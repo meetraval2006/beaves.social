@@ -3,6 +3,30 @@ import Image from "next/image";
 export default function Home() {
   return (
     <>
+    <header>
+        <nav className="flex justify-between items-center w-[90%] mx-auto">
+            <div>
+                <p className="w-48 text-slate-50 text-xl m-5 font-bold text-center">beavs.social 🤝</p>
+            </div>
+            <div className="nav-links duration-500 mr-24 md:static absolute md:min-h-fit left-0 top-[-100%] md:w-auto w-full flex items-center p-5">
+                <ul className="flex md:flex-row flex-col md:items-center md:gap-[4vw] gap-6">
+                    <li className="m-2">
+                        <a className="text-slate-200 font-medium hover:text-white md:text-base text-xl md:mx-auto mx-5" href="#description">App Description</a>
+                    </li>
+                    <li className="m-2">
+                        <a className="text-slate-200 font-medium hover:text-white md:text-base text-xl md:mx-auto mx-5" href="#about">About Us</a>
+                    </li>
+                    <li className="m-2">
+                        <a className="text-slate-200 font-medium hover:text-white md:text-base text-xl md:mx-auto mx-5" href="#blog">Blog</a>
+                    </li>
+                    <li className="m-2">
+                        <a className="text-slate-200 font-medium hover:text-white md:text-base text-xl md:mx-auto mx-5" href="#fundraiser">Fundraiser</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
     <section className="section bg-gray-200 relative md:-mt-auto not-prose">
         <div className="absolute inset-0 pointer-events-none" aria-hidden="true"/>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
