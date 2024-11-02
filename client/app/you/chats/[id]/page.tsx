@@ -62,25 +62,43 @@ export default function Home() {
 
       <div className="basis-10/12 p-4 flex flex-col justify-end">
         <div className="p-2">
-          <div className="float-right bg-indigo-500 py-2 px-4 rounded-full">Hi</div>
+          <div className="float-right flex items-center columns-2">
+            <div style={{cursor: "default"}} className="text-sm mr-2 text-gray-400">7:01 pm</div>
+            <div className="bg-indigo-500 py-2 px-4 rounded-full">Hi</div>
+          </div>
         </div>
         <div className="p-2">
-          <div className="float-right bg-indigo-500 py-2 px-4 rounded-full">How are you</div>
+          <div className="float-right flex items-center columns-2">
+            <div style={{cursor: "default"}} className="text-sm mr-2 text-gray-400">7:01 pm</div>
+            <div className="bg-indigo-500 py-2 px-4 rounded-full">How are you</div>
+          </div>
         </div>
         <div className="p-2">
-          <div className="float-right bg-indigo-500 py-2 px-4 rounded-full">My name is Foo Bar</div>
+          <div className="float-right flex items-center columns-2">
+            <div style={{cursor: "default"}} className="text-sm mr-2 text-gray-400">7:02 pm</div>
+            <div className="bg-indigo-500 py-2 px-4 rounded-full">My name is Foo Bar</div>
+          </div>
         </div>
         <div className="p-2">
           <img src="https://i.pinimg.com/236x/68/31/12/68311248ba2f6e0ba94ff6da62eac9f6.jpg" className="flex items-center float-left h-11 w-11 mr-5 ms-2 rounded-full" alt="server-icon"/>
-          <div className="float-left bg-gray-500 py-2 px-4 rounded-full">Hello!</div>
+          <div className="float-left flex items-center columns-2">
+            <div className="bg-gray-500 py-2 px-4 rounded-full">Hello!</div>
+            <div style={{cursor: "default"}} className="text-sm ml-2 text-gray-400">7:02 pm</div>
+          </div>
         </div>
         <div className="p-2">
           <img src="https://i.pinimg.com/236x/68/31/12/68311248ba2f6e0ba94ff6da62eac9f6.jpg" className="flex items-center float-left h-11 w-11 mr-5 ms-2 rounded-full" alt="server-icon"/>
-          <div className="float-left bg-gray-500 py-2 px-4 rounded-full">I'm doing great</div>
+          <div className="float-left flex items-center columns-2">
+            <div className="bg-gray-500 py-2 px-4 rounded-full">I'm doing great</div>
+            <div style={{cursor: "default"}} className="text-sm ml-2 text-gray-400">7:03 pm</div>
+          </div>
         </div>
         <div className="p-2">
           <img src="https://i.pinimg.com/236x/68/31/12/68311248ba2f6e0ba94ff6da62eac9f6.jpg" className="flex items-center float-left h-11 w-11 mr-5 ms-2 rounded-full" alt="server-icon"/>
-          <div className="float-left bg-gray-500 py-2 px-4 rounded-full">My name is Bar Foo</div>
+          <div className="float-left flex items-center columns-2">
+            <div className="bg-gray-500 py-2 px-4 rounded-full">My name is Bar Foo!</div>
+            <div style={{cursor: "default"}} className="text-sm ml-2 text-gray-400">7:03 pm</div>
+          </div>
         </div>
       </div>
 

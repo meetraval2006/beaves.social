@@ -8,7 +8,7 @@ interface Options {
 
 export default function ChatUserSelect(options: Options) {
   const router = useRouter();
-  const handleUserClick = (_: any, id: number): Promise<boolean> => router.push(`/you/chats/${id}`);
+  const handleUserClick = (_: any, id: number): void => router.push(`/you/chats/${id}`);
 
   return (
     <li>
