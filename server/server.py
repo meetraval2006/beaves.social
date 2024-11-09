@@ -7,7 +7,7 @@ from flask_restful import Api, Resource, reqparse, abort
 app = Flask(__name__)
 api = Api(app)
 
-#cred = credentials.Certificate('./server/service_account_key.json')
+cred = credentials.Certificate('./server/service_account_key.json')
 firebase_app = firebase_admin.initialize_app(cred)
 
 db = firestore.client()
