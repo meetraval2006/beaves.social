@@ -15,7 +15,7 @@ users = db.collection("users").stream()
 next_id = f"{int([doc.id for doc in users][-1]) + 1}"
 
 name = input("Enter your name: ")
-pfp = input("Enter a number(place holder for pfp): ")
+pfp = input("Enter a number for pfp(place holder): ")
 role = input("What's your major: ")
 
 doc_ref = db.collection("users").document(next_id).set({"name": name, "pfp": pfp, "role": role})
