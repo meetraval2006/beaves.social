@@ -10,7 +10,7 @@ export default function Home() {
         </svg>
     </a>
 
-    <aside id="default-sidebar" className="fixed rows-2 border-r border-r-indigo-200 top-0 left-0 z-40 w-96 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
+    <aside id="default-sidebar" className="fixed rows-2 border-r border-r-indigo-200 top-0 left-0 z-40 w-96 h-screen transition-transform -translate-x-full md:translate-x-0" aria-label="Sidebar">
         <div className="h-32 px-2 py-4 pb-32">
             <div className="p-4 py-4">
                 <div className="text-2xl font-bold">
