@@ -1,1 +1,2 @@
-service_account_key.json
+#delete this file or comment line 2 before running server.py
+key.json
