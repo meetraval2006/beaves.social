@@ -2,7 +2,8 @@
 
 import { usePathname } from 'next/navigation';
 
-import ChatUserSelect from "@/app/components/ChatUserSelect";
+import HistoryTextSelect from "@/app/components/HistoryTextSelect";
+import HomeUserSelect from '@/app/components/HomeUserSelect';
 
 export default function Home() {
   const pathname = usePathname();
@@ -16,43 +17,7 @@ export default function Home() {
         </svg>
     </a>
 
-    <aside id="default-sidebar" className="fixed rows-2 border-r border-r-indigo-200 top-0 left-0 z-40 w-96 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
-        <div className="h-32 px-2 py-4 pb-32">
-            <div className="p-4 py-4">
-                <div className="text-2xl font-bold">
-                    Your Chats
-                </div>
-                <div className="py-4">
-                    <form className="max-w-md mx-auto">   
-                        <label className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-                        <div className="relative">
-                            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                                <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                                </svg>
-                            </div>
-                            <input type="search" id="default-search" className="block w-full px-4 py-2 ps-10 text-md text-gray-900 border border-gray-300 rounded-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search" required />
-                        </div>
-                    </form>
-                </div>
-
-            </div>
-        </div>
-        
-        <div className="px-2 py-4 overflow-y-auto">
-            <ul className="font-medium">
-                    <ChatUserSelect id={1} />
-                    <ChatUserSelect id={2} />
-                    <ChatUserSelect id={3} />
-                    <ChatUserSelect id={4} />
-                    <ChatUserSelect id={5} />
-                    <ChatUserSelect id={6} />
-                    <ChatUserSelect id={7} />
-            </ul>
-        </div>
-    </aside>
-
-    <div className="sm:ml-96 flex flex-col h-screen">
+    {/* <div className="sm:ml- flex flex-col h-screen">
       <div className="basis-1/12 border-b border-b-indigo-200 pl-6 py-4">
         <div className="flex items-center">
           <img src="https://i.pinimg.com/236x/68/31/12/68311248ba2f6e0ba94ff6da62eac9f6.jpg" className="flex items-center float-left h-11 w-11 mr-5 ms-2 rounded-full" alt="server-icon"/>
@@ -117,6 +82,70 @@ export default function Home() {
                   </div>
               </form>
           </div>
+      </div>
+    </div> */}
+
+    <aside id="default-sidebar" className="fixed rows-2 border-l border-l-indigo-200 top-0 right-0 z-40 w-3/12 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
+        <div className="h-32 px-6 pt-4 pb-32">
+            <div className="py-4">
+              <div className="pb-4">
+                    <form className="max-w-md">   
+                        <label className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                                <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                                </svg>
+                            </div>
+                            <input type="search" id="default-search" className="block w-full px-4 py-2 ps-10 text-md text-gray-900 border border-gray-300 rounded-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search" required />
+                        </div>
+                    </form>
+              </div>
+
+              <div className="text-3xl font-bold pt-4">
+                  History
+              </div>
+            </div>
+        </div>
+        
+        <div className="px-2 pt-2 overflow-y-auto">
+            <ul className="font-medium">
+                    <HistoryTextSelect id={1} />
+                    <HistoryTextSelect id={2} />
+                    <HistoryTextSelect id={3} />
+                    <HistoryTextSelect id={4} />
+                    <HistoryTextSelect id={5} />
+                    <HistoryTextSelect id={6} />
+                    <HistoryTextSelect id={7} />
+            </ul>
+        </div>
+    </aside>
+
+    <div className="top-0 left-0 w-9/12 h-screen py-4 px-8 flex flex-col">
+      <div className="basis-2/12 flex items-center justify-center">
+          <div className="text-4xl font-black pt-2 pb-8">Welcome</div>
+      </div>
+
+      <div className="basis-10/12 p-2 grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-1 gap-6 items-stretch h-full">
+        <HomeUserSelect username="Username #1" />
+        <HomeUserSelect username="Username #2" />
+        <HomeUserSelect username="Username #3" />
+
+        <HomeUserSelect username="Username #4" />
+        <HomeUserSelect username="Username #5" />
+        <HomeUserSelect username="Username #6" />
+
+        <HomeUserSelect username="Username #7" />
+        <HomeUserSelect username="Username #8" />
+        <HomeUserSelect username="Username #9" />
+
+        <HomeUserSelect username="Username #10" />
+        <HomeUserSelect username="Username #11" />
+        <HomeUserSelect username="Username #12" />
+
+        <HomeUserSelect username="Username #13" />
+        <HomeUserSelect username="Username #14" />
+        <HomeUserSelect username="Username #15" />
       </div>
     </div>
 
