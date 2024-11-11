@@ -21,6 +21,7 @@ def create_user():
 
     name = data.get("name")
     pfp = data.get("pfp")
+    username = data.get("username")
     role = data.get("role")
     email = data.get("email")
 
@@ -29,9 +30,9 @@ def create_user():
 
     random_id = str(uuid.uuid4())
 
-    db.collection("users").document(random_id).set({"name": name, "pfp": pfp, "role": role, "email": email})
+    db.collection("users").document(random_id).set({"name": name, "username": username, "pfp": pfp, "role": role, "email": email})
 
-    return jsonify({"id": random_id, "name": name, "pfp": pfp, "role": role, "email": email})
+    return jsonify({"id": random_id, "name": name, "username": username, "pfp": pfp, "role": role, "email": email})
 
 
 if __name__ == "__main__":
