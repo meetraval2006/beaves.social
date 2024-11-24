@@ -31,30 +31,19 @@ def create_user():
         
         if not re.match(r"^[a-zA-Z]+", name):
             print("Invalid name. Please type your full name")
-            abort(400, message="Invalid name. Pleae type your full name")
+            abort(400, message="Invalid name. Please type your full name")
 
         if not re.match(r"^[a-zA-Z0-9_$#!.,:><%-=+]+", username):
             print("Invalid username. Please type a valid username")
             abort(400, message="Invalid username. Please type a valid username")
-            
-        if not isinstance(name, str) or not isinstance(username, str) or not isinstance(major, str) or not isinstance(minor, str) or not isinstance(resident_hall, str) or not isinstance(email, str):
-            abort(400, message="Name, username, role, and/or email cannot contain numbers or special characters")
-        
-        if not isinstance(year, int):
-            abort(400, message="Year should be an integer")
+
+        if not re.match(r"^[a-zA-Z0-9]+@oregonstate.edu", email):
+            print("Invalid email. Please type a valid Oregon State email")
+            abort(400, message="Invalid email. Please type a valid Oregon State email")
 
         if not name or not username or not major or not minor or not year or not resident_hall or not email:
             print("Please provide all the information")
             abort(400, message="Please provide all the information")
-            
-
-        if isinstance(major, list) == False:
-            print("Major should be a list")
-            abort(400, message="Major should be a list")
-
-        if isinstance(minor, list) == False:
-            print("Minor should be a list")
-            abort(400, message="Minor should be a list")
         
             
         random_id = str(uuid.uuid4())
@@ -66,6 +55,19 @@ def create_user():
     except Exception as e:
         print(f"error: {e}")
         abort(400, message="Error creating user")
+
+
+@app.route('/api/get_user', methods=['GET'])
+def get_user():
+    
+    user_id = db.collection("users").get()
+    name = db.collection("users").document(user_id).get("name")
+    username = db.collection("users").document(user_id).get("username")
+    print(f"User ID: {user_id})")
+    print(f"Name: {name}") 
+    print(f"Username: {username}")
+    return jsonify(user_id.to_dict(), name.to_dict(), username.to_dict())
+    
 
 if __name__ == "__main__":
     app.run(debug=True)
