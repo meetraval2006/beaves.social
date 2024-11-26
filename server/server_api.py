@@ -61,6 +61,7 @@ def create_user():
 def get_user():
     users_ref = db.collection("users")
     docs = users_ref.stream()
+    
     for doc in docs:
         #pfp = data.get("pfp")
         username = doc.to_dict().get("username")
