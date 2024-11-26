@@ -63,11 +63,11 @@ def get_user():
     docs = users_ref.stream()
     for doc in docs:
         #pfp = data.get("pfp")
-        username = data.get("username")
-        user_major = doc.to_dict().get("role")
-        minor = data.get("minor")
-        year = data.get("year")
-        resident_hall = data.get("resident_hall")
+        username = doc.to_dict().get("username")
+        user_major = doc.to_dict().get("major")
+        user_major = doc.to_dict().get("major")
+        year = doc.to_dict().get("year")
+        resident_hall = doc.to_dict().get("resident_hall")
         user_name = doc.to_dict().get("name")
         user_email = doc.to_dict().get("email")
         
