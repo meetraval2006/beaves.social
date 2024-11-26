@@ -59,14 +59,20 @@ def create_user():
 
 @app.route('/api/get_user', methods=['GET'])
 def get_user():
-    
-    user_id = db.collection("users").get()
-    name = db.collection("users").document(user_id).get("name")
-    username = db.collection("users").document(user_id).get("username")
-    print(f"User ID: {user_id})")
-    print(f"Name: {name}") 
-    print(f"Username: {username}")
-    return jsonify(user_id.to_dict(), name.to_dict(), username.to_dict())
+    users_ref = db.collection("users")
+    docs = users_ref.stream()
+    for doc in docs:
+        #pfp = data.get("pfp")
+        username = data.get("username")
+        user_major = doc.to_dict().get("role")
+        minor = data.get("minor")
+        year = data.get("year")
+        resident_hall = data.get("resident_hall")
+        user_name = doc.to_dict().get("name")
+        user_email = doc.to_dict().get("email")
+        
+       
+    return jsonify({"name": user_name, "email": user_email, "major": user_major})
     
 
 if __name__ == "__main__":
