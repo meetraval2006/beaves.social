@@ -65,14 +65,14 @@ def get_user():
         #pfp = data.get("pfp")
         username = doc.to_dict().get("username")
         user_major = doc.to_dict().get("major")
-        user_major = doc.to_dict().get("major")
+        user_minor = doc.to_dict().get("major")
         year = doc.to_dict().get("year")
         resident_hall = doc.to_dict().get("resident_hall")
         user_name = doc.to_dict().get("name")
         user_email = doc.to_dict().get("email")
         
        
-    return jsonify({"name": user_name, "email": user_email, "major": user_major})
+    return jsonify({"name": user_name, "email": user_email, "major": user_major, "minor": user_minor, "year": year, "resident_hall": resident_hall, "username": username})
     
 
 if __name__ == "__main__":
