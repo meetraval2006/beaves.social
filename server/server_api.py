@@ -57,6 +57,8 @@ def create_user():
         abort(400, message="Error creating user")
 
 
+#figure out how to get the user id (aka the document name)
+#figure out how to get all the data
 @app.route('/api/get_user', methods=['GET'])
 def get_user():
     users_ref = db.collection("users")
