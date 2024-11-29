@@ -92,49 +92,22 @@ def get_user():
         print(f"error: {e}")
         abort(400, description="Error getting user")
 
-# #figure out how to get the user id (aka the document name)
-# #figure out how to get all the data
-# @app.route('/api/get_user', methods=['GET'])
-# def get_user():
-#     try:
-#         user_id = request.args.get("id")
-#         print(f"Received user_id: {user_id}")  # Debugging statement
-#         if not user_id:
-#             abort(400, description="User ID is required")
-        
-#         user_doc = db.collection("users").document(user_id).get()
-#         if not user_doc.exists:
-#             abort(404, description="User not found")
-        
-#         user_info = user_doc.to_dict()
-#         user_info["id"] = user_id  # Add the document ID to the dictionary
-        
-#         return jsonify(user_info)
-#     except Exception as e:
-#         print(f"error: {e}")
-#         abort(400, description="Error getting user")
-#     #docs = users_ref.stream()
-#     # user_doc_id: str = ""
+@app.route('/api/get_users', methods=['GET'])
+def get_users():
+    try:
+        users_ref = db.collection("users")
+        docs = users_ref.stream()
+        users = []
+        for doc in docs:
+            user_data = doc.to_dict()
+            user_data["id"] = doc.id  # Add the document ID to the dictionary
+            users.append(user_data)
+            #user_id = [users[0].get("id")]
+        return jsonify(users)
 
-#     # try:
-#     #     data = request.get_json()
-#     #     user_doc_id = data.get("user_doc_id")
-
-#     # except Exception as e:
-#     #     print(f"error: {e}")
-#     #     abort(400, message="Error creating user")
-
-#     # doc = users_ref.document(user_doc_id).get()
-#     # print(doc)
-   
- 
-#     # username = docs.to_dict().get("username")
-#     # major = docs.to_dict().get("major")
-#     # minor = docs.to_dict().get("major")
-#     # year = docs.to_dict().get("year")
-#     # residence_hall = docs.to_dict().get("residence_hall")
-#     # name = docs.to_dict().get("name")
-#     # email = docs.to_dict().get("email")
+    except Exception as e:
+        print(f"error: {e}")
+        abort(400, description="Error getting user")
 
 if __name__ == "__main__":
     app.run(debug=True)
