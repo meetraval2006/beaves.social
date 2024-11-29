@@ -1,4 +1,5 @@
 import Image from "next/image";
+import AuthenticationButton from "@/app/components/AuthenticationButton";
 
 export default function Home() {
   return (
@@ -55,15 +56,7 @@ export default function Home() {
                     </p>
 
                     <div className="max-w-xs sm:max-w-md m-auto flex flex-nowrap flex-col sm:flex-row sm:justify-center gap-4 ">
-                        {/* <link href="https://multiii.github.io/Self-Improvement-Guide/" className="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-5 py-3 px-6 rounded-full text-xl">
-                            Read the Guide
-                        </link> */}
-                        <button 
-                        className="bg-[#ff4e00] hover:bg-[#BA3800] text-white font-semibold my-8 py-5 px-6 rounded-full text-2xl"
-                        
-                        >
-                          Login with ONID
-                        </button>
+                        <AuthenticationButton />
                     </div>
                 </div>
             </div>
