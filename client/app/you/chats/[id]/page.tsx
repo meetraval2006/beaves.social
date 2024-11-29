@@ -41,13 +41,13 @@ export default function Home() {
         
         <div className="px-2 py-4 overflow-y-auto">
             <ul className="font-medium">
-                    <ChatUserSelect id={1} />
-                    <ChatUserSelect id={2} />
-                    <ChatUserSelect id={3} />
-                    <ChatUserSelect id={4} />
-                    <ChatUserSelect id={5} />
-                    <ChatUserSelect id={6} />
-                    <ChatUserSelect id={7} />
+                    <ChatUserSelect username={"User"} latestMessageAuthor={"Foo"} latestMessageText={"Hi"} />
+                    <ChatUserSelect username={"User"} latestMessageAuthor={"Foo"} latestMessageText={"Hi"} />
+                    <ChatUserSelect username={"User"} latestMessageAuthor={"Foo"} latestMessageText={"Hi"} />
+                    <ChatUserSelect username={"User"} latestMessageAuthor={"Foo"} latestMessageText={"Hi"} />
+                    <ChatUserSelect username={"User"} latestMessageAuthor={"Foo"} latestMessageText={"Hi"} />
+                    <ChatUserSelect username={"User"} latestMessageAuthor={"Foo"} latestMessageText={"Hi"} />
+                    <ChatUserSelect username={"User"} latestMessageAuthor={"Foo"} latestMessageText={"Hi"} />
             </ul>
         </div>
     </aside>

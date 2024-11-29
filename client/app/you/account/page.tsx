@@ -1,27 +1,56 @@
+'use client';
+
 import Image from "next/image";
+import { useRouter, useSearchParams } from 'next/navigation'
+import { FormEvent } from 'react'
 import DropdownOptions from "@/app/components/AccountDropdownOptions";
 
 export default function Home() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const email = searchParams.get('email') + "@oregonstate.edu";
+
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    const data = new FormData(event.currentTarget);
+    const dataObject = Object.fromEntries(data);
+    dataObject.email = email;
+    
+    const response = fetch('http://127.0.0.1:5000/api/create_user', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dataObject),
+    });
+    
+    event.preventDefault();
+    router.push(`/you/chats/inbox`);
+  }
+
   return (
     <>
       <section className="bg-gray-50 dark:bg-gray-900">
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-            <a href="#" className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
-                <Image 
+            <a href="/" className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
+                <Image
                   className="inline-block align-middle rounded-lg w-12 h-12 mr-2" 
                   src="/favicon.ico" 
                   alt="placeholder"
                   width={300}
                   height={300}
                 />
-                beavs.social  
+                beavs.social
             </a>
             <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                         Create an account
                     </h1>
-                    <form className="space-y-4 md:space-y-6" action="#">
+                    <form className="space-y-4 md:space-y-6" action="#" onSubmit={onSubmit}>
+                        <div>
+                            <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+                            <input type="email" name="email" id="email" disabled className="cursor-not-allowed bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" value={email} required={false}/>
+                        </div>
                         <div>
                             <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your name</label>
                             <input type="name" name="name" id="name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Eg. John Doe" required={false}/>
