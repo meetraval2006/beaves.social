@@ -13,7 +13,7 @@ app = Flask(__name__)
 CORS(app)
 api = Api(app)
 
-cred = credentials.Certificate('./key.json')
+cred = credentials.Certificate('./server/key.json')
 firebase_initialization = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -69,7 +69,7 @@ def create_user():
         print(f"error: {e}")
         abort(400, message="Error creating user")
 
-@app.route("/api/get_user", methods=["GET"])
+@app.route("/api/get_users", methods=["GET"])
 def get_user():
     try:
         email = f'{request.args.get("email")}@oregonstate.edu'
@@ -92,22 +92,38 @@ def get_user():
         print(f"error: {e}")
         abort(400, description="Error getting user")
 
-@app.route('/api/get_users', methods=['GET'])
+@app.route('/api/get_user', methods=['GET'])
 def get_users():
     try:
         users_ref = db.collection("users")
         docs = users_ref.stream()
         users = []
+        #user_id = []
         for doc in docs:
             user_data = doc.to_dict()
             user_data["id"] = doc.id  # Add the document ID to the dictionary
             users.append(user_data)
-            #user_id = [users[0].get("id")]
-        return jsonify(users)
 
+            # user_id = users["id"]
+            # user_id.to_dict()
+        return jsonify(users)
+        
     except Exception as e:
         print(f"error: {e}")
         abort(400, description="Error getting user")
+
+@app.route('/api/get_user_id', methods=['GET'])
+def get_user_id():
+    try:
+        ref = db.collection("users")
+        document = ref.stream()
+        user_id = []
+        for doc in document:
+            user_id.append({"name": doc.to_dict()["name"], "id": doc.id})
+        return jsonify(user_id)
+    except Exception as e:
+        print(f"error: {e}")
+        abort(400, description="Error getting user id")
 
 if __name__ == "__main__":
     app.run(debug=True)
