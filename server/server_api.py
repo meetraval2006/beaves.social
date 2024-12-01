@@ -227,6 +227,25 @@ def create_event():
     except Exception as e:
         abort(400, message=f"Error creating event: {e}")
 
+@app.route('/api/get_events', methods=['GET'])
+def get_events():
+    try:
+        events_ref = db.collection("events")
+        docs = events_ref.stream()
+        events = []
+        #user_id = []
+        for doc in docs:
+            events_data = doc.to_dict()
+            events_data["id"] = doc.id  # Add the document ID to the dictionary
+            events.append(events_data)
+
+            # user_id = users["id"]
+            # user_id.to_dict()
+        return jsonify(events)
+        
+    except Exception as e:
+        print(f"error: {e}")
+        abort(400, description="Error getting user")
 
 
 if __name__ == "__main__":
