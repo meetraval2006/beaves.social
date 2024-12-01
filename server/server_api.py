@@ -13,7 +13,7 @@ app = Flask(__name__)
 CORS(app)
 api = Api(app)
 
-cred = credentials.Certificate('./key.json')
+cred = credentials.Certificate('./server/key.json')
 firebase_initialization = firebase_admin.initialize_app(cred, {"databaseURL": "https://beavs-social-default-rtdb.firebaseio.com/"})
 db = firestore.client()
 
@@ -143,6 +143,8 @@ def add_message():
         likes = data.get("likes")
         replyId = data.get("replyId")  
 
+        gc_id = str(uuid.uuid4())
+
         if not timestamp or not text or not likes:
             return jsonify({"error": "Fields 'timestamp', 'text', and 'likes' are required"}), 400
 
@@ -154,7 +156,7 @@ def add_message():
             "replyId": replyId or "N/A"  
         }
 
-        ref = firebase_db.reference('messages')
+        ref = firebase_db.reference(gc_id)
         ref.child(message_id).set(message_data)
 
         message_data["id"] = message_id
@@ -200,10 +202,10 @@ def create_event():
     try:
         data = request.get_json()
         name = data.get("name")
-        major = data.get("major")
-        minor = data.get("minor")
-        year = data.get("year")
-        residence_hall = data.get("residence_hall")
+        majors: list[str] = data.get("major")
+        minors: list[str] = data.get("minor")
+        years: list[str] = data.get("year")
+        residence_halls: list[str] = data.get("residence_hall")
         group_chat_id = data.get("groupChatId")
         author_id = data.get("authorId")
 
@@ -214,10 +216,10 @@ def create_event():
         
         dictionary = {
             "name": name,
-            "major": major or None,
-            "minor": minor or None,
-            "year": year or None,
-            "residence_hall": residence_hall,
+            "majors": majors or [],
+            "minors": minors or [],
+            "years": years or [],
+            "residence_halls": residence_halls or [],
             "groupChatId": group_chat_id,
             "authorId": author_id
         }
@@ -229,5 +231,24 @@ def create_event():
     except Exception as e:
         abort(400, message=f"Error creating event: {e}")
 
+@app.route('/api/get_events', methods=['GET'])
+def get_events():
+    try:
+        events_ref = db.collection("events")
+        docs = events_ref.stream()
+        events = []
+        #user_id = []
+        for doc in docs:
+            events_data = doc.to_dict()
+            events_data["id"] = doc.id  # Add the document ID to the dictionary
+            events.append(events_data)
+            # user_id = users["id"]
+            # user_id.to_dict()
+        return jsonify(events)
+        
+    except Exception as e:
+        print(f"error: {e}")
+        abort(400, description="Error getting user")
+        
 if __name__ == "__main__":
     app.run(debug=True)
