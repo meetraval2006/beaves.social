@@ -13,7 +13,7 @@ app = Flask(__name__)
 CORS(app)
 api = Api(app)
 
-cred = credentials.Certificate('./server/key.json')
+cred = credentials.Certificate('./key.json')
 firebase_initialization = firebase_admin.initialize_app(cred, {"databaseURL": "https://beavs-social-default-rtdb.firebaseio.com/"})
 db = firestore.client()
 
@@ -128,25 +128,29 @@ def get_user_id():
 
 # Chat messages methods
 
-@app.route('/api/add_message', methods=['POST'])
-def add_message():
+@app.route('/api/create_gc', methods=['POST'])
+def create_gc():
     """
     Endpoint to add a message to the Firebase Realtime Database.
     Expects JSON input with 'timestamp', 'text', 'likes', and 'replyId'.
     """
     try:
         data = request.get_json()
+        gc_name = data.get("gc_name")
         timestamp = data.get("timestamp")
         text = data.get("text")
         likes = data.get("likes")
         replyId = data.get("replyId")  
 
-        gc_id = str(uuid.uuid4())
-
         if not timestamp or not text or not likes:
             return jsonify({"error": "Fields 'timestamp', 'text', and 'likes' are required"}), 400
 
         message_id = str(uuid.uuid4())
+        gc_data = {
+            "gc_name": gc_name,
+            "is_gc": False,
+        }
+
         message_data = {
             "timestamp": timestamp,
             "text": text,
@@ -154,44 +158,62 @@ def add_message():
             "replyId": replyId or "N/A"  
         }
 
-        ref = firebase_db.reference(gc_id)
-        ref.child(message_id).set(message_data)
+        ref = firebase_db.reference('messages')
+        ref.child(message_id).set(gc_data)
 
-        message_data["id"] = message_id
+        
         return jsonify(message_data), 201
 
     except Exception as e:
         print(f"Error adding message: {e}")
         return jsonify({"error": "Failed to add message"}), 500
 
-@app.route('/api/get_messages', methods=['GET'])
-def get_messages():
-    """
-    Endpoint to retrieve all messages containing a specific text.
-    Expects 'text' as a query parameter.
-    """
-    try:
-        text = request.args.get("text")
-        if not text:
-            return jsonify({"error": "Text parameter is required"}), 400
+#get all the gc
+@app.route('/api/get_gc', methods=['GET'])
+def get_gc():
+    ...
 
-        ref = firebase_db.reference('messages')
-        messages = ref.get()
+#get the gcs that a particular user is in. For example, use Robert's id to get all the gcs that he is in
+@app.route('/api/get_gcs', methods=['GET'])
+def get_gcs():
+    ...
 
-        if not messages:
-            return jsonify([])
+@app.route('/api/add_messages', methods=['POST'])
+def add_messages():
+    ...
 
-        filtered_messages = [
-            {"id": msg_id, **msg_data}
-            for msg_id, msg_data in messages.items()
-            if text.lower() in msg_data.get("text", "").lower()
-        ]
+@app.route('/api/update_chat', methods=['POST'])
+def update_chat():
+    ...
 
-        return jsonify(filtered_messages), 200
+# @app.route('/api/get_messages', methods=['GET'])
+# def get_messages():
+#     """
+#     Endpoint to retrieve all messages containing a specific text.
+#     Expects 'text' as a query parameter.
+#     """
+#     try:
+#         text = request.args.get("text")
+#         if not text:
+#             return jsonify({"error": "Text parameter is required"}), 400
 
-    except Exception as e:
-        print(f"Error retrieving messages: {e}")
-        return jsonify({"error": "Failed to retrieve messages"}), 500
+#         ref = firebase_db.reference('messages')
+#         messages = ref.get()
+
+#         if not messages:
+#             return jsonify([])
+
+#         filtered_messages = [
+#             {"id": msg_id, **msg_data}
+#             for msg_id, msg_data in messages.items()
+#             if text.lower() in msg_data.get("text", "").lower()
+#         ]
+
+#         return jsonify(filtered_messages), 200
+
+#     except Exception as e:
+#         print(f"Error retrieving messages: {e}")
+#         return jsonify({"error": "Failed to retrieve messages"}), 500
 
 # Event methods
 
@@ -200,10 +222,10 @@ def create_event():
     try:
         data = request.get_json()
         name = data.get("name")
-        majors: list[str] = data.get("majors")
-        minors: list[str] = data.get("minors")
-        years: list[str] = data.get("years")
-        residence_halls: list[str] = data.get("residence_halls")
+        majors: list[str] = data.get("major")
+        minors: list[str] = data.get("minor")
+        years: list[str] = data.get("year")
+        residence_halls: list[str] = data.get("residence_hall")
         group_chat_id = data.get("groupChatId")
         author_id = data.get("authorId")
 
@@ -240,6 +262,7 @@ def get_events():
             events_data = doc.to_dict()
             events_data["id"] = doc.id  # Add the document ID to the dictionary
             events.append(events_data)
+
             # user_id = users["id"]
             # user_id.to_dict()
         return jsonify(events)
@@ -247,6 +270,7 @@ def get_events():
     except Exception as e:
         print(f"error: {e}")
         abort(400, description="Error getting user")
-        
+
+
 if __name__ == "__main__":
     app.run(debug=True)
