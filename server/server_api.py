@@ -154,7 +154,7 @@ def add_message():
             "replyId": replyId or "N/A"  
         }
 
-        ref = db.reference('messages')
+        ref = firebase_db.reference('messages')
         ref.child(message_id).set(message_data)
 
         message_data["id"] = message_id
@@ -175,7 +175,7 @@ def get_messages():
         if not text:
             return jsonify({"error": "Text parameter is required"}), 400
 
-        ref = db.reference('messages')
+        ref = firebase_db.reference('messages')
         messages = ref.get()
 
         if not messages:
