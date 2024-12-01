@@ -101,14 +101,12 @@ def get_users():
         users_ref = db.collection("users")
         docs = users_ref.stream()
         users = []
-        #user_id = []
+        
         for doc in docs:
             user_data = doc.to_dict()
             user_data["id"] = doc.id  # Add the document ID to the dictionary
             users.append(user_data)
 
-            # user_id = users["id"]
-            # user_id.to_dict()
         return jsonify(users)
         
     except Exception as e:
@@ -200,10 +198,10 @@ def create_event():
     try:
         data = request.get_json()
         name = data.get("name")
-        major = data.get("major")
-        minor = data.get("minor")
-        year = data.get("year")
-        residence_hall = data.get("residence_hall")
+        majors: list[str] = data.get("major")
+        minors: list[str] = data.get("minor")
+        years: list[str] = data.get("year")
+        residence_halls: list[str] = data.get("residence_hall")
         group_chat_id = data.get("groupChatId")
         author_id = data.get("authorId")
 
@@ -214,10 +212,10 @@ def create_event():
         
         dictionary = {
             "name": name,
-            "major": major or None,
-            "minor": minor or None,
-            "year": year or None,
-            "residence_hall": residence_hall,
+            "majors": majors or [],
+            "minors": minors or [],
+            "years": years or [],
+            "residence_halls": residence_halls or [],
             "groupChatId": group_chat_id,
             "authorId": author_id
         }
@@ -228,6 +226,8 @@ def create_event():
     
     except Exception as e:
         abort(400, message=f"Error creating event: {e}")
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
