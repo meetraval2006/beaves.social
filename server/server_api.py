@@ -13,7 +13,7 @@ app = Flask(__name__)
 CORS(app)
 api = Api(app)
 
-cred = credentials.Certificate('./key.json')
+cred = credentials.Certificate('./server/key.json')
 firebase_initialization = firebase_admin.initialize_app(cred, {"databaseURL": "https://beavs-social-default-rtdb.firebaseio.com/"})
 db = firestore.client()
 
@@ -141,6 +141,8 @@ def add_message():
         likes = data.get("likes")
         replyId = data.get("replyId")  
 
+        gc_id = str(uuid.uuid4())
+
         if not timestamp or not text or not likes:
             return jsonify({"error": "Fields 'timestamp', 'text', and 'likes' are required"}), 400
 
@@ -152,7 +154,7 @@ def add_message():
             "replyId": replyId or "N/A"  
         }
 
-        ref = firebase_db.reference('messages')
+        ref = firebase_db.reference(gc_id)
         ref.child(message_id).set(message_data)
 
         message_data["id"] = message_id
@@ -238,7 +240,6 @@ def get_events():
             events_data = doc.to_dict()
             events_data["id"] = doc.id  # Add the document ID to the dictionary
             events.append(events_data)
-
             # user_id = users["id"]
             # user_id.to_dict()
         return jsonify(events)
@@ -246,7 +247,6 @@ def get_events():
     except Exception as e:
         print(f"error: {e}")
         abort(400, description="Error getting user")
-
-
+        
 if __name__ == "__main__":
     app.run(debug=True)
