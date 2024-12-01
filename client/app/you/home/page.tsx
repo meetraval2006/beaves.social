@@ -1,12 +1,13 @@
 "use client";
 
-import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import HistoryTextSelect from "@/app/components/HistoryTextSelect";
 import HomeUserSelect from '@/app/components/HomeUserSelect';
+import HomeUsersWall from '@/app/components/HomeUsersWall';
 
 export default function Home() {
-  const pathname = usePathname();
+  const router = useRouter();
 
   return (
     <>
@@ -124,29 +125,14 @@ export default function Home() {
     <div className="top-0 left-0 w-9/12 h-screen py-4 px-8 flex flex-col">
       <div className="basis-2/12 flex items-center justify-center">
           <div className="text-4xl font-black pt-2 pb-8">Welcome</div>
+          <div className="flex ml-8 pt-2 pb-8 gap-4">
+            <button className="transition rounded-lg ease-in-out bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300 p-2 flex-initial" onClick={() => router.push("account")}>Account</button>
+            <button className="transition rounded-lg ease-in-out bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300 p-2 flex-initial" onClick={() => router.push("chats/inbox")}>Chats</button>
+            <button className="transition rounded-lg ease-in-out bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300 p-2 flex-initial" onClick={() => router.push("events")}>Events</button>
+          </div>
       </div>
 
-      <div className="basis-10/12 p-2 grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-1 gap-6 items-stretch h-full">
-        <HomeUserSelect username="Username #1" />
-        <HomeUserSelect username="Username #2" />
-        <HomeUserSelect username="Username #3" />
-
-        <HomeUserSelect username="Username #4" />
-        <HomeUserSelect username="Username #5" />
-        <HomeUserSelect username="Username #6" />
-
-        <HomeUserSelect username="Username #7" />
-        <HomeUserSelect username="Username #8" />
-        <HomeUserSelect username="Username #9" />
-
-        <HomeUserSelect username="Username #10" />
-        <HomeUserSelect username="Username #11" />
-        <HomeUserSelect username="Username #12" />
-
-        <HomeUserSelect username="Username #13" />
-        <HomeUserSelect username="Username #14" />
-        <HomeUserSelect username="Username #15" />
-      </div>
+      <HomeUsersWall />
     </div>
 
     </>
