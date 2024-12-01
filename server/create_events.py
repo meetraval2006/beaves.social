@@ -32,34 +32,27 @@ def get_user():
 def create_event():
     try:
         data = request.get_json()
-        event_title = data.get("eventTitle")
-        event_date = data.get("eventDate")
-        location = data.get("location")
-        description = data.get("description")
-        max_participants = data.get("maxParticipants")
-        tags = data.get("tags")
+        name = data.get("name")
+        roles = data.get("roles")
+        groupChatId = data.get("groupChatId")
         author_id = data.get("authorId")
 
-        if not event_title or not event_date or not location or not description or not author_id:
+        if not name or not roles or not groupChatId or not author_id:
             abort(400, message="Please provide all the required event information")
 
         random_id = str(uuid.uuid4())
 
         db.collection("events").document(random_id).set({
-            "eventTitle": event_title,
-            "eventDate": event_date,
-            "location": location,
-            "description": description,
-            "maxParticipants": max_participants,
-            "tags": tags,
+            "name": name,
+            "roles": roles,
+            "groupChatId": groupChatId,
             "authorId": author_id
         })
 
         return jsonify({
-            "eventId": random_id, "eventTitle": event_title, 
-            "eventDate": event_date, "location": location, 
-            "description": description, "maxParticipants": max_participants, 
-            "tags": tags, "authorId": author_id
+            "eventId": random_id, "name": name, 
+            "roles": roles, "groupChatId": groupChatId, 
+             "authorId": author_id
         })
     
     except Exception as e:
