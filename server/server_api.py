@@ -198,10 +198,10 @@ def create_event():
     try:
         data = request.get_json()
         name = data.get("name")
-        majors: list[str] = data.get("major")
-        minors: list[str] = data.get("minor")
-        years: list[str] = data.get("year")
-        residence_halls: list[str] = data.get("residence_hall")
+        majors: list[str] = data.get("majors")
+        minors: list[str] = data.get("minors")
+        years: list[str] = data.get("years")
+        residence_halls: list[str] = data.get("residence_halls")
         group_chat_id = data.get("groupChatId")
         author_id = data.get("authorId")
 

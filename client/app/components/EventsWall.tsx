@@ -7,7 +7,7 @@ export default function HomeUsersWall() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("http://127.0.0.1:5000/api/get_users", {
+      const response = await fetch("http://127.0.0.1:5000/api/get_events", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -23,7 +23,7 @@ export default function HomeUsersWall() {
 
   return (
     <div className="basis-10/12 p-2 grid xl:grid-cols-2 md:grid-cols-1 gap-6 items-stretch h-full">
-      {data ? data.map((user) => <EventCard username={user.username} key={user.id} id={user.id}/>) : <div key="blank-screen"></div>}
+      {data ? data.map((user) => <EventCard name={user.name} key={user.id} id={user.id}/>) : <div key="blank-screen"></div>}
     </div>
   )
 }
