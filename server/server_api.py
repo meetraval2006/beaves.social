@@ -113,15 +113,26 @@ def get_users():
         print(f"error: {e}")
         abort(400, description="Error getting user")
 
-@app.route('/api/get_user_id', methods=['GET'])
+@app.route('/api/get_user_by_id', methods=['GET'])
 def get_user_id():
     try:
-        ref = db.collection("users")
-        document = ref.stream()
-        user_id = []
-        for doc in document:
-            user_id.append({"name": doc.to_dict()["name"], "id": doc.id})
-        return jsonify(user_id)
+        if not request.args.get("id"):
+            abort(400, description="Email is required")
+
+        id = request.args.get("id")
+
+        docs = (
+            db.collection("users")
+            .where(filter=FieldFilter("__name__", "==", id))
+            .get()
+        )
+
+        if len(docs) < 1:
+            return jsonify({"error": "User not found"})
+        
+        user_info = docs[0].to_dict()
+        return jsonify(user_info)
+    
     except Exception as e:
         print(f"error: {e}")
         abort(400, description="Error getting user id")
@@ -160,9 +171,18 @@ def create_gc():
         return jsonify({"error": "Failed to create GC"}), 500
 
 #get all the gc
+
 @app.route('/api/get_gc', methods=['GET'])
 def get_gc():
-    ...
+    try:
+        chat_id = request.args.get("chat_id")
+        ref = firebase_db.reference(chat_id)
+        print(ref.get())
+        return jsonify(ref.get())
+
+    except Exception as e:
+        print(f"Error adding message: {e}")
+        return jsonify({"error": "Failed to get GC"}), 500
 
 #get the gcs that a particular user is in. For example, use Robert's id to get all the gcs that he is in
 @app.route('/api/get_gcs', methods=['GET'])
