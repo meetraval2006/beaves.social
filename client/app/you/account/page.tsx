@@ -1,7 +1,6 @@
 'use client';
 
 import Image from "next/image";
-import { setCookie } from 'cookies-next/client';
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FormEvent } from 'react'
 
@@ -19,13 +18,23 @@ export default function Home() {
     const dataObject = Object.fromEntries(data);
     dataObject.email = email;
     
-    const response = fetch('http://127.0.0.1:5000/api/create_user', {
+    const response = await fetch('http://127.0.0.1:5000/api/create_user', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(dataObject),
     });
+    const json = await response.json();
+
+    localStorage.setItem("email", json.email);
+    localStorage.setItem("id", json.id);
+    localStorage.setItem("name", json.name);
+    localStorage.setItem("username", json.username);
+    localStorage.setItem("major", json.major);
+    localStorage.setItem("minor", json.minor);
+    localStorage.setItem("residence_hall", json.residence_hall);
+    localStorage.setItem("year", json.year);
     
     event.preventDefault();
     router.push(`/you/chats/inbox`);

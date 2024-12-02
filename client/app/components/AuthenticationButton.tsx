@@ -1,12 +1,15 @@
 'use client';
 
+import { useState } from 'react';
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 
-import { AuthProvider } from '@/app/components/AuthProvider';
-import { useAuth } from "@/app/components/AuthContext";
+import { useAppContext } from './AppContext';
+
+// import { AuthProvider } from '@/app/components/AuthProvider';
+// import { useAuth } from "@/app/components/AuthContext";
 
 // Your Firebase configuration
 const firebaseConfig = {
@@ -25,10 +28,11 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-const AuthenticationButton: React.FC = () => {
-  // const navigate = useNavigate();
-  const router = useRouter();
 
+
+const AuthenticationButton: React.FC = () => {
+  const router = useRouter();  
+  
   const handleSignUp = async () => {  
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({
@@ -38,6 +42,8 @@ const AuthenticationButton: React.FC = () => {
     firebase.auth().signInWithPopup(provider)
       .then(async (result) => {
         const emailPrefix = result.user?.email?.split("@")[0];
+
+        // setEmail(emailPrefix);
 
         const response = await fetch("http://127.0.0.1:5000/api/get_user?email=" + emailPrefix, {
           method: "GET",
@@ -49,28 +55,53 @@ const AuthenticationButton: React.FC = () => {
 
         if ("error" in json)
           router.push(`you/account?email=${emailPrefix}`);
-        else
+        else {
+          localStorage.setItem("email", emailPrefix ?? "");
+          localStorage.setItem("id", json.id);
+          localStorage.setItem("name", json.name);
+          localStorage.setItem("username", json.username);
+          localStorage.setItem("major", json.major);
+          localStorage.setItem("minor", json.minor);
+          localStorage.setItem("residence_hall", json.residence_hall);
+          localStorage.setItem("year", json.year);
+
           router.push(`you/chats/inbox`);
+        }
       })
       .catch((error) => {
         console.log("Error signing in:", error);
       })
 
-      // creae use effect thing and add emal to data, and then set email below as alr done
+      // const [data, setData] = useState<any[]>([]);
 
-      const { setEmail } = useAuth();
-      setEmail(emailPrefix);
+      // useEffect(() => {
+      //   const fetchData = async () => {
+      //     const response = await fetch("http://127.0.0.1:5000/api/get_gcs", {
+      //       method: "GET",
+      //       headers: {
+      //         "Content-Type": "application/json",
+      //       },
+      //     });
+      //     const data = await response.json();
+      //     setData(data);
+      //   };
+        
+      //   fetchData();
+      // }, []);
+
+      // // creae use effect thing and add emal to data, and then set email below as alr done
+
+      // const { setEmail } = useAuth();
+      // setEmail(emailPrefix);
   };
 
   return (
-    <AuthProvider>
-    <button
-      className="bg-[#ff4e00] hover:bg-[#BA3800] text-white font-semibold my-8 py-5 px-6 rounded-full text-2xl"
-      onClick={handleSignUp}
-    >
-      Login with ONID
-    </button>
-    </AuthProvider>
+      <button
+        className="bg-[#ff4e00] hover:bg-[#BA3800] text-white font-semibold my-8 py-5 px-6 rounded-full text-2xl"
+        onClick={handleSignUp}
+      >
+        Login with ONID
+      </button>
   );
 };
 

@@ -1,14 +1,22 @@
+"use client";
+
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { getCookie } from 'cookies-next/client';
 
-import { useAuth } from '@/app/components/AuthContext';
+import { useAppContext } from './AppContext';
+
+interface GCObject {
+    is_gc: boolean;
+    gc_name?: string;
+    users?: any[];
+    messages?: any[];
+}
 
 export default function ChatMessagesWindow() {
     const pathname = usePathname();
     const chatId = pathname.split("/")[3];
 
-    const [data, setData] = useState<any[]>([]);
+    const [data, setData] = useState<GCObject | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -25,35 +33,46 @@ export default function ChatMessagesWindow() {
         fetchData();
     }, []);
 
-    const [user, setUser] = useState<any[]>([]);
+    let gcName;
+    const [user, setUser] = useState<any>(null);
 
-    // useEffect(() => {
-    //     console.log(getCookie('email'));
-    //     const fetchData = async () => {
-    //     const response = await fetch("http://127.0.0.1:5000/api/get_user_by_id?id=" + chatId, {
-    //         method: "GET",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //         },
-    //     });
-    //     const data = await response.json();
-    //     setData(data);
-    //     };
+    if (data?.is_gc)
+      gcName = data.gc_name;
+
+    else {
+      const [gcNameUserId, setGcNameUserId] = useState<any>(null);
+
+      useEffect(() => {
+        const gcNameUserIdTemp = (data?.users[0] == localStorage.getItem("id")) ? data?.users[1] : data?.users[0]; 
+        setGcNameUserId(gcNameUserIdTemp);
+
+        const fetchUser = async () => {
+          if (!gcNameUserId)
+            return;
+
+          const response = await fetch("http://127.0.0.1:5000/api/get_user_by_id?id=" + gcNameUserId, {
+              method: "GET",
+              headers: {
+                  "Content-Type": "application/json",
+              },
+          });
+          const user = await response.json();          
+          setUser(user);
+        };
         
-    //     fetchData();
-    // }, []);
+        fetchUser();
+      }, [data, gcNameUserId]);
 
-    const { userEmail, setEmail } = useAuth();
-    console.log(userEmail);
-
-    const gcName = data.is_gc ? data.gc_name : "";
+      gcName = user?.username;
+      console.log(gcName)
+    }
 
     return (
         <div className="sm:ml-96 flex flex-col h-screen">
       <div className="basis-1/12 border-b border-b-indigo-200 pl-6 py-4">
         <div className="flex items-center">
           <img src="https://i.pinimg.com/236x/68/31/12/68311248ba2f6e0ba94ff6da62eac9f6.jpg" className="flex items-center float-left h-11 w-11 mr-5 ms-2 rounded-full" alt="server-icon"/>
-          <div className="text-xl font-semibold">{data.is_gc ? data.gc_name : data.user_name}</div>
+          <div className="text-xl font-semibold">{gcName}</div>
         </div>
       </div>
 
