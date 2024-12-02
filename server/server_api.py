@@ -132,29 +132,33 @@ def get_user_id():
 def add_message():
     """
     Endpoint to add a message to the Firebase Realtime Database.
-    Expects JSON input with 'timestamp', 'text', 'likes', and 'replyId'.
+    Expects JSON input with 'timestamp', 'text', 'likes', and 'reply_id'.
     """
     try:
         data = request.get_json()
         timestamp = data.get("timestamp")
         text = data.get("text")
         likes = data.get("likes")
-        replyId = data.get("replyId")  
+        reply_id = data.get("reply_id") # Optional: ID of the message being replied to
+        gc_id = data.get("group_chat_id")
 
-        gc_id = str(uuid.uuid4())
-
-        if not timestamp or not text or not likes:
-            return jsonify({"error": "Fields 'timestamp', 'text', and 'likes' are required"}), 400
+        if not timestamp or not text or not likes or not gc_id:
+            return jsonify({"error": "Fields 'timestamp', 'text', 'likes', and 'group_chat_id' are required"}), 400
 
         message_id = str(uuid.uuid4())
         message_data = {
             "timestamp": timestamp,
             "text": text,
             "likes": likes,
-            "replyId": replyId or "N/A"  
+            "replyId": reply_id or "N/A"
         }
 
         ref = firebase_db.reference(gc_id)
+
+        messages = ref.get()["messages"]
+        messages.append({message_id: message_data})
+
+        ref.update({"messages": messages})
         ref.child(message_id).set(message_data)
 
         message_data["id"] = message_id
@@ -192,6 +196,53 @@ def get_messages():
     except Exception as e:
         print(f"Error retrieving messages: {e}")
         return jsonify({"error": "Failed to retrieve messages"}), 500
+
+@app.route('/api/update_chat', methods=['POST'])
+def update_chat():
+    """
+    Endpoint to update the 'users' or 'name' of a group chat.
+    Expects JSON input with 'chat_id', and optionally 'users' or 'name'.
+    """
+    try:
+        # Parse the request data
+        data = request.get_json()
+        chat_id = data.get("chat_id")  # ID of the chat group to update
+        users = data.get("users")  # Optional: New users array
+        name = data.get("name")  # Optional: New name for the chat group
+
+        # Validate the chat_id
+        if not chat_id:
+            return jsonify({"error": "Field 'chat_id' is required"}), 400
+
+        # Reference the specific chat in the database
+        chat_ref = db.reference(f'chats/{chat_id}')
+        chat_data = chat_ref.get()
+
+        # Validate if the chat group exists
+        if not chat_data:
+            return jsonify({"error": "Chat not found"}), 404
+
+        # Prepare updates
+        updates = {}
+        if users:
+            updates["users"] = users
+        if name:
+            updates["name"] = name
+
+        # If no fields to update, return an error
+        if not updates:
+            return jsonify({"error": "At least one of 'users' or 'name' must be provided"}), 400
+
+        # Update the chat in the database
+        chat_ref.update(updates)
+
+        # Return the updated chat data
+        updated_chat = chat_ref.get()
+        return jsonify(updated_chat), 200
+
+    except Exception as e:
+        print(f"Error updating chat: {e}")
+        return jsonify({"error": "Failed to update chat"}), 500
 
 # Event methods
 
