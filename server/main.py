@@ -11,4 +11,5 @@ response = requests.post("http://127.0.0.1:5000/api/create_event", json={
     "groupChatId": "12345",
     "authorId": "67890"
 }, headers={"Content-Type": "application/json"})
+
 print(response.text)

@@ -6,6 +6,7 @@ interface Options {
   username: string,
   latestMessageAuthor: string,
   latestMessageText: string,
+  isMessage: boolean,
 }
 
 export default function ChatUserSelect(options: Options) {
@@ -23,7 +24,7 @@ export default function ChatUserSelect(options: Options) {
           </div>
 
           <div className="text-sm text-gray-400">
-            <span>{latestMessageAuthor}: {latestMessageText}</span>
+            <span>{latestMessageAuthor}{options.isMessage ? ": " : "No messages"}{latestMessageText}</span>
           </div>
         </div>
       </a>
