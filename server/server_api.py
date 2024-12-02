@@ -13,7 +13,7 @@ app = Flask(__name__)
 CORS(app)
 api = Api(app)
 
-cred = credentials.Certificate('./key.json')
+cred = credentials.Certificate('./server/key.json')
 firebase_initialization = firebase_admin.initialize_app(cred, {"databaseURL": "https://beavs-social-default-rtdb.firebaseio.com/"})
 db = firestore.client()
 
@@ -137,32 +137,23 @@ def create_gc():
     try:
         data = request.get_json()
         gc_name = data.get("gc_name")
-        timestamp = data.get("timestamp")
-        text = data.get("text")
-        likes = data.get("likes")
-        replyId = data.get("replyId")  
+        is_gc = data.get("is_gc")
+        users = data.get("users")
+        messages = data.get("messages")
 
-        if not timestamp or not text or not likes:
-            return jsonify({"error": "Fields 'timestamp', 'text', and 'likes' are required"}), 400
+        chat_id = str(uuid.uuid4())
 
-        message_id = str(uuid.uuid4())
         gc_data = {
             "gc_name": gc_name,
-            "is_gc": False,
+            "is_gc": is_gc,
+            "users": users,
+            "messages": messages
         }
 
-        message_data = {
-            "timestamp": timestamp,
-            "text": text,
-            "likes": likes,
-            "replyId": replyId or "N/A"  
-        }
-
-        ref = firebase_db.reference('messages')
-        ref.child(message_id).set(gc_data)
-
+        ref = firebase_db.reference(chat_id)
+        ref.set(gc_data)
         
-        return jsonify(message_data), 201
+        return jsonify(gc_data), 201
 
     except Exception as e:
         print(f"Error adding message: {e}")
@@ -180,7 +171,33 @@ def get_gcs():
 
 @app.route('/api/add_messages', methods=['POST'])
 def add_messages():
-    ...
+    try:
+        data = request.get_json()
+
+        chat_id = data.get("chat_id")
+        timestamp = data.get("timestamp")
+        likes = data.get("likes")
+        text = data.get("text")
+        isPinned = data.get("isPinned")
+        user_id = data.get("user_id")
+
+        message_id = str(uuid.uuid4())
+
+        message_data = {
+            "text": text,
+            "isPinned": isPinned,
+            "likes": likes,
+            "timestamp": timestamp,
+            "user_id": user_id #id of the user who sent the message
+        }
+
+        ref = firebase_db.reference(chat_id)
+        ref.child(message_id).set(message_data)
+
+        return jsonify(message_data), 201
+    except Exception as e:
+        print(f"Error adding message: {e}")
+        return jsonify({"error": "Failed to add message"}), 500
 
 @app.route('/api/update_chat', methods=['POST'])
 def update_chat():
