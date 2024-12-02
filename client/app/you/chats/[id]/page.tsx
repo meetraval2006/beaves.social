@@ -45,17 +45,7 @@ export default function Home() {
             </div>
         </div>
         
-        <div className="px-2 pb-4 pt-2 overflow-y-auto">
-            <ul className="font-medium">
-                    <ChatUserSelect username={"User"} latestMessageAuthor={"Foo"} latestMessageText={"Hi"} />
-                    <ChatUserSelect username={"User"} latestMessageAuthor={"Foo"} latestMessageText={"Hi"} />
-                    <ChatUserSelect username={"User"} latestMessageAuthor={"Foo"} latestMessageText={"Hi"} />
-                    <ChatUserSelect username={"User"} latestMessageAuthor={"Foo"} latestMessageText={"Hi"} />
-                    <ChatUserSelect username={"User"} latestMessageAuthor={"Foo"} latestMessageText={"Hi"} />
-                    <ChatUserSelect username={"User"} latestMessageAuthor={"Foo"} latestMessageText={"Hi"} />
-                    <ChatUserSelect username={"User"} latestMessageAuthor={"Foo"} latestMessageText={"Hi"} />
-            </ul>
-        </div>
+        <ChatsPane/>
     </aside>
 
     <div className="sm:ml-96 flex flex-col h-screen">
