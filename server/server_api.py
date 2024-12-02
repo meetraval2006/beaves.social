@@ -185,8 +185,17 @@ def get_gc():
 @app.route('/api/get_gc', methods=['GET'])
 def get_gcs():
     try:
-        ref = firebase_db.reference('/')
-        return jsonify(ref.get())
+        data = request.get_json()
+        user_id = data.get("user_id")
+
+        reference = firebase_db.reference('/') #reference to the root node
+        data = reference.get()
+        user_ids = data["users"]
+
+        keys = [] #group chat id
+        for key in data.keys():
+            keys.append(key)
+        
 
     except Exception as e:
         print(f"Error adding message: {e}")
@@ -197,7 +206,6 @@ def add_messages():
     try:
         data = request.get_json()
 
-        chat_id = data.get("chat_id")
         timestamp = data.get("timestamp")
         likes = data.get("likes")
         text = data.get("text")
@@ -206,13 +214,6 @@ def add_messages():
 
         message_id = str(uuid.uuid4())
 
-        reference = firebase_db.reference('/') #reference to the root node
-        data = reference.get()
-
-        keys = [] #group chat id
-        for key in data.keys():
-            keys.append(key)
-    
         message_data = {
             "text": text,
             "isPinned": isPinned,
@@ -220,9 +221,6 @@ def add_messages():
             "timestamp": timestamp,
             "user_id": user_id #id of the user who sent the message
         }
-
-        ref = firebase_db.reference(keys)
-        ref.child(message_id).set(message_data)
 
         return jsonify(message_data), 201
     
