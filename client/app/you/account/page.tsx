@@ -1,8 +1,10 @@
 'use client';
 
 import Image from "next/image";
+import { setCookie } from 'cookies-next/client';
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FormEvent } from 'react'
+
 import DropdownOptions from "@/app/components/AccountDropdownOptions";
 
 export default function Home() {
@@ -12,6 +14,8 @@ export default function Home() {
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     const data = new FormData(event.currentTarget);
+    // const { userEmail, setEmail } = useAuth();
+
     const dataObject = Object.fromEntries(data);
     dataObject.email = email;
     
