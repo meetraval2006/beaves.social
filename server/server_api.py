@@ -89,6 +89,8 @@ def get_user():
             return jsonify({"error": "User not found"})
         
         user_info = docs[0].to_dict()
+        user_info["id"] = docs[0].id
+
         return jsonify(user_info)
     
     except Exception as e:
@@ -114,23 +116,18 @@ def get_users():
         abort(400, description="Error getting user")
 
 @app.route('/api/get_user_by_id', methods=['GET'])
-def get_user_id():
+def get_user_by_id():
     try:
         if not request.args.get("id"):
             abort(400, description="Email is required")
 
         id = request.args.get("id")
+        doc = db.collection("users").document(id).get()
 
-        docs = (
-            db.collection("users")
-            .where(filter=FieldFilter("__name__", "==", id))
-            .get()
-        )
-
-        if len(docs) < 1:
+        if not doc:
             return jsonify({"error": "User not found"})
         
-        user_info = docs[0].to_dict()
+        user_info = doc.to_dict()
         return jsonify(user_info)
     
     except Exception as e:
