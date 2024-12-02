@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 
+import { AuthProvider } from '@/app/components/AuthProvider';
+import { useAuth } from "@/app/components/AuthContext";
+
 // Your Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAlcEh2v1rNxuzqzNfdKXyP1UV3hrm7sQQ",
@@ -44,7 +47,7 @@ const AuthenticationButton: React.FC = () => {
         });
         const json = await response.json()
 
-        if ("error" in json) 
+        if ("error" in json)
           router.push(`you/account?email=${emailPrefix}`);
         else
           router.push(`you/chats/inbox`);
@@ -52,15 +55,22 @@ const AuthenticationButton: React.FC = () => {
       .catch((error) => {
         console.log("Error signing in:", error);
       })
+
+      // creae use effect thing and add emal to data, and then set email below as alr done
+
+      const { setEmail } = useAuth();
+      setEmail(emailPrefix);
   };
 
   return (
+    <AuthProvider>
     <button
       className="bg-[#ff4e00] hover:bg-[#BA3800] text-white font-semibold my-8 py-5 px-6 rounded-full text-2xl"
       onClick={handleSignUp}
     >
       Login with ONID
     </button>
+    </AuthProvider>
   );
 };
 
