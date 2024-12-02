@@ -13,7 +13,7 @@ app = Flask(__name__)
 CORS(app)
 api = Api(app)
 
-cred = credentials.Certificate('./key.json')
+cred = credentials.Certificate('./server/key.json')
 firebase_initialization = firebase_admin.initialize_app(cred, {"databaseURL": "https://beavs-social-default-rtdb.firebaseio.com/"})
 db = firestore.client()
 
@@ -169,20 +169,20 @@ def create_gc():
 
 #get all the gc
 
-@app.route('/api/get_gc', methods=['GET'])
+@app.route('/api/get_gcs', methods=['GET'])
 def get_gc():
     try:
-        chat_id = request.args.get("chat_id")
-        ref = firebase_db.reference(chat_id)
-        print(ref.get())
-        return jsonify(ref.get())
+        #chat_id = request.args.get("chat_id")
+        ref = firebase_db.reference('/')
+        data = ref.get()
+        return jsonify(data)
 
     except Exception as e:
         print(f"Error adding message: {e}")
         return jsonify({"error": "Failed to get GC"}), 500
 
 #get the gcs that a particular user is in. For example, use Robert's id to get all the gcs that he is in
-@app.route('/api/get_gcs', methods=['GET'])
+@app.route('/api/get_gc', methods=['GET'])
 def get_gcs():
     try:
         ref = firebase_db.reference('/')
@@ -206,6 +206,13 @@ def add_messages():
 
         message_id = str(uuid.uuid4())
 
+        reference = firebase_db.reference('/') #reference to the root node
+        data = reference.get()
+
+        keys = [] #group chat id
+        for key in data.keys():
+            keys.append(key)
+    
         message_data = {
             "text": text,
             "isPinned": isPinned,
@@ -214,10 +221,11 @@ def add_messages():
             "user_id": user_id #id of the user who sent the message
         }
 
-        ref = firebase_db.reference(chat_id)
+        ref = firebase_db.reference(keys)
         ref.child(message_id).set(message_data)
 
         return jsonify(message_data), 201
+    
     except Exception as e:
         print(f"Error adding message: {e}")
         return jsonify({"error": "Failed to add message"}), 500

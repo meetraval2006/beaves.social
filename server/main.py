@@ -1,15 +1,27 @@
-# This file is only for testing purposes. I will remove this later
+import firebase_admin
+from firebase_admin import db as firebase_db, credentials, firestore
+from google.cloud.firestore_v1.base_query import FieldFilter
 
-import requests
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from flask_restful import Api, Resource, reqparse, abort
 
-response = requests.post("http://127.0.0.1:5000/api/create_event", json={
-    "name": "CS Club ACM",
-    "major": "Computer Science",
-    "minor": "Mathematics",
-    "year": "Freshman",
-    "residence_hall": "Baker",
-    "groupChatId": "12345",
-    "authorId": "67890"
-}, headers={"Content-Type": "application/json"})
+import uuid
+import re
 
-print(response.text)
+app = Flask(__name__)
+CORS(app)
+api = Api(app)
+
+cred = credentials.Certificate('./server/key.json')
+firebase_initialization = firebase_admin.initialize_app(cred, {"databaseURL": "https://beavs-social-default-rtdb.firebaseio.com/"})
+db = firestore.client()
+
+ref = firebase_db.reference('/')
+data = ref.get()
+
+keys = []
+for key in data.keys():
+    keys.append(key)
+
+print(keys)
