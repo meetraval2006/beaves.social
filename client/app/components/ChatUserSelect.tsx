@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 
 interface Options {
+  id: string,
   username: string,
   latestMessageAuthor: string,
   latestMessageText: string,
