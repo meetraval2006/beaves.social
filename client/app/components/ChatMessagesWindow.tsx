@@ -85,6 +85,30 @@ export default function ChatMessagesWindow() {
       });
     };
 
+    const handleKeyDown = async (e: any) => {
+      if (e.key === 'Enter') {
+        const text = e.target.value;
+        console.log(457734884784834989343489)
+
+        const dataObject = {
+          chat_id: chatId,
+          user_id: localStorage.getItem("id"),
+          text: text,
+          likes: 0,
+          isPinned: false,
+          timestamp: Math.floor(Date.now() / 1000)
+        }
+
+        const response = await fetch('http://127.0.0.1:5000/api/add_messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dataObject),
+        });
+      }
+    }
+
     return (
         <div className="sm:ml-96 flex flex-col h-screen">
       <div className="basis-1/12 border-b border-b-indigo-200 pl-6 py-4">
@@ -103,7 +127,7 @@ export default function ChatMessagesWindow() {
               <form className="max-w mx-12">   
                   <label className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                   <div className="relative">
-                      <input type="message" className="block w-full px-4 py-2 ps-4 text-md text-gray-900 border border-gray-300 rounded-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Message..." required />
+                      <input type="message" onKeyDown={handleKeyDown} className="block w-full px-4 py-2 ps-4 text-md text-gray-900 border border-gray-300 rounded-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Message..." required />
                   </div>
               </form>
           </div>

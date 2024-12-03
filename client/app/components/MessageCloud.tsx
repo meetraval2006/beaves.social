@@ -38,6 +38,5 @@ const otherMessageCloud = (message: Message) => {
 };
 
 export default function MessageCloud(message: Message) {
-  console.log(2, message)
   return message.isMine ? myMessageCloud(message) : otherMessageCloud(message);  
 };

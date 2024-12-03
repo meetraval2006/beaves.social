@@ -13,7 +13,7 @@ app = Flask(__name__)
 CORS(app)
 api = Api(app)
 
-cred = credentials.Certificate('./server/key.json')
+cred = credentials.Certificate('./key.json')
 firebase_initialization = firebase_admin.initialize_app(cred, {"databaseURL": "https://beavs-social-default-rtdb.firebaseio.com/"})
 db = firestore.client()
 
@@ -196,6 +196,7 @@ def get_gcs():
 @app.route('/api/add_messages', methods=['POST'])
 def add_messages():
     try:
+        print(0)
         data = request.get_json()
 
         chat_id = data.get("chat_id")
@@ -204,8 +205,11 @@ def add_messages():
         text = data.get("text")
         isPinned = data.get("isPinned")
         user_id = data.get("user_id")
+        print(1)
 
         message_id = str(uuid.uuid4())
+
+        print(2)
 
         message_data = {
             "chat_id": chat_id,
@@ -215,6 +219,8 @@ def add_messages():
             "timestamp": timestamp,
             "user_id": user_id #id of the user who sent the message
         }
+
+        print(3)
 
         ref = firebase_db.reference(chat_id)
         new_message_ref = ref.child("messages").push(message_data)
