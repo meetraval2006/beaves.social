@@ -1,0 +1,9 @@
+Problems with the app
+- Auto Page refreshing
+- Chats I am not in, shows up in my end
+- We don't have a way to create a Chat
+- We don't have a way to create event and join an event
+- After creating the account for the first time, it should just take me to the home page
+- Need to create a profile page
+- Should be able to click on a user and see their information
+- Gotta fix the naming in the chats
