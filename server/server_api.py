@@ -13,7 +13,7 @@ app = Flask(__name__)
 CORS(app)
 api = Api(app)
 
-cred = credentials.Certificate('./key.json')
+cred = credentials.Certificate('./server/key.json')
 firebase_initialization = firebase_admin.initialize_app(cred, {"databaseURL": "https://beavs-social-default-rtdb.firebaseio.com/"})
 db = firestore.client()
 
@@ -208,6 +208,7 @@ def add_messages():
         message_id = str(uuid.uuid4())
 
         message_data = {
+            "chat_id": chat_id,
             "text": text,
             "isPinned": isPinned,
             "likes": likes,
@@ -216,16 +217,13 @@ def add_messages():
         }
 
         ref = firebase_db.reference(chat_id)
-        messages = ref.child("messages")
+        new_message_ref = ref.child("messages").push(message_data)
+        message_id = new_message_ref.key  # Get the key of the newly added message
 
-        if messages is None:
-            messages = {}
-        
-        messages[message_id] = message_data
-
-        ref.child("messages").set(messages)
+        message_data["id"] = message_id  # Add the message ID to the response data
 
         return jsonify(message_data), 201
+    
     except Exception as e:
         print(f"Error adding message: {e}")
         return jsonify({"error": "Failed to add message"}), 500
