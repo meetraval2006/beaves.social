@@ -174,8 +174,9 @@ def get_gc():
     try:
         chat_id = request.args.get("chat_id")
         ref = firebase_db.reference(chat_id)
-        print(ref.get())
-        return jsonify(ref.get())
+        data = ref.get()
+        data["gc_id"] = chat_id
+        return jsonify(data)
 
     except Exception as e:
         print(f"Error adding message: {e}")
@@ -215,7 +216,14 @@ def add_messages():
         }
 
         ref = firebase_db.reference(chat_id)
-        ref.child(message_id).set(message_data)
+        messages = ref.child("messages")
+
+        if messages is None:
+            messages = {}
+        
+        messages[message_id] = message_data
+
+        ref.child("messages").set(messages)
 
         return jsonify(message_data), 201
     except Exception as e:
