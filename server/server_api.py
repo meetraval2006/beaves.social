@@ -228,6 +228,7 @@ def add_messages():
         print(f"Error adding message: {e}")
         return jsonify({"error": "Failed to add message"}), 500
 
+#liked and isPinned done after hackathon
 @app.route('/api/update_chat', methods=['POST'])
 def update_chat():
     ...
