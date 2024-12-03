@@ -73,8 +73,17 @@ export default function ChatMessagesWindow() {
       }, [data, gcNameUserId]);
 
       gcName = user?.username;
-      console.log(gcName)
     }
+
+    const returnMessageBubbles = (data: any) => {
+      if (data == null || data.messages == null)
+        return;
+
+      return Object.keys(data.messages).map((key) => {
+        const message = data.messages[key];
+        return <MessageCloud key={key} text={message.text} timestamp={message.timestamp} user_id={message.user_id} isPinned={message.isPinned} likes={message.likes} isMine={message.user_id == userId}/>
+      });
+    };
 
     return (
         <div className="sm:ml-96 flex flex-col h-screen">
@@ -86,8 +95,7 @@ export default function ChatMessagesWindow() {
       </div>
 
       <div className="basis-10/12 p-4 flex flex-col justify-end">
-      {console.log(data)}
-        {Object.keys(data).map(key => <MessageCloud key={key} text={data[key].text} timestamp={data[key].timestamp} user_id={data[key].user_id} isPinned={data[key].isPinned} likes={data[key].likes} isMine={data[key].user_id == userId} />)}
+        {returnMessageBubbles(data)}
       </div>
 
       <div className="basis-1/12">
