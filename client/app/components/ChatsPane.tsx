@@ -2,18 +2,8 @@ import { useState, useEffect } from 'react';
 
 import ChatUserSelect from "./ChatUserSelect";
 
-interface ChatData {
-  [key: string]: {
-    gc_name: string;
-    messages: {
-      user_id: string;
-      text: string;
-    }[];
-  };
-}
-
 export default function ChatsPane() {
-  const [data, setData] = useState<ChatData>({});
+  const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {

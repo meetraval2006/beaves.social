@@ -13,7 +13,7 @@ interface Options {
 export default function ChatUserSelect(options: Options) {
   const router = useRouter();
   const { username, latestMessageAuthor, latestMessageText } = options;
-  const handleUserClick = (_: any, id: string): void => router.push(`/you/chats/${id}`);
+  const handleUserClick = (_: any, id: number): void => router.push(`/you/chats/${id}`);
 
   return (
     <li>
