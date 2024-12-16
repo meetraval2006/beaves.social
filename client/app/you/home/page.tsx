@@ -124,7 +124,7 @@ export default function Home() {
 
     <div className="top-0 left-0 w-9/12 h-screen py-4 px-8 flex flex-col">
       <div className="basis-2/12 flex items-center justify-center">
-          <div className="text-4xl font-black pt-2 pb-8">Welcome</div>
+          <div className="text-4xl font-black pt-2 pb-8">beavs.social</div>
           <div className="flex ml-8 pt-2 pb-8 gap-4">
             <button className="transition rounded-lg ease-in-out bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300 p-2 flex-initial" onClick={() => router.push("account")}>Account</button>
             <button className="transition rounded-lg ease-in-out bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300 p-2 flex-initial" onClick={() => router.push("chats/inbox")}>Chats</button>

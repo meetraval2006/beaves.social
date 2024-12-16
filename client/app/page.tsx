@@ -36,8 +36,8 @@ export default function Home() {
             <div className="text-center pb-10 md:pb-16 max-w-screen-lg mx-auto">
                 <h1 className="text-5xl md:text-8xl font-bold leading-tighter tracking-tighter mb-4 font-heading text-gray-900">
                     <span className="text-accent text-[#ff4e00] highlight">
-                      beavs
-                    </span>.social
+                      beavs.social
+                    </span>
                 </h1>
 
                 <div className="max-sm:px-4 max-md:px-8 max-lg:px-16 px-32 flex justify-center items-center pt-12 pb-12 drop-shadow-xl">
