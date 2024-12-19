@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import MainHomePageWall from "@/app/components/MainHomePageWall";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -10,10 +11,13 @@ export default function Home() {
             <div>
                 <p className="w-48 text-slate-50 text-xl m-5 font-bold text-center">beavs.social 🤝</p>
             </div>
+
             <div className="nav-links duration-500 mr-24 md:static absolute md:min-h-fit left-0 top-[-100%] md:w-auto w-full flex items-center p-5">
                 <ul className="flex md:flex-row flex-col md:items-center md:gap-[4vw] gap-6">
                     <li className="m-2">
-                        <a className="text-slate-200 font-medium hover:text-white md:text-base text-xl md:mx-auto mx-5" href="#description">App Description</a>
+                        <Link href="/you/description" className="text-slate-200 font-medium hover:text-white md:text-base text-xl md:mx-auto mx-5">
+                           App Description
+                        </Link>
                     </li>
                     <li className="m-2">
                         <a className="text-slate-200 font-medium hover:text-white md:text-base text-xl md:mx-auto mx-5" href="#about">About Us</a>
@@ -26,6 +30,7 @@ export default function Home() {
                     </li>
                 </ul>
             </div>
+
         </nav>
     </header>
 
