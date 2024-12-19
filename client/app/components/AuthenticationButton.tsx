@@ -32,7 +32,8 @@ if (!firebase.apps.length) {
 
 const AuthenticationButton: React.FC = () => {
   const router = useRouter();  
-  
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   const handleSignUp = async () => {  
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({
@@ -65,7 +66,8 @@ const AuthenticationButton: React.FC = () => {
           localStorage.setItem("residence_hall", json.residence_hall);
           localStorage.setItem("year", json.year);
 
-          router.push(`you/chats/inbox`);
+          setIsAuthenticated(true);
+          router.push(`you/mainhome`);
         }
       })
       .catch((error) => {
