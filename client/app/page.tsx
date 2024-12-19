@@ -13,7 +13,7 @@ export default function Home() {
             <div className="nav-links duration-500 mr-24 md:static absolute md:min-h-fit left-0 top-[-100%] md:w-auto w-full flex items-center p-5">
                 <ul className="flex md:flex-row flex-col md:items-center md:gap-[4vw] gap-6">
                     <li className="m-2">
-                        <a className="text-slate-200 font-medium hover:text-white md:text-base text-xl md:mx-auto mx-5" href="#description">App Description</a>
+                        <a className="text-slate-200 font-medium hover:text-white md:text-base text-xl md:mx-auto mx-5" href="`#description">App Description</a>
                     </li>
                     <li className="m-2">
                         <a className="text-slate-200 font-medium hover:text-white md:text-base text-xl md:mx-auto mx-5" href="#about">About Us</a>
