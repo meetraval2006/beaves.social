@@ -5,6 +5,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
+import { motion } from "framer-motion";
 
 import { useAppContext } from './AppContext';
 
@@ -98,12 +99,17 @@ const AuthenticationButton: React.FC = () => {
   };
 
   return (
-      <button
-        className="bg-[#ff4e00] hover:bg-[#BA3800] text-white font-semibold my-8 py-5 px-6 rounded-full text-2xl"
-        onClick={handleSignUp}
-      >
-        Login with ONID
-      </button>
+    <motion.button
+    className="inline-block rounded-lg bg-gradient-to-r from-orange-500 to-orange-700 px-6 py-3 text-base font-medium text-white shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 tracking-wide"
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ duration: 0.3 }}
+    onClick={handleSignUp}
+  >
+    Get Started
+  </motion.button>
   );
 };
 
