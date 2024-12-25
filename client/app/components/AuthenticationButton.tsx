@@ -68,7 +68,7 @@ const AuthenticationButton: React.FC = () => {
           localStorage.setItem("year", json.year);
 
           setIsAuthenticated(true);
-          router.push(`you/mainhome`);
+          router.push(`you/home`);
         }
       })
       .catch((error) => {
