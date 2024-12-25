@@ -1,5 +1,6 @@
 "user client";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 export default function MainHomePageWall() {
     const router = useRouter();
@@ -8,18 +9,42 @@ export default function MainHomePageWall() {
     const sendToEvents = () => router.push(`/you/events`);
 
     return (
-        <>
-            <section className="section bg-gray-200 relative md:-mt-auto not-prose">
-                <button className="bg-[#ff4e00] hover:bg-[#BA3800] text-white font-semibold my-8 py-5 px-6 rounded-full text-2xl" onClick={sendToChats}>
+            <div className="section bg-gray-200 relative md:-mt-auto not-prose">
+                 <motion.button
+                    className="inline-block rounded-lg bg-gradient-to-r from-orange-500 to-orange-700 px-6 py-3 text-base font-medium text-white shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 tracking-wide"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                    onClick={sendToChats}
+                  >
                     Chats
-                </button>
-            </section>
-
-            <section className="section bg-gray-200 relative md:-mt-auto not-prose">
-                <button className="bg-[#ff4e00] hover:bg-[#BA3800] text-white font-semibold my-8 py-5 px-6 rounded-full text-2xl" onClick={sendToEvents}>
+                  </motion.button>
+          
+                  <motion.button
+                    className="inline-block rounded-lg bg-gradient-to-r from-orange-500 to-orange-700 px-6 py-3 text-base font-medium text-white shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 tracking-wide"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                    onClick={sendToEvents}
+                  >
                     Events
-                </button>
-            </section>
-        </>
+                  </motion.button>
+
+                  <motion.button
+                    className="inline-block rounded-lg bg-gradient-to-r from-orange-500 to-orange-700 px-6 py-3 text-base font-medium text-white shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 tracking-wide"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                    onClick={sendToAppDescription}
+                  >
+                    About the Creators and the App
+                  </motion.button>
+            </div>
     );
 }
