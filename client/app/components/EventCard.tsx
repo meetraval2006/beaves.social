@@ -77,7 +77,7 @@ export default function EventCard(options: Options) {
             </div>
 
             <div className="mt-4">
-              <button id={options.groupChatId} className="w-full transition rounded-lg ease-in-out bg-blue-500 hover:bg-indigo-500 duration-200 p-2 flex-initial">Join</button>
+              <button id={options.groupChatId} className="w-full transition rounded-lg ease-in-out bg-blue-500 hover:bg-indigo-500 duration-100 p-2 flex-initial">Join</button>
             </div>
 
             </div>

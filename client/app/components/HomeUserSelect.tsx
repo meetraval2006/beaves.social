@@ -106,9 +106,19 @@ export default function HomeUserSelect({ username, id, name, email, major, minor
               </svg>
             </div>
           </div>
+
+          <div className="bg-gradient-to-r from-orange-400 to-orange-600 p-1">
+                <motion.button
+                className="w-full rounded-lg shadow-lg overflow-hidden"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                >Message</motion.button>
+        </div>
         </motion.button>
       </div>
-
     </ReactCardFlip>
   )
 }
