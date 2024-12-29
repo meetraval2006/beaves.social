@@ -132,8 +132,9 @@ export default function Home() {
           </div>
           <div className="text-4xl font-black pt-2 pb-8 text-orange-800">Events</div>
           <div className="flex ml-8 pt-2 pb-8 gap-4">
-          <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 flex-initial text-black" onClick={() => router.push("account")}>Account</button>
+            <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 flex-initial text-black" onClick={() => router.push("account")}>Account</button>
             <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 flex-initial text-black" onClick={() => router.push("chats/inbox")}>Chats</button>
+            <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 flex-initial text-black" onClick={() => router.push("description")}>App Description</button>
           </div>
       </div>
 
