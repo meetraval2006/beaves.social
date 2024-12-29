@@ -21,8 +21,8 @@ export default function ChatsPane() {
   }, []);
 
   return (
-    <div className="px-2 pb-4 pt-2 overflow-y-auto">
-      <ul className="font-medium">
+    <div className="px-2 pb-4 pt-2 overflow-y-auto ">
+      <ul className="font-medium ">
         {Object.keys(data).map((key) => {
           const latestMessage = data[key].messages?.length ? data[key].messages[data[key].messages.length - 1] : null;
           return (

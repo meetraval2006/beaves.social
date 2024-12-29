@@ -44,6 +44,7 @@ export default function HomeUsersWall() {
             years={event.years}
             residence_halls={event.residence_halls}
             id={event.id}
+            key={event.id}
             groupChatId={event.groupChatId}
           />
         </motion.div>

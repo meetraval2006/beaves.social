@@ -21,11 +21,11 @@ export default function ChatUserSelect(options: Options) {
         <img src="https://i.pinimg.com/236x/68/31/12/68311248ba2f6e0ba94ff6da62eac9f6.jpg" className="flex items-center float-left h-11 w-11 mr-5 ms-2 rounded-full" alt="server-icon"/>
         <div className="rows-2">
           <div className="text-base">
-            <span>{username}</span>
+            <span className="text-orange-400">{username}</span>
           </div>
 
           <div className="text-sm text-gray-400">
-            <span>{latestMessageAuthor}{options.isMessage ? ": " : "No messages"}{latestMessageText}</span>
+            <span className="text-white">{latestMessageAuthor}{options.isMessage ? ": " : "No messages"}{latestMessageText}</span>
           </div>
         </div>
       </a>

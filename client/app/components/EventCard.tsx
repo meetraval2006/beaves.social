@@ -51,36 +51,38 @@ export default function EventCard(options: Options) {
 
   return (
     
-      <div key={options.id} style={{cursor: "default"}} className="rounded-lg h-fit min-h-24 bg-slate-400">
-          <div className="overflow-hidden h-full px-8 py-4" >
+      <div key={options.id} style={{cursor: "default"}} className="bg-gradient-to-r from-orange-400 to-orange-600 p-1 rounded-lg">
+        <div className="flex items-center bg-black bg-opacity-90 p-3 space-x-4 rounded-lg">
+          <div className="overflow-hidden h-auto px-8 py-4" >
 
-            <div className="text-2xl font-semibold mb-2">{options.name}</div>
+            <div className="text-xl font-semibold text-orange-400 truncate">{options.name}</div>
 
             <div>
-              <span className="font-bold text-gray-950"> Majors: </span>  
-              <span className="text-gray-800"> {majors} </span>
+              <span className="font-bold text-slate-200	"> Majors: </span>  
+              <span className="text-m  text-orange-400 truncate"> {majors} </span>
             </div>
 
             <div>
-              <span className="font-bold text-gray-950"> Minors: </span>  
-              <span className="text-gray-800"> {minors} </span>
+              <span className="font-bold text-slate-200	"> Minors: </span>  
+              <span className="text-m text-orange-400 truncate"> {minors} </span>
             </div>
 
             <div>
-              <span className="font-bold text-gray-950"> Years: </span>  
-              <span className="text-gray-800"> {years} </span>
+              <span className="font-bold text-slate-200	"> Years: </span>  
+              <span className="text-m text-orange-400 truncate"> {years} </span>
             </div>
 
             <div>
-              <span className="font-bold text-gray-950"> Residence Halls: </span>  
-              <span className="text-gray-800"> {residence_halls} </span>
+              <span className="font-bold text-slate-200	"> Residence Halls: </span>  
+              <span className="text-m text-orange-400 truncate"> {residence_halls} </span>
             </div>
 
             <div className="mt-4">
-              <button id={options.groupChatId} className="w-full transition rounded-lg ease-in-out bg-blue-500 hover:bg-indigo-500 duration-100 p-2 flex-initial">Join</button>
+              <button id={options.groupChatId} className="w-full transition rounded-lg ease-in-out bg-orange-500 hover:bg-orange-400 duration-100 p-2 flex-initial text-slate-200	font-semibold">Join</button>
             </div>
 
             </div>
+          </div>
       </div>
     
   )

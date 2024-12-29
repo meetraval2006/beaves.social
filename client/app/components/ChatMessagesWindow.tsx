@@ -110,15 +110,15 @@ export default function ChatMessagesWindow() {
     }
 
     return (
-        <div className="sm:ml-96 flex flex-col h-screen">
-      <div className="basis-1/12 border-b border-b-indigo-200 pl-6 py-4">
-        <div className="flex items-center">
+        <div className="sm:ml-96 flex flex-col h-screen ">
+      <div className="basis-1/12 border-b border-b-indigo-200 pl-6 py-4 bg-orange-700">
+        <div className="flex items-center ">
           <img src="https://i.pinimg.com/236x/68/31/12/68311248ba2f6e0ba94ff6da62eac9f6.jpg" className="flex items-center float-left h-11 w-11 mr-5 ms-2 rounded-full" alt="server-icon"/>
-          <div className="text-xl font-semibold">{gcName}</div>
+          <div className="text-xl font-semibold" >{gcName}</div>
         </div>
       </div>
 
-      <div className="basis-10/12 p-4 flex flex-col justify-end">
+      <div className="basis-10/12 p-4 flex flex-col justify-end ">
         {returnMessageBubbles(data)}
       </div>
 

@@ -18,7 +18,7 @@ export default function Home() {
         </svg>
     </a>
 
-    <aside id="default-sidebar" className="fixed rows-2 border-l border-l-orange-700 top-0 right-0 z-40 w-3/12 h-screen transition-transform -translate-x-full sm:translate-x-0 bg-gray-900" aria-label="Sidebar">
+    <aside id="default-sidebar" className="fixed rows-2 border-l border-l-orange-700 top-0 right-0 z-40 w-3/12 h-screen transition-transform -translate-x-full sm:translate-x-0 bg-black" aria-label="Sidebar">
         <div className="h-32 px-6 pt-4 pb-32">
             <div className="py-4">
               <div className="pb-4">
@@ -30,7 +30,7 @@ export default function Home() {
                                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                                 </svg>
                             </div>
-                            <input type="search" id="default-search" className="block w-full px-4 py-2 ps-10 text-md text-orange-300 border border-orange-600 rounded-full bg-gray-800 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:border-orange-600 dark:placeholder-orange-400 dark:text-orange-200 dark:focus:ring-orange-500 dark:focus:border-orange-500" placeholder="Search" required />
+                            <input type="search" id="default-search" className="block w-full px-4 py-2 ps-10 text-md text-orange-300 border border-orange-600 rounded-full bg-gray-800 focus:ring-orange-500 focus:border-orange-500 dark:bg-black dark:border-orange-600 dark:placeholder-orange-400 dark:text-orange-200 dark:focus:ring-orange-500 dark:focus:border-orange-500" placeholder="Search" required />
                         </div>
                     </form>
               </div>
