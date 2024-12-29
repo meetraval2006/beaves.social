@@ -72,6 +72,15 @@ def create_user():
         print(f"error: {e}")
         abort(400, message="Error creating user")
 
+@app.route("/api/update_user", method = ["PUT"])
+def update_user():
+    try:
+       ...
+
+    except Exception as e:
+        print(f"error: {e}")
+        abort(400, description="Error updating user")
+
 @app.route("/api/get_user", methods=["GET"])
 def get_user():
     try:
