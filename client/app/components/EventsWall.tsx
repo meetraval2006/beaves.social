@@ -22,33 +22,45 @@ export default function HomeUsersWall() {
   
 
   return (
-    <div className="basis-10/12 p-2 grid xl:grid-cols-2 md:grid-cols-1 gap-6 items-stretch h-full">
-      {data ? data.map((event) => (
-        <motion.div
-          key={event.id}
-          style={{
-            transformStyle: 'preserve-3d',
-            perspective: '1000px',
-          }}
-          whileHover={{
-            scale: 1.05,
-            rotateY: 5,
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-          }}
-          transition={{ duration: 0.3 }}
+    <div className="flex flex-col w-full">
+      <div className="flex justify-center my-4">
+        <button
+          className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 bg-orange-600 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg shadow-md transition ease-in-out duration-300"
+          // onClick={}
         >
-          <EventCard
-            name={event.name}
-            majors={event.majors}
-            minors={event.minors}
-            years={event.years}
-            residence_halls={event.residence_halls}
-            id={event.id}
+          Create Event
+        </button>
+      </div>
+
+      <div className="basis-10/12 p-2 grid xl:grid-cols-2 md:grid-cols-1 gap-6 items-stretch h-full">
+        {data ? data.map((event) => (
+          <motion.div
             key={event.id}
-            groupChatId={event.groupChatId}
-          />
-        </motion.div>
-      )) : <div key="blank-screen"></div>}
+            style={{
+              transformStyle: 'preserve-3d',
+              perspective: '1000px',
+            }}
+            whileHover={{
+              scale: 1.05,
+              rotateY: 5,
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            }}
+            transition={{ duration: 0.3 }}
+          >
+            <EventCard
+              name={event.name}
+              majors={event.majors}
+              minors={event.minors}
+              years={event.years}
+              residence_halls={event.residence_halls}
+              id={event.id}
+              key={event.id}
+              groupChatId={event.groupChatId}
+            />
+          </motion.div>
+        )) : <div key="blank-screen"></div>}
+      </div>
     </div>
   )
 }
+

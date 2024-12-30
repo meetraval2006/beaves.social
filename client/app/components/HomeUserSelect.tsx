@@ -83,12 +83,12 @@ export default function HomeUserSelect({ username, id, name, email, major, minor
           <div className="bg-gradient-to-r from-orange-400 to-orange-600 p-1">
             <div className="flex items-center bg-black bg-opacity-90 p-3 space-x-4 rounded-md">
               <div className="flex-grow">
-                <div className="text-xl font-semibold text-orange-400 truncate">{name}</div>
-                <div className="text-xl font-semibold text-orange-400 truncate">{email}</div>
-                <div className="text-xl font-semibold text-orange-400 truncate">{year}</div>
-                <div className="text-xl font-semibold text-orange-400 truncate">{major}</div>
-                <div className="text-xl font-semibold text-orange-400 truncate">{minor}</div>
-                <div className="text-xl font-semibold text-orange-400 truncate">{residence_hall}</div>
+                <div className="text-l font-semibold text-orange-400 truncate">{name}</div>
+                <div className="text-l font-semibold text-orange-400 truncate">{email}</div>
+                <div className="text-l font-semibold text-orange-400 truncate">{year}</div>
+                <div className="text-l font-semibold text-orange-400 truncate">{major}</div>
+                <div className="text-l font-semibold text-orange-400 truncate">{minor}</div>
+                <div className="text-l font-semibold text-orange-400 truncate">{residence_hall}</div>
               </div>
               <svg 
                 className="w-6 h-6 text-orange-500" 
