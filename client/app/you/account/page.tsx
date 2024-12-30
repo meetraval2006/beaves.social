@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { useRouter, useSearchParams, redirect } from 'next/navigation';
 import { FormEvent } from 'react';
-
 import DropdownOptions from "@/app/components/AccountDropdownOptions";
+import Logo from "@/public/logo.png";
 
 export default function Home() {
   const searchParams = useSearchParams();
@@ -67,7 +67,7 @@ export default function Home() {
           >
             <Image
               className="inline-block align-middle rounded-lg w-12 h-12 mr-2"
-              src="/favicon.ico"
+              src={Logo}
               alt="placeholder"
               width={300}
               height={300}

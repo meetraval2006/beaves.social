@@ -1,6 +1,7 @@
 "use client";
 import Image from 'next/image';
 import { redirect } from 'next/navigation';
+import Logo from "@/public/logo.png";
 
 const features = [
   "Easy to use interface",
@@ -32,17 +33,18 @@ export default function AppDescriptionPage() {
         </div>
       </div>
       <div className="max-w-3xl mx-auto">
+        
         <header className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-orange-500 mb-2">
-            beavs.social
+            App Description
           </h1>
         </header>
 
-        <div className="bg-white dark:bg-black shadow-lg rounded-lg overflow-hidden">
+        <div className="bg-white dark:bg-black shadow-lg rounded-lg overflow-hidden w-full bg-white rounded-lg shadow dark:border dark:border-orange-600 dark:bg-black">
           <div className="p-8">
             <div className="flex items-center mb-6">
               <Image
-                src="/placeholder.svg?height=80&width=80"
+                src={Logo}
                 alt="App Icon"
                 width={80}
                 height={80}

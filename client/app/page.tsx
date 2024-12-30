@@ -2,6 +2,7 @@
 import Image from "next/image";
 import AuthenticationButton from "@/app/components/AuthenticationButton";
 import { motion } from "framer-motion";
+import Logo from "@/public/logo.png";
 
 export default function Home() {
   return (
@@ -62,12 +63,11 @@ export default function Home() {
                 <div className="max-sm:px-4 max-md:px-8 max-lg:px-16 px-32 flex justify-center items-center pt-12 pb-12 drop-shadow-xl">
                   <motion.div
                     initial={{ rotate: 0 }}
-                    animate={{ rotate: 360 }}
                     transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                   >
                     <Image 
                       className="inline-block align-middle rounded-full" 
-                      src="/favicon.ico" 
+                      src={Logo}
                       alt="Beaver logo"
                       width={220}
                       height={220}
