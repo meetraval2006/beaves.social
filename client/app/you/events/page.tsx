@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import { useRouter, redirect } from "next/navigation";
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-
 import HistoryTextSelect from "@/app/components/HistoryTextSelect";
 import EventsWall from "@/app/components/EventsWall";
+import CreateEventForm from "@/app/components/CreateEvent";
 
 export default function Home() {
   const router = useRouter();
@@ -44,8 +44,19 @@ export default function Home() {
                 <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 flex-initial text-black" onClick={() => router.push("chats/inbox")}>Chats</button>
                 <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 flex-initial text-black" onClick={() => router.push("description")}>App Description</button>
               </div>
+
+              
               
             </div>
+          </div>
+
+          <div className="flex justify-center my-4">
+            <button
+              className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 bg-orange-600 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg shadow-md transition ease-in-out duration-300"
+              onClick={() => router.push("createEvent")}
+              >
+                Create Event
+            </button>
           </div>
 
           <EventsWall />

@@ -7,7 +7,7 @@ import DropdownOptions from "@/app/components/AccountDropdownOptions";
 import Logo from "@/public/logo.png";
 
 export default function CreateEventForm() {
-  const searchParams = useSearchParams();
+  //const searchParams = useSearchParams();
   const router = useRouter();
   //const email = searchParams.get('email') + "@oregonstate.edu";
 
@@ -28,7 +28,7 @@ export default function CreateEventForm() {
     const json = await response.json();
 
     //localStorage.setItem("email", json.email);
-    localStorage.setItem("author_id", json.id);
+    localStorage.setItem("author_id", json.author_id);
     localStorage.setItem("name", json.name);
     localStorage.setItem("major", json.major);
     localStorage.setItem("minor", json.minor);
@@ -138,6 +138,7 @@ export default function CreateEventForm() {
                 <button
                   type="submit"
                   className="w-full text-white bg-orange-600 hover:bg-orange-400 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-orange-800"
+                  
                 >
                   Create an event
                 </button>

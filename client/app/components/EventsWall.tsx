@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import EventCard from './EventCard';
-import { useRouter } from 'next/navigation';
+import { useRouter, redirect } from 'next/navigation';
 
 export default function HomeUsersWall() {
   const [data, setData] = useState<any[]>([]);
@@ -22,18 +22,9 @@ export default function HomeUsersWall() {
     fetchData();
   }, []);
 
-  const handleDirect = () => {router.push("/you/create_event")};
-
   return (
     <div className="flex flex-col w-full">
-      <div className="flex justify-center my-4">
-        <button
-          className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 bg-orange-600 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg shadow-md transition ease-in-out duration-300"
-          onClick={handleDirect}
-        >
-          Create Event
-        </button>
-      </div>
+      
 
       <div className="basis-10/12 p-2 grid xl:grid-cols-2 md:grid-cols-1 gap-6 items-stretch h-full">
         {data ? data.map((event) => (
