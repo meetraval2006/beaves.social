@@ -289,10 +289,10 @@ def create_event():
         
         dictionary = {
             "name": name,
-            "majors": majors or [],
-            "minors": minors or [],
-            "years": years or [],
-            "residence_halls": residence_halls or [],
+            "majors": majors,
+            "minors": minors,
+            "years": years,
+            "residence_halls": residence_halls,
             "groupChatId": group_chat_id,
             "authorId": author_id
         }
