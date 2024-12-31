@@ -19,10 +19,12 @@ export default function Home() {
     <div className="flex h-screen bg-black">
       <div className={`flex-grow transition-all duration-300 ${isSidebarOpen ? 'mr-[25%]' : ''}`}>
         <div className="py-4 px-8 flex flex-col h-full">
+
           <div className="w-full flex flex-col items-center justify-center py-4">
-            <div className="flex items-center justify-center w-full mb-4">
+
+            <div className="flex items-center justify-center w-full mb-4 gap-6">
               <button
-                className="transition rounded-full ease-in-out bg-orange-500 hover:-translate-y-1 hover:scale-110 hover:bg-orange-600 duration-300 p-2 flex-initial mr-4"
+                className="transition rounded-full ease-in-out bg-orange-500 hover:-translate-y-1 hover:scale-110 hover:bg-orange-600 duration-300 p-2 flex-initial mr-6"
                 onClick={() => redirect("/you/home")}
               >
                 <svg
@@ -36,11 +38,13 @@ export default function Home() {
                 </svg>
               </button>
               <div className="text-4xl font-black text-orange-800">Events</div>
-            </div>
-            <div className="flex gap-4 justify-center">
-              <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 flex-initial text-black" onClick={() => router.push("account")}>Account</button>
-              <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 flex-initial text-black" onClick={() => router.push("chats/inbox")}>Chats</button>
-              <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 flex-initial text-black" onClick={() => router.push("description")}>App Description</button>
+              
+              <div className="flex gap-4 justify-center">
+                <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 flex-initial text-black" onClick={() => router.push("account")}>Account</button>
+                <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 flex-initial text-black" onClick={() => router.push("chats/inbox")}>Chats</button>
+                <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 flex-initial text-black" onClick={() => router.push("description")}>App Description</button>
+              </div>
+              
             </div>
           </div>
 

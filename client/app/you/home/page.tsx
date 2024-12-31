@@ -3,10 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
-
+import Image from 'next/image';
 import HistoryTextSelect from "@/app/components/HistoryTextSelect";
 import HomeUserSelect from '@/app/components/HomeUserSelect';
 import HomeUsersWall from '@/app/components/HomeUsersWall';
+import Logo from "@/public/logo.png";
 
 export default function Home() {
   const router = useRouter();
@@ -19,20 +20,33 @@ export default function Home() {
   return (
     <div className="flex h-screen bg-black">
       <div className={`flex-grow transition-all duration-300 ${isSidebarOpen ? 'mr-[25%]' : ''}`}>
-        <div className="py-4 px-8 flex flex-col h-full">
-          <div className="flex items-center justify-between mb-8 px-4">
-            <div className="text-4xl font-black text-orange-500">beavs.social</div>
-            <div className="flex items-center space-x-4">
-              <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 px-4 py-2 text-black" onClick={() => router.push("account")}>Account</button>
-              <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 px-4 py-2 text-black" onClick={() => router.push("chats/inbox")}>Chats</button>
-              <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 px-4 py-2 text-black" onClick={() => router.push("events")}>Events</button>
-              <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 px-4 py-2 text-black" onClick={() => router.push("description")}>App Description</button>
+              <div className="py-4 px-8 flex flex-col h-full">
+      
+                <div className="w-full flex flex-col items-center justify-center py-4">
+      
+                  <div className="flex items-center justify-center w-full mb-4 gap-6">
+                  <Image
+                    className="inline-block align-middle rounded-lg w-20 h-20 mr-2 gap-1"
+                    src={Logo}
+                    alt="placeholder"
+                    width={500}
+                    height={500}
+                  />
+                    <div className="text-4xl font-black text-orange-600">beavs.social</div>
+                    
+                    <div className="flex gap-4 justify-center">
+                      <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 flex-initial text-black" onClick={() => router.push("account")}>Account</button>
+                      <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 flex-initial text-black" onClick={() => router.push("chats/inbox")}>Chats</button>
+                      <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 flex-initial text-black" onClick={() => router.push("events")}>Events</button>
+                      <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 flex-initial text-black" onClick={() => router.push("description")}>App Description</button>
+                    </div>
+                    
+                  </div>
+                </div>
+      
+                <HomeUsersWall />
+              </div>
             </div>
-          </div>
-
-          <HomeUsersWall />
-        </div>
-      </div>
 
       <aside 
         className={`fixed top-0 right-0 z-40 h-screen transition-all duration-300 ease-in-out border-l border-l-orange-700 bg-black ${
