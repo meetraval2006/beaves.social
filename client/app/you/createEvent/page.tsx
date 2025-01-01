@@ -2,41 +2,33 @@
 
 import Image from "next/image";
 import { useRouter, useSearchParams, redirect } from 'next/navigation';
-import { FormEvent } from 'react';
-import DropdownOptions from "@/app/components/AccountDropdownOptions";
+import { useState } from 'react';
+import EventDropdownOptions from "@/app/components/EventDropDown";
 import Logo from "@/public/logo.png";
 
 export default function CreateEventForm() {
-  //const searchParams = useSearchParams();
   const router = useRouter();
-  //const email = searchParams.get('email') + "@oregonstate.edu";
+  const [data, setData] = useState('')
 
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const dataObject = Object.fromEntries(data);
-    //dataObject.email = email;
-    
-    const response = await fetch('http://127.0.0.1:5000/api/create_event', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(dataObject),
-    });
-
-    const json = await response.json();
-
-    //localStorage.setItem("email", json.email);
-    localStorage.setItem("author_id", json.author_id);
-    localStorage.setItem("name", json.name);
-    localStorage.setItem("major", json.major);
-    localStorage.setItem("minor", json.minor);
-    localStorage.setItem("residence_hall", json.residence_hall);
-    localStorage.setItem("year", json.year);
-
-    router.push(`/you/events`);
-  }
+  const sendPostRequest = async () => {
+    let response = await fetch('http://127.0.0.1:5000/api/create_event', {
+        method: "POST",
+        body: JSON.stringify({
+          name: "name",
+          majors: "majors",
+          minors: "minors",
+          years: "years",
+          residence_halls: "residence_halls",
+          event_description: "event_description"
+        })
+    }),
+    headers:{
+      'Content-Type': 'application/json'
+    }
+    response = await response.json();
+    router.push('/you/events')
+    //alert(response.data)
+}
 
   return (
     <>
@@ -78,17 +70,18 @@ export default function CreateEventForm() {
               <h1 className="text-xl font-bold text-gray-900 dark:text-orange-500">
                 Create an event
               </h1>
-              <form className="space-y-4" onSubmit={onSubmit}>
+              <form className="space-y-4">
                 <div>
                   <label
                     htmlFor="name"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-orange-400"
                   >
-                    Your name
+                    Name of the event
                   </label>
                   <input
                     type="text"
                     name="name"
+                    
                     id="name"
                     placeholder="Eg. John Doe"
                     className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
@@ -100,9 +93,9 @@ export default function CreateEventForm() {
                     htmlFor="year"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-orange-400"
                   >
-                    Year
+                    What year student are you looking for?
                   </label>
-                  <DropdownOptions.YearDropdownOptions />
+                  <EventDropdownOptions.YearDropdownOptions />
                 </div>
 
                 <div>
@@ -110,9 +103,9 @@ export default function CreateEventForm() {
                     htmlFor="major"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-orange-400"
                   >
-                    Major
+                    What major are you looking for?
                   </label>
-                  <DropdownOptions.MajorDropdownOptions />
+                  <EventDropdownOptions.MajorDropdownOptions />
                 </div>
 
                 <div>
@@ -122,7 +115,7 @@ export default function CreateEventForm() {
                   >
                     Minor (if any)
                   </label>
-                  <DropdownOptions.MinorDropdownOptions />
+                  <EventDropdownOptions.MinorDropdownOptions />
                 </div>
 
                 <div>
@@ -132,13 +125,29 @@ export default function CreateEventForm() {
                   >
                     Residence Hall (if any)
                   </label>
-                  <DropdownOptions.ResidenceHallDropdownOptions />
+                  <EventDropdownOptions.ResidenceHallDropdownOptions />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-orange-400"
+                  >
+                    Description of the Event
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    placeholder="What is your event"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
+                  />
                 </div>
                 
                 <button
                   type="submit"
                   className="w-full text-white bg-orange-600 hover:bg-orange-400 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-orange-800"
-                  
+                  onClick={sendPostRequest}
                 >
                   Create an event
                 </button>

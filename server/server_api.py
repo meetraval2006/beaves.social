@@ -275,10 +275,11 @@ def create_event():
     try:
         data = request.get_json()
         name = data.get("name")
-        majors: list[str] = data.get("major")
-        minors: list[str] = data.get("minor")
-        years: list[str] = data.get("year")
-        residence_halls: list[str] = data.get("residence_hall")
+        majors: list[str] = data.get("majors")
+        minors: list[str] = data.get("minors")
+        years: list[str] = data.get("years")
+        residence_halls: list[str] = data.get("residence_halls")
+        event_description = data.get("eventDescription")
         group_chat_id = data.get("groupChatId")
         author_id = data.get("authorId")
 
@@ -286,6 +287,7 @@ def create_event():
             abort(400, message="Please provide all the required event information")
 
         random_id = str(uuid.uuid4())
+        groupChatId = str(uuid.uuid4())
         
         dictionary = {
             "name": name,
@@ -293,12 +295,12 @@ def create_event():
             "minors": minors,
             "years": years,
             "residence_halls": residence_halls,
-            "groupChatId": group_chat_id,
+            "eventDescription": event_description,
             "authorId": author_id
         }
         db.collection("events").document(random_id).set(dictionary)
 
-        dictionary["eventId"] = random_id
+        dictionary["groupChatId"] = groupChatId #creating a id for the group chat that will be created when users join the event
         return jsonify(dictionary)
     
     except Exception as e:

@@ -10,6 +10,8 @@ const year = [
   "Sophomore",
   "Junior",
   "Senior",
+  "Masters",
+  "PhD"
 ];
 
 const majors = [
@@ -120,6 +122,7 @@ const majors = [
 ];
 
 const minors = [
+  "None",
   "Accounting",
   "Actuarial Science",
   "Aerospace Engineering",
@@ -248,6 +251,7 @@ const minors = [
 ];
 
 const residenceHalls = [
+  "Not Applicable",
   "Bloss Hall",
   "Buxton Hall",
   "Callahan Hall",
@@ -266,7 +270,7 @@ const residenceHalls = [
   "Wilson Hall",
 ];
 
-const DropdownOptions = (options: Options) => {
+const EventDropdownOptions = (options: Options) => {
   let dropdownOptions: string[] = [];
   let name: string = "";
 
