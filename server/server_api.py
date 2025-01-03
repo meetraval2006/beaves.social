@@ -280,10 +280,15 @@ def create_event():
         years: list[str] = data.get("years")
         residence_halls: list[str] = data.get("residence_halls")
         event_description = data.get("eventDescription")
-        group_chat_id = data.get("groupChatId")
         author_id = data.get("authorId")
 
-        if not name or not group_chat_id or not author_id:
+        # Ensure these fields are arrays
+        majors = majors if isinstance(majors, list) else []
+        minors = minors if isinstance(minors, list) else []
+        years = years if isinstance(years, list) else []
+        residence_halls = residence_halls if isinstance(residence_halls, list) else []
+
+        if not name or not author_id:
             abort(400, message="Please provide all the required event information")
 
         random_id = str(uuid.uuid4())
@@ -296,11 +301,11 @@ def create_event():
             "years": years,
             "residence_halls": residence_halls,
             "eventDescription": event_description,
-            "authorId": author_id
+            "authorId": author_id,
         }
-        db.collection("events").document(random_id).set(dictionary)
-
         dictionary["groupChatId"] = groupChatId #creating a id for the group chat that will be created when users join the event
+        db.collection("events").document(random_id).set(dictionary)
+        
         return jsonify(dictionary)
     
     except Exception as e:

@@ -3,32 +3,50 @@
 import Image from "next/image";
 import { useRouter, useSearchParams, redirect } from 'next/navigation';
 import { useState } from 'react';
-import EventDropdownOptions from "@/app/components/EventDropDown";
 import Logo from "@/public/logo.png";
+import { Toaster, toast } from 'react-hot-toast';
 
 export default function CreateEventForm() {
   const router = useRouter();
-  const [data, setData] = useState('')
+  const [eventName, setEventName] = useState('');
+  const [year, setYear] = useState('');
+  const [major, setMajor] = useState('');
+  const [minor, setMinor] = useState('');
+  const [hall, setHall] = useState('');
+  const [description, setDescription] = useState('');
 
-  const sendPostRequest = async () => {
-    let response = await fetch('http://127.0.0.1:5000/api/create_event', {
-        method: "POST",
-        body: JSON.stringify({
-          name: "name",
-          majors: "majors",
-          minors: "minors",
-          years: "years",
-          residence_halls: "residence_halls",
-          event_description: "event_description"
-        })
-    }),
-    headers:{
-      'Content-Type': 'application/json'
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const data = {
+      name: eventName,
+      majors: major.split(',').map(item => item.trim()), // Convert to array
+      minors: minor.split(',').map(item => item.trim()), // Convert to array
+      years: year.split(',').map(item => item.trim()), // Convert to array
+      residence_halls: hall.split(',').map(item => item.trim()), // Convert to array
+      eventDescription: description,
+      authorId: localStorage.getItem('id')
+    };
+
+    const response = await fetch('http://127.0.0.1:5000/api/create_event', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (response.ok) {
+      // Handle success
+      console.log('Event created successfully');
+      toast.success('Event created successfully!'); // Add this line
+      router.push('/you/events');
+    } else {
+      // Handle error
+      console.error('Failed to create event');
+      toast.error('Failed to create event. Please try again.'); // Add this line
     }
-    response = await response.json();
-    router.push('/you/events')
-    //alert(response.data)
-}
+  };
 
   return (
     <>
@@ -70,7 +88,7 @@ export default function CreateEventForm() {
               <h1 className="text-xl font-bold text-gray-900 dark:text-orange-500">
                 Create an event
               </h1>
-              <form className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label
                     htmlFor="name"
@@ -81,10 +99,11 @@ export default function CreateEventForm() {
                   <input
                     type="text"
                     name="name"
-                    
                     id="name"
                     placeholder="Eg. John Doe"
                     className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
+                    value={eventName}
+                    onChange={(e) => setEventName(e.target.value)}
                   />
                 </div>
               
@@ -95,7 +114,15 @@ export default function CreateEventForm() {
                   >
                     What year student are you looking for?
                   </label>
-                  <EventDropdownOptions.YearDropdownOptions />
+                  <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    placeholder="Eg. John Doe"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
+                    value={year}
+                    onChange={(e) => setYear(e.target.value)}
+                  />
                 </div>
 
                 <div>
@@ -103,9 +130,17 @@ export default function CreateEventForm() {
                     htmlFor="major"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-orange-400"
                   >
-                    What major are you looking for?
+                    What major are you looking for (be specific)?
                   </label>
-                  <EventDropdownOptions.MajorDropdownOptions />
+                  <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    placeholder="Eg. John Doe"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
+                    value={major}
+                    onChange={(e) => setMajor(e.target.value)}
+                  />
                 </div>
 
                 <div>
@@ -115,7 +150,15 @@ export default function CreateEventForm() {
                   >
                     Minor (if any)
                   </label>
-                  <EventDropdownOptions.MinorDropdownOptions />
+                  <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    placeholder="Eg. John Doe"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
+                    value={minor}
+                    onChange={(e) => setMinor(e.target.value)}
+                  />
                 </div>
 
                 <div>
@@ -125,7 +168,15 @@ export default function CreateEventForm() {
                   >
                     Residence Hall (if any)
                   </label>
-                  <EventDropdownOptions.ResidenceHallDropdownOptions />
+                  <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    placeholder="Eg. John Doe"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
+                    value={hall}
+                    onChange={(e) => setHall(e.target.value)}
+                  />
                 </div>
 
                 <div>
@@ -141,13 +192,14 @@ export default function CreateEventForm() {
                     id="name"
                     placeholder="What is your event"
                     className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                   />
                 </div>
                 
                 <button
                   type="submit"
                   className="w-full text-white bg-orange-600 hover:bg-orange-400 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-orange-800"
-                  onClick={sendPostRequest}
                 >
                   Create an event
                 </button>
@@ -157,6 +209,7 @@ export default function CreateEventForm() {
           </div>
         </div>
       </section>
+      <Toaster /> {/* Add this line */}
     </>
   );
 }

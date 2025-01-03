@@ -26,7 +26,7 @@ export default function HomeUsersWall() {
     <>
         <div className="basis-10/12 p-2 grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-1 gap-6 items-stretch h-full">
           {data ? data.map((user) => {
-            return <button>
+            return <button key={user.id}>
               <HomeUserSelect 
               username={user.username} 
               key={user.id} 

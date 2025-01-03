@@ -11,8 +11,12 @@ interface Options {
 }
 
 export default function EventCard(options: Options) {
-
-  const majors: JSX.Element[] = options.majors.map(
+  const majors = Array.isArray(options.majors) ? options.majors : [];
+  const minors = Array.isArray(options.minors) ? options.minors : [];
+  const years = Array.isArray(options.years) ? options.years : [];
+  const residence_halls = Array.isArray(options.residence_halls) ? options.residence_halls : [];
+  
+  const majorElements: JSX.Element[] = majors.map(
     major => {
       return (
         <React.Fragment key={major}>
@@ -21,7 +25,7 @@ export default function EventCard(options: Options) {
       )
     }
   );
-  const minors: JSX.Element[] = options.minors.map(
+  const minorElements: JSX.Element[] = minors.map(
     minor => {
       return (
         <React.Fragment key={minor}>
@@ -30,7 +34,7 @@ export default function EventCard(options: Options) {
       )
     }
   );
-  const years: JSX.Element[] = options.years.map(
+  const yearElements: JSX.Element[] = years.map(
     year => {
       return (
         <React.Fragment key={year}>
@@ -39,7 +43,7 @@ export default function EventCard(options: Options) {
       )
     }
   );
-  const residence_halls: JSX.Element[] = options.residence_halls.map(
+  const residenceHallElements: JSX.Element[] = residence_halls.map(
     residence_hall => {
       return (
         <React.Fragment key={residence_hall}>
@@ -59,22 +63,22 @@ export default function EventCard(options: Options) {
 
             <div>
               <span className="font-bold text-slate-200	"> Majors: </span>  
-              <span className="text-m  text-orange-400 truncate"> {majors} </span>
+              <span className="text-m  text-orange-400 truncate"> {majorElements} </span>
             </div>
 
             <div>
               <span className="font-bold text-slate-200	"> Minors: </span>  
-              <span className="text-m text-orange-400 truncate"> {minors} </span>
+              <span className="text-m text-orange-400 truncate"> {minorElements} </span>
             </div>
 
             <div>
               <span className="font-bold text-slate-200	"> Years: </span>  
-              <span className="text-m text-orange-400 truncate"> {years} </span>
+              <span className="text-m text-orange-400 truncate"> {yearElements} </span>
             </div>
 
             <div>
               <span className="font-bold text-slate-200	"> Residence Halls: </span>  
-              <span className="text-m text-orange-400 truncate"> {residence_halls} </span>
+              <span className="text-m text-orange-400 truncate"> {residenceHallElements} </span>
             </div>
 
             <div className="mt-4">
