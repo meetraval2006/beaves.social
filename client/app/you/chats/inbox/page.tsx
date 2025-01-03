@@ -1,16 +1,20 @@
-"use client";
+'use client'
 
-import { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import ChatsPane from "@/app/components/ChatsPane";
-import { redirect } from 'next/navigation';
+import { useState } from 'react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import ChatsPane from "@/app/components/ChatsPane"
+import { redirect } from 'next/navigation'
+import ChatCreationPopup from '@/app/components/CreateChatPane'
 
 export default function Home() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [isPopupOpen, setIsPopupOpen] = useState(false)
 
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+    setIsSidebarOpen(!isSidebarOpen)
+  }
+
+  
 
   return (
     <div className="flex h-screen bg-black">
@@ -68,7 +72,12 @@ export default function Home() {
 
               <div className="flex items-center justify-between">
                 <div className="text-sm font-semibold text-orange-400">Chats</div>
-                <button className="text-sm font-semibold text-orange-500 hover:text-orange-400">New Chat</button>
+                <button 
+                  className="text-sm font-semibold text-orange-500 hover:text-orange-400"
+                  onClick={() => setIsPopupOpen(true)}
+                >
+                  New Chat
+                </button>
               </div>
             </div>
             <ChatsPane />
@@ -97,7 +106,12 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <ChatCreationPopup
+        isOpen={isPopupOpen}
+        onClose={() => setIsPopupOpen(false)}
+      />
     </div>
-  );
+  )
 }
 
