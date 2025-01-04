@@ -270,7 +270,7 @@ const residenceHalls = [
   "Wilson Hall",
 ];
 
-const EventDropdownOptions = (options: Options) => {
+const DropdownOptions = (options: Options) => {
   let dropdownOptions: string[] = [];
   let name: string = "";
 
