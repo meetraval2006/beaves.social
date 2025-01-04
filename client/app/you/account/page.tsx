@@ -93,7 +93,7 @@ export default function Home() {
                     id="name"
                     placeholder="Eg. John Doe"
                     className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
-                    value={email}
+                    defaultValue={email}
                   />
                 </div>
                 <div>
