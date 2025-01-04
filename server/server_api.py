@@ -72,6 +72,60 @@ def create_user():
         print(f"error: {e}")
         abort(400, message="Error creating user")
 
+@app.route("/api/update_user", methods=["PUT"])
+def update_user():
+    try:
+        data = request.get_json()
+        user_id = data.get("id")
+        name = data.get("name")
+        #pfp = data.get("pfp")
+        username = data.get("username")
+        major = data.get("major")
+        minor = data.get("minor")
+        year = data.get("year")
+        residence_hall = data.get("residence_hall")
+        email = data.get("email")
+        
+        if not user_id:
+            print("User ID is required")
+            abort(400, description="User ID is required")
+
+        if not re.match(r"^[a-zA-Z]+", name):
+            print("Invalid name. Please type your full name")
+            abort(400, message="Invalid name. Please type your full name")
+
+        if not re.match(r"^[a-zA-Z0-9_@$#!.,:><%-=+]+", username):
+            print("Invalid username. Please type a valid username")
+            abort(400, message="Invalid username. Please type a valid username")
+
+        if not re.match(r"^[a-zA-Z0-9]+@oregonstate.edu", email):
+            print("Invalid email. Please type a valid Oregon State email")
+            abort(400, message="Invalid email. Please type a valid Oregon State email")
+
+        if not name or not username or not major or not minor or not year or not residence_hall or not email:
+            print("Please provide all the information")
+            abort(400, message="Please provide all the information")
+        
+            
+        user_data: dict[str, str] = {
+            "name": name, 
+            "username": username, 
+            "major": major, 
+            "minor": minor, 
+            "year": year, 
+            "residence_hall": residence_hall, 
+            "email": email
+        }
+        
+        print(f"Updating user with ID: {user_id}")
+        db.collection("users").document(user_id).update(user_data)
+        print(f"User with ID: {user_id} updated successfully")
+        return jsonify(user_data)
+    
+    except Exception as e:
+        print(f"error: {e}")
+        abort(400, message="Error creating user")
+
 @app.route("/api/get_user", methods=["GET"])
 def get_user():
     try:
