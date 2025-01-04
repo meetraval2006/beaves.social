@@ -117,9 +117,9 @@ export default function HomeUserSelect({ username, id, name, email, major, minor
               </div>
             </button>
 
-            <div className="bg-gradient-to-r from-orange-400 to-orange-600 p-1 mt-2">
+            <div className="bg-gradient-to-r from-orange-400 to-orange-600 p-1 mt-2 rounded-xl">
               <button
-                className="w-full rounded-lg shadow-lg overflow-hidden bg-black bg-opacity-90 text-orange-400 py-2"
+                className="w-full rounded-xl shadow-lg overflow-hidden bg-black bg-opacity-90 text-orange-400 py-2"
               >
                 Message
               </button>
