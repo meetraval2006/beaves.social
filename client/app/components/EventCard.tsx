@@ -5,6 +5,7 @@ interface Options {
   minors: string[]
   years: string[]
   residence_halls: string[]
+  eventDescription: string[]
   key: string
   id: string
   groupChatId: string
@@ -15,6 +16,7 @@ export default function EventCard(options: Options) {
   const minors = Array.isArray(options.minors) ? options.minors : [];
   const years = Array.isArray(options.years) ? options.years : [];
   const residence_halls = Array.isArray(options.residence_halls) ? options.residence_halls : [];
+  const eventDescription = Array.isArray(options.residence_halls) ? options.residence_halls : [];
   
   const majorElements: JSX.Element[] = majors.map(
     major => {
@@ -53,6 +55,15 @@ export default function EventCard(options: Options) {
     }
   );
 
+  const eventDescriptionElements: JSX.Element[] = eventDescription.map(
+    eventDescription => {
+      return (
+        <React.Fragment key={eventDescription}>
+          <span className="underline">{eventDescription}</span>&nbsp;
+        </React.Fragment>
+  )
+})
+
   return (
     
       <div key={options.id} style={{cursor: "default"}} className="bg-gradient-to-r from-orange-400 to-orange-600 p-1 rounded-lg">
@@ -79,6 +90,11 @@ export default function EventCard(options: Options) {
             <div>
               <span className="font-bold text-slate-200	"> Residence Halls: </span>  
               <span className="text-m text-orange-400 truncate"> {residenceHallElements} </span>
+            </div>
+
+            <div>
+              <span className="font-bold text-slate-200	"> Description: </span>  
+              <span className="text-m text-orange-400 truncate"> {eventDescription} </span>
             </div>
 
             <div className="mt-4">

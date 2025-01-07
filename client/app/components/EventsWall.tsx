@@ -47,6 +47,7 @@ export default function HomeUsersWall() {
               minors={event.minors}
               years={event.years}
               residence_halls={event.residence_halls}
+              eventDescription={event.eventDescription}
               id={event.id}
               key={event.id}
               groupChatId={event.groupChatId}
