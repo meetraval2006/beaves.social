@@ -16,7 +16,7 @@ export default function EventCard(options: Options) {
   const minors = Array.isArray(options.minors) ? options.minors : [];
   const years = Array.isArray(options.years) ? options.years : [];
   const residence_halls = Array.isArray(options.residence_halls) ? options.residence_halls : [];
-  const eventDescription = Array.isArray(options.residence_halls) ? options.residence_halls : [];
+  const eventDescription = Array.isArray(options.eventDescription) ? options.eventDescription : [];
   
   const majorElements: JSX.Element[] = majors.map(
     major => {
@@ -94,7 +94,7 @@ export default function EventCard(options: Options) {
 
             <div>
               <span className="font-bold text-slate-200	"> Description: </span>  
-              <span className="text-m text-orange-400 truncate"> {eventDescription} </span>
+              <span className="text-m text-orange-400 truncate"> {eventDescriptionElements} </span>
             </div>
 
             <div className="mt-4">

@@ -28,12 +28,12 @@ export default function CreateEventForm() {
     const json = await response.json();
 
     //localStorage.setItem("email", json.email);
-    localStorage.setItem("author_id", json.id);
-    localStorage.setItem("name", json.name);
-    localStorage.setItem("major", json.major);
-    localStorage.setItem("minor", json.minor);
-    localStorage.setItem("residence_hall", json.residence_hall);
-    localStorage.setItem("year", json.year);
+    // localStorage.setItem("author_id", json.id);
+    // localStorage.setItem("name", json.name);
+    // localStorage.setItem("major", json.major);
+    // localStorage.setItem("minor", json.minor);
+    // localStorage.setItem("residence_hall", json.residence_hall);
+    // localStorage.setItem("year", json.year);
 
     router.push(`/you/events`);
   }

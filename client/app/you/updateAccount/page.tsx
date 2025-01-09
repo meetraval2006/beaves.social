@@ -34,7 +34,7 @@ export default function Home() {
 
     const json = await response.json();
 
-    localStorage.setItem("id", json.id);
+    //localStorage.setItem("id", json.id);
     localStorage.setItem("email", json.email);
     localStorage.setItem("name", json.name);
     localStorage.setItem("username", json.username);

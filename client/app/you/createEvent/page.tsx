@@ -41,6 +41,7 @@ export default function CreateEventForm() {
       console.log('Event created successfully');
       toast.success('Event created successfully!'); // Add this line
       router.push('/you/events');
+      //console.log(localStorage.getItem('id'));
     } else {
       // Handle error
       console.error('Failed to create event');
