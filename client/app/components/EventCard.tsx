@@ -5,7 +5,7 @@ interface Options {
   minors: string[]
   years: string[]
   residence_halls: string[]
-  eventDescription: string[]
+  eventDescription: string
   key: string
   id: string
   groupChatId: string
@@ -16,8 +16,8 @@ export default function EventCard(options: Options) {
   const minors = Array.isArray(options.minors) ? options.minors : [];
   const years = Array.isArray(options.years) ? options.years : [];
   const residence_halls = Array.isArray(options.residence_halls) ? options.residence_halls : [];
-  const eventDescription = Array.isArray(options.eventDescription) ? options.eventDescription : [];
-  
+  const eventDescription: string = options.eventDescription ? options.eventDescription : "<No description>";
+
   const majorElements: JSX.Element[] = majors.map(
     major => {
       return (
@@ -55,14 +55,13 @@ export default function EventCard(options: Options) {
     }
   );
 
-  const eventDescriptionElements: JSX.Element[] = eventDescription.map(
-    eventDescription => {
+  const eventDescriptionElement = () => {
       return (
         <React.Fragment key={eventDescription}>
           <span className="underline">{eventDescription}</span>&nbsp;
         </React.Fragment>
-  )
-})
+      )
+  };
 
   return (
     
@@ -94,7 +93,7 @@ export default function EventCard(options: Options) {
 
             <div>
               <span className="font-bold text-slate-200	"> Description: </span>  
-              <span className="text-m text-orange-400 truncate"> {eventDescriptionElements} </span>
+              <span className="text-m text-orange-400 truncate"> {eventDescriptionElement()} </span>
             </div>
 
             <div className="mt-4">
