@@ -8,7 +8,7 @@ interface Message {
 }
 
 const myMessageCloud = (message: Message) => {
-  const date = new Date(message.timestamp);
+  const date = new Date(message.timestamp * 1000);
   const time = date.toLocaleTimeString();
 
   return (
@@ -21,7 +21,7 @@ const myMessageCloud = (message: Message) => {
   );
 };
 const otherMessageCloud = (message: Message) => {
-  const date = new Date(message.timestamp);
+  const date = new Date(message.timestamp * 1000);
   const time = date.toLocaleTimeString();
 
   return (

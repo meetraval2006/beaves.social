@@ -39,9 +39,6 @@ export default function Home() {
                 <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 flex-initial text-black" onClick={() => router.push("chats/inbox")}>Chats</button>
                 <button className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 flex-initial text-black" onClick={() => router.push("description")}>App Description</button>
               </div>
-
-              
-              
             </div>
           </div>
 
@@ -54,7 +51,7 @@ export default function Home() {
             </button>
           </div>
 
-          <EventsWall />
+          <EventsWall userId={localStorage.getItem("id") ?? "null"} />
         </div>
       </div>
     </div>

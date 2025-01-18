@@ -13,7 +13,7 @@ app = Flask(__name__)
 CORS(app)
 api = Api(app)
 
-cred = credentials.Certificate('./key.json')
+cred = credentials.Certificate('./server/key.json')
 firebase_initialization = firebase_admin.initialize_app(cred, {"databaseURL": "https://beavs-social-default-rtdb.firebaseio.com/"})
 db = firestore.client()
 
@@ -182,6 +182,7 @@ def get_user_by_id():
             return jsonify({"error": "User not found"})
         
         user_info = doc.to_dict()
+        print(id)
         return jsonify(user_info)
     
     except Exception as e:
@@ -342,11 +343,17 @@ def create_event():
         years = years if isinstance(years, list) else []
         residence_halls = residence_halls if isinstance(residence_halls, list) else []
 
+        print(name, author_id)
+
         if not name or not author_id:
             abort(400, message="Please provide all the required event information")
 
+        print(1)
+
         random_id = str(uuid.uuid4())
         groupChatId = str(uuid.uuid4())
+
+        print(2)
         
         dictionary = {
             "name": name,
@@ -357,9 +364,11 @@ def create_event():
             "eventDescription": event_description,
             "authorId": author_id,
         }
+        print(3)
         dictionary["groupChatId"] = groupChatId #creating a id for the group chat that will be created when users join the event
+        print(4)
         db.collection("events").document(random_id).set(dictionary)
-        
+        print(5)
         return jsonify(dictionary)
     
     except Exception as e:
