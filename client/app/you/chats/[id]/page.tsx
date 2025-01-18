@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { usePathname, redirect } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { Plus } from 'lucide-react';
 
 import ChatsPane from "@/app/components/ChatsPane";
@@ -9,7 +9,6 @@ import ChatMessagesWindow from "@/app/components/ChatMessagesWindow";
 import CreateChatModal from "@/app/components/CreateChatModal";
 
 export default function Home() {
-  const pathname = usePathname();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   return (

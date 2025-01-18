@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Trash2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 
 interface Options {
   userId: string
@@ -13,9 +15,14 @@ interface Options {
   key: string
   id: string
   groupChatId: string
+  onDelete: (id: string) => void;
 }
 
 export default function EventCard(options: Options) {
+  const router = useRouter();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
+
   const majors = Array.isArray(options.majors) ? options.majors : [];
   const minors = Array.isArray(options.minors) ? options.minors : [];
   const years = Array.isArray(options.years) ? options.years : [];
@@ -57,9 +64,59 @@ export default function EventCard(options: Options) {
     </React.Fragment>
   );
 
-  const handleDelete = () => {
-    // Empty function for now
-    console.log('Delete button clicked');
+  const handleDelete = async () => {
+    if (window.confirm('Are you sure you want to delete this event?')) {
+      setIsDeleting(true);
+      try {
+        const response = await fetch(`http://127.0.0.1:5000/api/delete_event?id=${options.id}`, {
+          method: 'DELETE',
+        });
+        if (response.ok) {
+          toast.success('Event deleted successfully');
+          options.onDelete(options.id);
+        } else {
+          throw new Error('Failed to delete event');
+        }
+      } catch (error) {
+        console.error('Error deleting event:', error);
+        toast.error('Failed to delete event');
+      } finally {
+        setIsDeleting(false);
+      }
+    }
+  };
+
+  const handleJoin = async () => {
+    if (options.userId === options.authorId) {
+      // Redirect to the group chat
+      router.push(`/you/chats/${options.groupChatId}`);
+    } else {
+      setIsJoining(true);
+      try {
+        const response = await fetch('http://127.0.0.1:5000/api/join_event', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            eventId: options.id,
+            userId: options.userId,
+            groupChatId: options.groupChatId,
+          }),
+        });
+        if (response.ok) {
+          toast.success('Joined event successfully');
+          router.push(`/you/chats/${options.groupChatId}`);
+        } else {
+          throw new Error('Failed to join event');
+        }
+      } catch (error) {
+        console.error('Error joining event:', error);
+        toast.error('Failed to join event');
+      } finally {
+        setIsJoining(false);
+      }
+    }
   };
 
   return (
@@ -67,14 +124,15 @@ export default function EventCard(options: Options) {
       {options.userId === options.authorId && (
         <button 
           onClick={handleDelete}
-          className="absolute top-2 right-2 p-1 bg-red-500 rounded-full hover:bg-red-600 transition-colors duration-200"
+          disabled={isDeleting}
+          className="absolute top-4 right-4 p-2 bg-orange-500 rounded-full hover:bg-orange-600 transition-colors duration-200"
           aria-label="Delete event"
         >
           <Trash2 size={20} className="text-white" />
         </button>
       )}
       <div className="flex items-center bg-black bg-opacity-90 p-3 space-x-4 rounded-lg">
-        <div className="overflow-hidden h-auto px-8 py-4" >
+        <div className="overflow-hidden h-auto px-8 py-4 w-full" >
           <div className="text-xl font-semibold text-orange-400 truncate">{options.name}</div>
           <div>
             <span className="font-bold text-slate-200"> Majors: </span>  
@@ -97,7 +155,13 @@ export default function EventCard(options: Options) {
             <span className="text-m text-orange-400 truncate"> {eventDescriptionElement()} </span>
           </div>
           <div className="mt-4">
-            <button id={options.groupChatId} className="w-full transition rounded-lg ease-in-out bg-orange-500 hover:bg-orange-400 duration-100 p-2 flex-initial text-slate-200 font-semibold">Join</button>
+            <button 
+              onClick={handleJoin}
+              disabled={isJoining}
+              className="w-full transition rounded-lg ease-in-out bg-orange-500 hover:bg-orange-400 duration-100 p-2 text-slate-200 font-semibold"
+            >
+              {options.userId === options.authorId ? 'Go to Chat' : (isJoining ? 'Joining...' : 'Join')}
+            </button>
           </div>
         </div>
       </div>

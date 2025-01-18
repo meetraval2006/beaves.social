@@ -1,34 +1,317 @@
 'use client';
 
 import Image from "next/image";
-import { useRouter, useSearchParams, redirect } from 'next/navigation';
+import { useRouter, redirect } from 'next/navigation';
 import { useState } from 'react';
 import Logo from "@/public/logo.png";
 import { Toaster, toast } from 'react-hot-toast';
-import { LocaleRouteNormalizer } from "next/dist/server/normalizers/locale-route-normalizer";
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 export default function CreateEventForm() {
   const router = useRouter();
   const [eventName, setEventName] = useState('');
-  const [year, setYear] = useState('');
-  const [major, setMajor] = useState('');
-  const [minor, setMinor] = useState('');
-  const [hall, setHall] = useState('');
+  const [years, setYears] = useState<string[]>([]);
+  const [majors, setMajors] = useState<string[]>([]);
+  const [minors, setMinors] = useState<string[]>([]);
+  const [halls, setHalls] = useState<string[]>([]);
   const [description, setDescription] = useState('');
+
+  const majorOptions = [
+    "All",
+    "Accountancy",
+    "Agricultural and Food Business Management",
+    "Agricultural Sciences",
+    "American Studies",
+    "Animal Sciences",
+    "Anthropology",
+    "Apparel Design",
+    "Applied Humanities",
+    "Architectural Engineering",
+    "Art",
+    "Arts, Media, and Technology",
+    "Biochemistry and Biophysics",
+    "Biochemistry and Molecular Biology",
+    "Bioengineering",
+    "BioHealth Sciences",
+    "Biological Data Sciences",
+    "Biology",
+    "Bioresource Research",
+    "Botany",
+    "Business Administration",
+    "Business Analytics",
+    "Business Information Systems",
+    "Chemical Engineering",
+    "Chemistry",
+    "Civil Engineering",
+    "Climate Science",
+    "Computer Science",
+    "Construction Engineering Management",
+    "Contemporary Music Industry",
+    "Creative Writing",
+    "Crop and Soil Science",
+    "Design and Innovation Management",
+    "Digital Communication Arts",
+    "Ecological Engineering",
+    "Economics",
+    "Education",
+    "Electrical and Computer Engineering",
+    "Energy Systems Engineering",
+    "Engineering Science",
+    "English",
+    "Environmental Economics and Policy",
+    "Environmental Engineering",
+    "Environmental Sciences",
+    "Ethnic Studies",
+    "Finance",
+    "Fisheries, Wildlife, and Conservation Sciences",
+    "Food Science and Sustainable Technologies",
+    "Forest Engineering - Civil Engineering",
+    "Forest Engineering",
+    "Forestry",
+    "French",
+    "Geography and Geospatial Science",
+    "Geology",
+    "German",
+    "Graphic Design",
+    "History",
+    "Honors Associate",
+    "Honors Scholar",
+    "Horticulture",
+    "Hospitality Management",
+    "Human Development and Family Sciences",
+    "Industrial Engineering",
+    "Innovation Management",
+    "Interior Design",
+    "International Studies",
+    "Kinesiology",
+    "Liberal Studies",
+    "Manufacturing Engineering",
+    "Marine Studies",
+    "Marketing",
+    "Mathematics",
+    "Mechanical Engineering",
+    "Microbiology",
+    "Music Studies",
+    "Music",
+    "Natural Resources",
+    "Nuclear Engineering",
+    "Nutrition",
+    "Oceanography",
+    "Organizational Leadership",
+    "Outdoor Products",
+    "Philosophy",
+    "Physics",
+    "Political Science",
+    "Product and Merchandising Management",
+    "Psychology",
+    "Public Health",
+    "Public Policy",
+    "Radiation Health Physics",
+    "Rangeland Sciences",
+    "Religious Studies",
+    "Social Science",
+    "Sociology",
+    "Spanish",
+    "Speech Communication",
+    "Supply Chain and Logistics Management",
+    "Sustainability",
+    "Teaching",
+    "Theatre Arts",
+    "Tourism, Recreation, and Adventure Leadership",
+    "Women, Gender, and Sexuality Studies",
+    "Wood Innovation for Sustainability",
+    "Zoology"
+  ];
+
+  const minorOptions = [
+    "All",
+    "Accounting",
+    "Actuarial Science",
+    "Aerospace Engineering",
+    "Aerospace Studies",
+    "Agricultural and Food Business Management",
+    "Agricultural Education",
+    "Agricultural Sciences and Natural Resources Communications",
+    "Agricultural Sciences",
+    "Animal Sciences",
+    "Anthropology",
+    "Applied Journalism",
+    "Art History",
+    "Arts, Media, and Technology",
+    "Asian Languages and Cultures",
+    "Asian Studies",
+    "Biochemistry and Molecular Biology",
+    "Biological Data Sciences",
+    "Biology",
+    "Botany",
+    "Business Information Systems",
+    "Business",
+    "Chemistry",
+    "Communication",
+    "Comparative International Agriculture",
+    "Computer Science",
+    "Contemplative Studies",
+    "Criminology",
+    "Crop Science",
+    "Cybersecurity Management",
+    "Design and Innovation Management",
+    "Early Childhood Development and Education",
+    "Earth Sciences",
+    "Economics",
+    "Education",
+    "English",
+    "Entomology",
+    "Environmental and Occupational Health",
+    "Environmental Economics and Policy",
+    "Environmental Engineering",
+    "Environmental Law and Policy",
+    "Environmental Sciences",
+    "Ethnic Studies",
+    "Exercise Physiology",
+    "Family Business",
+    "Fermentation Science",
+    "Film Studies",
+    "Finance",
+    "Fisheries and Wildlife Sciences",
+    "Food Manufacturing",
+    "Food Science",
+    "Food Technology",
+    "Forestry",
+    "French",
+    "Geography",
+    "Geology",
+    "Geomatics Engineering",
+    "German",
+    "Global Development Studies",
+    "Global Health",
+    "Graphic Design",
+    "Guitar",
+    "Health Management and Policy",
+    "History",
+    "Horticulture",
+    "Human Development and Family Sciences",
+    "Human Resource Management",
+    "Humanitarian Engineering",
+    "Indigenous Studies",
+    "Industrial Engineering",
+    "Innovation and Entrepreneurship",
+    "International Engineering",
+    "Irrigation Engineering",
+    "Latinx/a/o Studies",
+    "Leadership",
+    "Marine Biology",
+    "Marine Conservation and Management",
+    "Marine Studies",
+    "Marketing",
+    "Materials Science",
+    "Mathematics",
+    "Merchandising Management",
+    "Microbiology",
+    "Military History",
+    "Military Science",
+    "Music",
+    "Music Performance",
+    "Natural Resources",
+    "Naval Science-U.S. Marine Corps",
+    "Naval Science-U.S. Navy",
+    "New Media Communications",
+    "Nuclear Engineering",
+    "Nutrition",
+    "Oceanography",
+    "Organizational Leadership",
+    "Outdoor Products",
+    "Philosophy",
+    "Photography",
+    "Physics",
+    "Political Science",
+    "Popular Music Studies",
+    "Professional Sales",
+    "Psychology",
+    "Public Health",
+    "Queer Studies",
+    "Radiation Health Physics",
+    "Rangeland Science",
+    "Religious Studies",
+    "Social Justice",
+    "Sociology",
+    "Soil Science",
+    "Spanish",
+    "Sports Business",
+    "Statistics",
+    "Studio Art",
+    "Supply Chain and Logistics Management",
+    "Sustainability",
+    "Theatre Arts",
+    "Tourism, Recreation, and Adventure Leadership",
+    "Toxicology",
+    "Turf and Landscape Management",
+    "User Experience Research",
+    "Women, Gender, and Sexuality Studies",
+    "Wood Innovation for Sustainability",
+    "Wood Products Sales",
+    "Writing"
+  ];
+
+  const yearOptions = [
+    "All",
+    "Freshman",
+    "Sophomore",
+    "Junior",
+    "Senior",
+    "Masters",
+    "PhD"
+  ];
+
+  const residenceHallOptions = [
+    "All",
+    "Bloss Hall",
+    "Buxton Hall",
+    "Callahan Hall",
+    "Cauthorn Hall",
+    "Dixon Lodge",
+    "Finley Hall",
+    "Halsell Hall",
+    "Hawley Hall",
+    "ILLC",
+    "McNary Hall",
+    "Poling Hall",
+    "Sackett Hall",
+    "Tebeau Hall",
+    "Weatherford Hall",
+    "West Hall",
+    "Wilson Hall"
+  ];
+
+  const handleOptionChange = (option: string, currentState: string[], setter: React.Dispatch<React.SetStateAction<string[]>>) => {
+    if (option === "All") {
+      setter(["All"]);
+    } else {
+      setter(prev => {
+        if (prev.includes("All")) {
+          return [option];
+        } else {
+          const newState = prev.includes(option)
+            ? prev.filter(item => item !== option)
+            : [...prev, option];
+          return newState.length === 0 ? ["All"] : newState;
+        }
+      });
+    }
+  };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
-    // need to fix this -> it's logging null
 
     console.log(localStorage.getItem("id"))
 
     const data = {
       name: eventName,
-      majors: major.split(',').map(item => item.trim()), // Convert to array
-      minors: minor.split(',').map(item => item.trim()), // Convert to array
-      years: year.split(',').map(item => item.trim()), // Convert to array
-      residence_halls: hall.split(',').map(item => item.trim()), // Convert to array
+      majors: majors.length === 0 ? ["All"] : majors,
+      minors: minors.length === 0 ? ["All"] : minors,
+      years: years.length === 0 ? ["All"] : years,
+      residence_halls: halls.length === 0 ? ["All"] : halls,
       eventDescription: description,
       authorId: localStorage.getItem('id')
     };
@@ -42,15 +325,12 @@ export default function CreateEventForm() {
     });
 
     if (response.ok) {
-      // Handle success
       console.log('Event created successfully');
-      toast.success('Event created successfully!'); // Add this line
+      toast.success('Event created successfully!');
       router.push('/you/events');
-      //console.log(localStorage.getItem('id'));
     } else {
-      // Handle error
       console.error('Failed to create event');
-      toast.error('Failed to create event. Please try again.'); // Add this line
+      toast.error('Failed to create event. Please try again.');
     }
   };
 
@@ -82,7 +362,7 @@ export default function CreateEventForm() {
           >
             <Image
               className="inline-block align-middle rounded-lg w-12 h-12 mr-2"
-              src={Logo}
+              src={Logo || "/placeholder.svg"}
               alt="placeholder"
               width={300}
               height={300}
@@ -106,116 +386,119 @@ export default function CreateEventForm() {
                     type="text"
                     name="name"
                     id="name"
-                    placeholder="Eg. John Doe"
+                    placeholder="Enter event name"
                     className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
                     value={eventName}
-                    onChange={(e) => setEventName(e.target.value)}
+                    onChange={(e) => setEventName(e.target.value.slice(0, 75))}
+                    maxLength={75}
                   />
                 </div>
-              
+
                 <div>
-                  <label
-                    htmlFor="year"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-orange-400"
-                  >
+                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-orange-400">
                     What year student are you looking for?
                   </label>
-                  <input
-                    type="text"
-                    name="name"
-                    id="name"
-                    placeholder="Eg. John Doe"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
-                    value={year}
-                    onChange={(e) => setYear(e.target.value)}
-                  />
+                  <ScrollArea className="h-[200px] w-full rounded-md border p-4">
+                    {yearOptions.map((year) => (
+                      <div key={year} className="flex items-center space-x-2 mb-2">
+                        <Checkbox
+                          id={`year-${year}`}
+                          checked={years.includes(year)}
+                          onCheckedChange={() => handleOptionChange(year, years, setYears)}
+                        />
+                        <Label htmlFor={`year-${year}`}>{year}</Label>
+                      </div>
+                    ))}
+                  </ScrollArea>
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="major"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-orange-400"
-                  >
+                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-orange-400">
                     What major are you looking for (be specific)?
                   </label>
-                  <input
-                    type="text"
-                    name="name"
-                    id="name"
-                    placeholder="Eg. John Doe"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
-                    value={major}
-                    onChange={(e) => setMajor(e.target.value)}
-                  />
+                  <ScrollArea className="h-[200px] w-full rounded-md border p-4">
+                    {majorOptions.map((major) => (
+                      <div key={major} className="flex items-center space-x-2 mb-2">
+                        <Checkbox
+                          id={`major-${major}`}
+                          checked={majors.includes(major)}
+                          onCheckedChange={() => handleOptionChange(major, majors, setMajors)}
+                        />
+                        <Label htmlFor={`major-${major}`}>{major}</Label>
+                      </div>
+                    ))}
+                  </ScrollArea>
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="minor"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-orange-400"
-                  >
+                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-orange-400">
                     Minor (if any)
                   </label>
-                  <input
-                    type="text"
-                    name="name"
-                    id="name"
-                    placeholder="Eg. John Doe"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
-                    value={minor}
-                    onChange={(e) => setMinor(e.target.value)}
-                  />
+                  <ScrollArea className="h-[200px] w-full rounded-md border p-4">
+                    {minorOptions.map((minor) => (
+                      <div key={minor} className="flex items-center space-x-2 mb-2">
+                        <Checkbox
+                          id={`minor-${minor}`}
+                          checked={minors.includes(minor)}
+                          onCheckedChange={() => handleOptionChange(minor, minors, setMinors)}
+                        />
+                        <Label htmlFor={`minor-${minor}`}>{minor}</Label>
+                      </div>
+                    ))}
+                  </ScrollArea>
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="hall"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-orange-400"
-                  >
+                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-orange-400">
                     Residence Hall (if any)
                   </label>
-                  <input
-                    type="text"
-                    name="name"
-                    id="name"
-                    placeholder="Eg. John Doe"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
-                    value={hall}
-                    onChange={(e) => setHall(e.target.value)}
-                  />
+                  <ScrollArea className="h-[200px] w-full rounded-md border p-4">
+                    {residenceHallOptions.map((hall) => (
+                      <div key={hall} className="flex items-center space-x-2 mb-2">
+                        <Checkbox
+                          id={`hall-${hall}`}
+                          checked={halls.includes(hall)}
+                          onCheckedChange={() => handleOptionChange(hall, halls, setHalls)}
+                        />
+                        <Label htmlFor={`hall-${hall}`}>{hall}</Label>
+                      </div>
+                    ))}
+                  </ScrollArea>
                 </div>
 
                 <div>
                   <label
-                    htmlFor="name"
+                    htmlFor="description"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-orange-400"
                   >
                     Description of the Event
                   </label>
-                  <input
-                    type="text"
-                    name="name"
-                    id="name"
-                    placeholder="What is your event"
+                  <textarea
+                    name="description"
+                    id="description"
+                    placeholder="What is your event about?"
                     className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    onChange={(e) => setDescription(e.target.value.slice(0, 150))}
+                    maxLength={150}
+                    rows={4}
                   />
                 </div>
-                
+
                 <button
                   type="submit"
                   className="w-full text-white bg-orange-600 hover:bg-orange-400 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-orange-800"
                 >
                   Create an event
                 </button>
-                
+
               </form>
             </div>
           </div>
         </div>
       </section>
-      <Toaster /> {/* Add this line */}
+      <Toaster />
     </>
   );
 }
+

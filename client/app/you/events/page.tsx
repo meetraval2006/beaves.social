@@ -7,13 +7,13 @@ import HistoryTextSelect from "@/app/components/HistoryTextSelect";
 import EventsWall from "@/app/components/EventsWall";
 import CreateEventForm from "@/app/components/CreateEvent";
 
-export default function Home() {
+export default function Events() {
   const router = useRouter();
 
   return (
-    <div className="flex h-screen bg-black">
+    <div className="flex h-screen bg-black overflow-y-auto">
       <div className={`flex-grow transition-all duration-300`}>
-        <div className="py-4 px-8 flex flex-col h-full">
+        <div className="py-4 px-8 flex flex-col min-h-full">
 
           <div className="w-full flex flex-col items-center justify-center py-4">
 
@@ -57,5 +57,4 @@ export default function Home() {
     </div>
   );
 }
-
 

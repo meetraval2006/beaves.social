@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus } from 'lucide-react';
 
@@ -48,6 +48,26 @@ const CreateGroupDMCard: React.FC<CreateGroupDMCardProps> = ({ onClose }) => {
     setSelectedUsers(selectedUsers.filter(user => user.id !== userId));
   };
 
+  const checkExistingGroupChat = useCallback(async (userIds: string[]) => {
+    try {
+      const response = await fetch('http://127.0.0.1:5000/api/get_gcs');
+      const allChats = await response.json();
+
+      for (const [chatId, chatData] of Object.entries(allChats)) {
+        if (chatData.is_gc && chatData.users.length === userIds.length) {
+          const allUsersMatch = userIds.every(userId => chatData.users.includes(userId));
+          if (allUsersMatch) {
+            return chatId;
+          }
+        }
+      }
+      return null;
+    } catch (error) {
+      console.error('Error checking existing group chats:', error);
+      return null;
+    }
+  }, []);
+
   const handleCreateGroup = async () => {
     if (groupName.length > 100) {
       alert('Group name must be 100 characters or less');
@@ -62,6 +82,15 @@ const CreateGroupDMCard: React.FC<CreateGroupDMCardProps> = ({ onClose }) => {
     const currentUserId = localStorage.getItem('id');
     const userIds = [currentUserId, ...selectedUsers.map(user => user.id)];
 
+    // Check for existing group chat
+    const existingChatId = await checkExistingGroupChat(userIds);
+    if (existingChatId) {
+      onClose();
+      router.push(`/you/chats/${existingChatId}`);
+      return;
+    }
+
+    // If no existing chat, create a new one
     const response = await fetch('http://127.0.0.1:5000/api/create_gc', {
       method: 'POST',
       headers: {
@@ -76,7 +105,7 @@ const CreateGroupDMCard: React.FC<CreateGroupDMCardProps> = ({ onClose }) => {
     });
     const data = await response.json();
     onClose();
-    router.push(`/chat/${data.gc_id}`);
+    router.push(`/you/chats/${data.gc_id}`);
   };
 
   return (

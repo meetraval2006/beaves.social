@@ -343,17 +343,20 @@ def create_event():
         years = years if isinstance(years, list) else []
         residence_halls = residence_halls if isinstance(residence_halls, list) else []
 
-        print(name, author_id)
-
         if not name or not author_id:
             abort(400, message="Please provide all the required event information")
 
-        print(1)
-
         random_id = str(uuid.uuid4())
         groupChatId = str(uuid.uuid4())
-
-        print(2)
+        
+        # Create the group chat
+        gc_data = {
+            "gc_name": f"Event: {name}",
+            "is_gc": True,
+            "users": [author_id],
+            "messages": []
+        }
+        firebase_db.reference(groupChatId).set(gc_data)
         
         dictionary = {
             "name": name,
@@ -363,16 +366,40 @@ def create_event():
             "residence_halls": residence_halls,
             "eventDescription": event_description,
             "authorId": author_id,
+            "groupChatId": groupChatId
         }
-        print(3)
-        dictionary["groupChatId"] = groupChatId #creating a id for the group chat that will be created when users join the event
-        print(4)
+        
         db.collection("events").document(random_id).set(dictionary)
-        print(5)
         return jsonify(dictionary)
     
     except Exception as e:
         abort(400, message=f"Error creating event: {e}")
+
+@app.route('/api/join_event', methods=['POST'])
+def join_event():
+    try:
+        data = request.get_json()
+        event_id = data.get("eventId")
+        user_id = data.get("userId")
+        group_chat_id = data.get("groupChatId")
+
+        if not event_id or not user_id or not group_chat_id:
+            abort(400, message="Please provide all the required information")
+
+        # Add user to the group chat
+        ref = firebase_db.reference(group_chat_id)
+        gc_data = ref.get()
+        if gc_data:
+            users = gc_data.get("users", [])
+            if user_id not in users:
+                users.append(user_id)
+                ref.child("users").set(users)
+            return jsonify({"message": "User added to group chat successfully"}), 200
+        else:
+            abort(404, message="Group chat not found")
+
+    except Exception as e:
+        abort(400, message=f"Error joining event: {e}")
 
 @app.route('/api/get_events', methods=['GET'])
 def get_events():
@@ -394,6 +421,20 @@ def get_events():
         print(f"error: {e}")
         abort(400, description="Error getting user")
 
+@app.route("/api/delete_event", methods=["DELETE"])
+def delete_event():
+    try:
+        event_id = request.args.get("id")
+        if not event_id:
+            abort(400, description="Event ID is required")
+
+        db.collection("events").document(event_id).delete()
+        return jsonify({"message": "Event deleted successfully"})
+    
+    except Exception as e:
+        print(f"error: {e}")
+        abort(400, description="Error deleting event")
 
 if __name__ == "__main__":
     app.run(debug=True)
+

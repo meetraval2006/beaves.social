@@ -16,7 +16,7 @@ interface Options {
 export default function ChatUserSelect(options: Options) {
   const router = useRouter();
   const { latestMessageAuthor, latestMessageText } = options;
-  const [displayName, setDisplayName] = useState(options.username); // Initialize with default username
+  const [displayName, setDisplayName] = useState(options.isGc ? options.username : ""); // Initialize with default username
   const handleUserClick = (_: any, id: number): void => router.push(`/you/chats/${id}`);
 
   useEffect(() => {

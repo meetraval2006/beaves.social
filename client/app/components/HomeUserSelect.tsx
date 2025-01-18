@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import ReactCardFlip from "react-card-flip";
+import { useRouter } from 'next/navigation';
 
 interface Options {
   username: string
@@ -18,6 +19,61 @@ interface Options {
 
 export default function HomeUserSelect({ username, id, name, email, major, minor, year, residence_hall }: Options) {
   const [flip, setFlip] = useState(false);
+
+  const router = useRouter();
+
+  const handleMessageClick = async () => {
+    try {
+      const currentUserId = localStorage.getItem('id');
+      if (!currentUserId) {
+        console.error('Current user ID not found');
+        return;
+      }
+
+      if (currentUserId == id) {
+        setFlip(!flip);
+        return;
+      }
+
+      // Check if a DM already exists
+      const response = await fetch('http://127.0.0.1:5000/api/get_gcs');
+      const data = await response.json();
+
+      // Find a DM between the current user and the selected user
+      const existingDM = Object.entries(data).find(([chatId, chatData]: [string, any]) => {
+        const users = chatData.users || [];
+        return !chatData.is_gc && users.includes(currentUserId) && users.includes(id);
+      });
+
+      if (existingDM) {
+        // DM exists, redirect to it
+        router.push(`/you/chats/${existingDM[0]}`);
+      } else {
+        // Create new DM
+        const createResponse = await fetch('http://127.0.0.1:5000/api/create_gc', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            gc_name: `DM: ${username}`,
+            is_gc: false,
+            users: [currentUserId, id],
+            messages: []
+          }),
+        });
+        const createData = await createResponse.json();
+
+        if (createData) {
+          router.push(`/you/chats/${createData.gc_id}`);
+        } else {
+          console.error('Failed to create DM');
+        }
+      }
+    } catch (error) {
+      console.error('Error handling message click:', error);
+    }
+  };
 
   const cardVariants = {
     initial: { opacity: 1 },
@@ -120,6 +176,7 @@ export default function HomeUserSelect({ username, id, name, email, major, minor
             <div className="bg-gradient-to-r from-orange-400 to-orange-600 p-1 mt-2 rounded-xl">
               <button
                 className="w-full rounded-xl shadow-lg overflow-hidden bg-black bg-opacity-90 text-orange-400 py-2"
+                onClick={handleMessageClick}
               >
                 Message
               </button>

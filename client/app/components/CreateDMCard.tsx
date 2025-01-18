@@ -16,6 +16,7 @@ const CreateDMCard: React.FC<CreateDMCardProps> = ({ onClose }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [existingChats, setExistingChats] = useState<Record<string, string>>({});
   const router = useRouter();
 
   useEffect(() => {
@@ -26,6 +27,22 @@ const CreateDMCard: React.FC<CreateDMCardProps> = ({ onClose }) => {
       setUsers(data.filter(user => user.id !== currentUserId));
     };
     fetchUsers();
+
+    const fetchExistingChats = async () => {
+      const response = await fetch('http://127.0.0.1:5000/api/get_gcs');
+      const data = await response.json();
+      const currentUserId = localStorage.getItem('id');
+      const chats: Record<string, string> = {};
+      
+      Object.entries(data).forEach(([chatId, chatData]: [string, any]) => {
+        if (!chatData.is_gc && chatData.users.includes(currentUserId)) {
+          const otherUserId = chatData.users.find(id => id !== currentUserId);
+          chats[otherUserId] = chatId;
+        }
+      });
+      setExistingChats(chats);
+    };
+    fetchExistingChats();
   }, []);
 
   useEffect(() => {
@@ -37,6 +54,14 @@ const CreateDMCard: React.FC<CreateDMCardProps> = ({ onClose }) => {
 
   const handleUserSelect = async (selectedUser: User) => {
     const currentUserId = localStorage.getItem('id');
+    
+    // Check if a chat already exists with the selected user
+    if (existingChats[selectedUser.id]) {
+      onClose();
+      router.push(`${existingChats[selectedUser.id]}`);
+      return;
+    }
+
     const response = await fetch('http://127.0.0.1:5000/api/create_gc', {
       method: 'POST',
       headers: {
