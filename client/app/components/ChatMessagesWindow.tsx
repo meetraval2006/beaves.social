@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 
 import { useAppContext } from './AppContext';
@@ -18,21 +18,30 @@ export default function ChatMessagesWindow() {
     const chatId = pathname.split("/")[3];
 
     const [data, setData] = useState<any[]>([]);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
 
     useEffect(() => {
       const fetchData = async () => {
-      const response = await fetch("http://127.0.0.1:5000/api/get_gc?chat_id=" + chatId, {
-          method: "GET",
-          headers: {
-              "Content-Type": "application/json",
-          },
-      });
-      const data = await response.json();
-      setData(data);
+        const response = await fetch("http://127.0.0.1:5000/api/get_gc?chat_id=" + chatId, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const data = await response.json();
+        setData(data);
       };
       
       fetchData();
-    }, []);
+    }, [chatId]);
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [data]);
 
     let gcName;
     const [user, setUser] = useState<any>(null);
@@ -79,10 +88,19 @@ export default function ChatMessagesWindow() {
       if (data == null || data.messages == null)
         return;
 
-      return Object.keys(data.messages).map((key) => {
-        const message = data.messages[key];
-        return <MessageCloud key={key} text={message.text} timestamp={message.timestamp} user_id={message.user_id} isPinned={message.isPinned} likes={message.likes} isMine={message.user_id == userId}/>
-      });
+      const sortedMessages = Object.values(data.messages).sort((a: any, b: any) => a.timestamp - b.timestamp);
+
+      return sortedMessages.map((message: any, index: number) => (
+        <MessageCloud 
+          key={index}
+          text={message.text}
+          timestamp={message.timestamp}
+          user_id={message.user_id}
+          isPinned={message.isPinned}
+          likes={message.likes}
+          isMine={message.user_id == userId}
+        />
+      ));
     };
 
     const handleKeyDown = async (e: any) => {
@@ -107,33 +125,47 @@ export default function ChatMessagesWindow() {
           },
           body: JSON.stringify(dataObject),
         });
+
+        // After sending the message, fetch the updated data
+        const updatedResponse = await fetch("http://127.0.0.1:5000/api/get_gc?chat_id=" + chatId, {
+          method: "GET",
+          headers: {
+              "Content-Type": "application/json",
+          },
+        });
+        const updatedData = await updatedResponse.json();
+        setData(updatedData);
+
+        // Clear the input field
+        e.target.value = '';
       }
     }
 
     return (
-        <div className="sm:ml-96 flex flex-col h-screen ">
-      <div className="basis-1/12 border-b border-b-indigo-200 pl-6 py-4 bg-orange-700">
-        <div className="flex items-center ">
-          <img src="https://i.pinimg.com/236x/68/31/12/68311248ba2f6e0ba94ff6da62eac9f6.jpg" className="flex items-center float-left h-11 w-11 mr-5 ms-2 rounded-full" alt="server-icon"/>
-          <div className="text-xl font-semibold" >{gcName}</div>
+        <div className="sm:ml-96 flex flex-col h-screen">
+            <div className="sticky top-0 z-10 border-b border-b-indigo-200 pl-6 py-4 bg-orange-700">
+                <div className="flex items-center">
+                    <img src="https://i.pinimg.com/236x/68/31/12/68311248ba2f6e0ba94ff6da62eac9f6.jpg" className="flex items-center float-left h-11 w-11 mr-5 ms-2 rounded-full" alt="server-icon"/>
+                    <div className="text-xl font-semibold text-white">{gcName}</div>
+                </div>
+            </div>
+
+            <div className="flex-1 p-4 overflow-y-auto flex flex-col">
+                {returnMessageBubbles(data)}
+                <div ref={messagesEndRef} />
+            </div>
+
+            <div className="sticky bottom-0 bg-white border-t border-gray-200">
+                <div className="py-4">
+                    <form className="max-w mx-12">   
+                        <label className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                        <div className="relative">
+                            <input type="message" onKeyDown={handleKeyDown} className="block w-full px-4 py-2 ps-4 text-md text-gray-900 border border-gray-300 rounded-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Message..." required />
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-      </div>
-
-      <div className="basis-10/12 p-4 flex flex-col justify-end ">
-        {returnMessageBubbles(data)}
-      </div>
-
-      <div className="basis-1/12">
-        <div className="py-4">
-              <form className="max-w mx-12">   
-                  <label className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-                  <div className="relative">
-                      <input type="message" onKeyDown={handleKeyDown} className="block w-full px-4 py-2 ps-4 text-md text-gray-900 border border-gray-300 rounded-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Message..." required />
-                  </div>
-              </form>
-          </div>
-      </div>
-    </div>
     )
 };
-            
+
