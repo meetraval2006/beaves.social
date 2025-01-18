@@ -1,29 +1,46 @@
 'use client';
 
 import Image from "next/image";
-import { useRouter, useSearchParams, redirect } from 'next/navigation';
+import { useRouter, redirect } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { FormEvent } from 'react';
 import DropdownOptions from "@/app/components/AccountDropdownOptions";
 import Logo from "@/public/logo.png";
 
 export default function Home() {
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const email = searchParams.get('email') + "@oregonstate.edu";
   const [id, setUserId] = useState<string | null>(null);
+  const [emailPrefix, setEmailPrefix] = useState<string | null>(null);
+  const email = emailPrefix ? `${emailPrefix}@oregonstate.edu` : ""; // Only set email if emailPrefix is available
 
   useEffect(() => {
     setUserId(localStorage.getItem("id"));
   }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!id) return; // Avoid making the API call if `id` is not available
+      const userResponse = await fetch(`http://127.0.0.1:5000/api/get_user_by_id?id=${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const userData = await userResponse.json();
+      if (userData?.email) {
+        setEmailPrefix(userData.email.split('@oregonstate.edu')[0]);
+      }
+    };
+    fetchUserData();
+  }, [id]);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const dataObject = Object.fromEntries(data);
     dataObject.email = email;
-    dataObject.id = id ?? ''; //when dataObject.id is null, set it to an empty string, otherwise, stores the id
-    
+    dataObject.id = id ?? ""; // Set to empty string if id is null
+
     const response = await fetch('http://127.0.0.1:5000/api/update_user', {
       method: 'PUT',
       headers: {
@@ -34,7 +51,6 @@ export default function Home() {
 
     const json = await response.json();
 
-    //localStorage.setItem("id", json.id);
     localStorage.setItem("email", json.email);
     localStorage.setItem("name", json.name);
     localStorage.setItem("username", json.username);
@@ -44,14 +60,11 @@ export default function Home() {
     localStorage.setItem("year", json.year);
 
     if (response.ok) {
-        // Handle success
-        console.log('Account successfully updated');
-        router.push(`/you/chats/home`);
-      } else {
-        // Handle error
-        console.error('Failed to update account');
-      }
-    
+      console.log('Account successfully updated');
+      router.push(`/you/chats/home`);
+    } else {
+      console.error('Failed to update account');
+    }
   }
 
   return (
