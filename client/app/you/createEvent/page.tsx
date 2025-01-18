@@ -5,6 +5,7 @@ import { useRouter, useSearchParams, redirect } from 'next/navigation';
 import { useState } from 'react';
 import Logo from "@/public/logo.png";
 import { Toaster, toast } from 'react-hot-toast';
+import { LocaleRouteNormalizer } from "next/dist/server/normalizers/locale-route-normalizer";
 
 export default function CreateEventForm() {
   const router = useRouter();
@@ -17,6 +18,10 @@ export default function CreateEventForm() {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    // need to fix this -> it's logging null
+
+    console.log(localStorage.getItem("id"))
 
     const data = {
       name: eventName,

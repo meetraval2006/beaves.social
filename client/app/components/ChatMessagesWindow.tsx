@@ -88,7 +88,6 @@ export default function ChatMessagesWindow() {
     const handleKeyDown = async (e: any) => {
       if (e.key === 'Enter') {
         const text = e.target.value;
-        console.log(457734884784834989343489)
 
         const dataObject = {
           chat_id: chatId,
@@ -98,6 +97,8 @@ export default function ChatMessagesWindow() {
           isPinned: false,
           timestamp: Math.floor(Date.now() / 1000)
         }
+
+        console.log(Math.floor(Date.now() / 1000))
 
         const response = await fetch('http://127.0.0.1:5000/api/add_messages', {
           method: 'POST',

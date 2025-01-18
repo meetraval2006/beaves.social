@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import EventCard from './EventCard';
 import { useRouter, redirect } from 'next/navigation';
 
-export default function HomeUsersWall() {
+export default function HomeUsersWall(options: { userId: string }) {
   const [data, setData] = useState<any[]>([]);
   const router = useRouter();
 
@@ -24,8 +24,6 @@ export default function HomeUsersWall() {
 
   return (
     <div className="flex flex-col w-full">
-      
-
       <div className="basis-10/12 p-2 grid xl:grid-cols-2 md:grid-cols-1 gap-6 items-stretch h-full">
         {data ? data.map((event) => (
           <motion.div
@@ -42,6 +40,8 @@ export default function HomeUsersWall() {
             transition={{ duration: 0.3 }}
           >
             <EventCard
+              userId={options.userId}
+              authorId={event.authorId}
               name={event.name}
               majors={event.majors}
               minors={event.minors}
