@@ -281,7 +281,7 @@ def add_messages():
 
         ref = firebase_db.reference(chat_id)
         new_message_ref = ref.child("messages").push(message_data)
-        message_id = new_message_ref.key  # Get the key of the newly added message
+        message_id = new_message_ref.key  # Get the key of the newly add message
 
         message_data["id"] = message_id  # Add the message ID to the response data
 
@@ -364,6 +364,65 @@ def pin_message():
         print(f"Error updating message pin status: {e}")
         return jsonify({"error": "Failed to update message pin status"}), 500
 
+@app.route('/api/edit_message', methods=['POST'])
+def edit_message():
+    try:
+        data = request.get_json()
+        chat_id = data.get("chat_id")
+        message_id = data.get("message_id")
+        new_text = data.get("new_text")
+
+        if not chat_id or not message_id or not new_text:
+            abort(400, message="Chat ID, Message ID, and new text are required")
+
+        ref = firebase_db.reference(chat_id)
+        message_ref = ref.child("messages").child(message_id)
+        message_ref.update({"text": new_text})
+
+        return jsonify({"message": "Message updated successfully"}), 200
+
+    except Exception as e:
+        print(f"Error editing message: {e}")
+        return jsonify({"error": "Failed to edit message"}), 500
+
+@app.route('/api/delete_message', methods=['POST'])
+def delete_message():
+    try:
+        data = request.get_json()
+        chat_id = data.get("chat_id")
+        message_id = data.get("message_id")
+
+        if not chat_id or not message_id:
+            abort(400, message="Chat ID and Message ID are required")
+
+        ref = firebase_db.reference(chat_id)
+        message_ref = ref.child("messages").child(message_id)
+        message_ref.delete()
+
+        return jsonify({"message": "Message deleted successfully"}), 200
+
+    except Exception as e:
+        print(f"Error deleting message: {e}")
+        return jsonify({"error": "Failed to delete message"}), 500
+
+@app.route('/api/update_gc_name', methods=['POST'])
+def update_gc_name():
+    try:
+        data = request.get_json()
+        chat_id = data.get("chat_id")
+        new_name = data.get("new_name")
+
+        if not chat_id or not new_name:
+            abort(400, message="Chat ID and new name are required")
+
+        ref = firebase_db.reference(chat_id)
+        ref.update({"gc_name": new_name})
+
+        return jsonify({"message": "Group chat name updated successfully"}), 200
+
+    except Exception as e:
+        print(f"Error updating group chat name: {e}")
+        return jsonify({"error": "Failed to update group chat name"}), 500
 
 # @app.route('/api/get_messages', methods=['GET'])
 # def get_messages():

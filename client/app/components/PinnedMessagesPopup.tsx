@@ -1,23 +1,40 @@
-import { X } from 'lucide-react';
+import type React from "react"
+import { useRef, useEffect } from "react"
+import { X } from "lucide-react"
 
 interface PinnedMessage {
-  id: string;
-  text: string;
-  user_id: string;
-  username?: string;
-  timestamp: number;
+  id: string
+  text: string
+  user_id: string
+  username?: string
+  timestamp: number
 }
 
 interface PinnedMessagesPopupProps {
-  messages: PinnedMessage[];
-  onClose: () => void;
-  isGroupChat: boolean;
+  messages: PinnedMessage[]
+  onClose: () => void
+  isGroupChat: boolean
 }
 
 const PinnedMessagesPopup: React.FC<PinnedMessagesPopupProps> = ({ messages, onClose, isGroupChat }) => {
+  const popupRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+        onClose()
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [onClose])
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white rounded-lg p-6 w-96 max-h-[80vh] overflow-y-auto">
+      <div ref={popupRef} className="bg-white rounded-lg p-6 w-96 max-h-[80vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Pinned Messages</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
@@ -27,12 +44,16 @@ const PinnedMessagesPopup: React.FC<PinnedMessagesPopupProps> = ({ messages, onC
         {messages.length === 0 ? (
           <p className="text-gray-500">No pinned messages</p>
         ) : (
-          <ul key="list" className="space-y-4">
+          <ul className="space-y-4">
             {messages.map((message) => (
-              <li key={message.id} className="border-b pb-2">
-                <p className="text-sm">{message.text}</p>
+              <li key={message.id} id={message.id} className="border-b pb-2">
+                <p className="text-sm">
+                  {message.text}
+                </p>
                 {isGroupChat && (
-                  <p className="text-xs text-gray-500 mt-1">{message.username}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {message.username}
+                  </p>
                 )}
                 <p className="text-xs text-gray-400 mt-1">
                   {new Date(message.timestamp * 1000).toLocaleString()}
@@ -43,8 +64,8 @@ const PinnedMessagesPopup: React.FC<PinnedMessagesPopupProps> = ({ messages, onC
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PinnedMessagesPopup;
+export default PinnedMessagesPopup
 
