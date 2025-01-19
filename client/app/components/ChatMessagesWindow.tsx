@@ -32,6 +32,7 @@ export default function ChatMessagesWindow() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [isEditingGcName, setIsEditingGcName] = useState(false)
   const [editedGcName, setEditedGcName] = useState("")
+  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -52,33 +53,37 @@ export default function ChatMessagesWindow() {
       }
       const fetchedData: GCObject = await response.json()
       console.log("Fetched chat data:", fetchedData)
-      setData(fetchedData)
 
-      if (fetchedData.is_gc) {
-        setGcName(fetchedData.gc_name || "")
-      } else if (fetchedData.users && fetchedData.users.length >= 2) {
-        const otherUserId = fetchedData.users[0] === userId ? fetchedData.users[1] : fetchedData.users[0]
-        console.log(`Fetching user data for: ${otherUserId}`)
-        const userResponse = await fetch(`http://127.0.0.1:5000/api/get_user_by_id?id=${otherUserId}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-        if (!userResponse.ok) {
-          console.error(`Server responded with an error: ${userResponse.status}`)
-          throw new Error("Failed to fetch user data")
+      // Compare the fetched data with the current data
+      if (JSON.stringify(fetchedData) !== JSON.stringify(data)) {
+        setData(fetchedData)
+
+        if (fetchedData.is_gc) {
+          setGcName(fetchedData.gc_name || "")
+        } else if (fetchedData.users && fetchedData.users.length >= 2) {
+          const otherUserId = fetchedData.users[0] === userId ? fetchedData.users[1] : fetchedData.users[0]
+          console.log(`Fetching user data for: ${otherUserId}`)
+          const userResponse = await fetch(`http://127.0.0.1:5000/api/get_user_by_id?id=${otherUserId}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+          if (!userResponse.ok) {
+            console.error(`Server responded with an error: ${userResponse.status}`)
+            throw new Error("Failed to fetch user data")
+          }
+          const userData = await userResponse.json()
+          console.log("Fetched user data:", userData)
+          setUser(userData)
+          setGcName(userData?.username || "")
         }
-        const userData = await userResponse.json()
-        console.log("Fetched user data:", userData)
-        setUser(userData)
-        setGcName(userData?.username || "")
       }
     } catch (error) {
       console.error("Error fetching chat data:", error)
       toast.error("Failed to load chat data. Please try again.")
     }
-  }, [chatId, userId])
+  }, [chatId, userId, data])
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("id")
@@ -88,6 +93,18 @@ export default function ChatMessagesWindow() {
   useEffect(() => {
     if (userId) {
       fetchData()
+      // Set up polling
+      const interval = setInterval(() => {
+        fetchData()
+      }, 5000) // Poll every 5 seconds
+      setPollingInterval(interval)
+
+      // Clean up function
+      return () => {
+        if (pollingInterval) {
+          clearInterval(pollingInterval)
+        }
+      }
     }
   }, [userId, fetchData])
 
