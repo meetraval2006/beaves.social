@@ -292,7 +292,73 @@ def add_messages():
 #liked and isPinned done after hackathon
 @app.route('/api/update_chat', methods=['POST'])
 def update_chat():
-    ...
+    pass
+
+@app.route('/api/like_message', methods=['POST'])
+def like_message():
+    try:
+        data = request.get_json()
+        chat_id = data.get("chat_id")
+        message_id = data.get("message_id")
+        user_id = data.get("user_id")
+
+        if not chat_id or not message_id or not user_id:
+            abort(400, message="Chat ID, Message ID, and User ID are required")
+
+        ref = firebase_db.reference(chat_id)
+        message_ref = ref.child("messages").child(message_id)
+        message_data = message_ref.get()
+
+        if message_data:
+            likes = message_data.get("likes", 0)
+            liked_by = message_data.get("liked_by", [])
+
+            if user_id in liked_by:
+                liked_by.remove(user_id)
+                likes -= 1
+            else:
+                liked_by.append(user_id)
+                likes += 1
+
+            message_ref.update({
+                "likes": likes,
+                "liked_by": liked_by
+            })
+
+            return jsonify({"message": "Message like status updated successfully"}), 200
+        else:
+            abort(404, message="Message not found")
+
+    except Exception as e:
+        print(f"Error updating message like status: {e}")
+        return jsonify({"error": "Failed to update message like status"}), 500
+
+@app.route('/api/pin_message', methods=['POST'])
+def pin_message():
+    try:
+        data = request.get_json()
+        chat_id = data.get("chat_id")
+        message_id = data.get("message_id")
+
+        if not chat_id or not message_id:
+            abort(400, message="Chat ID and Message ID are required")
+
+        ref = firebase_db.reference(chat_id)
+        message_ref = ref.child("messages").child(message_id)
+        message_data = message_ref.get()
+
+        if message_data:
+            is_pinned = not message_data.get("isPinned", False)
+            message_ref.update({"isPinned": is_pinned})
+
+            return jsonify({"message": f"Message {'pinned' if is_pinned else 'unpinned'} successfully"}), 200
+        else:
+            abort(404, message="Message not found")
+
+    except Exception as e:
+        print(f"Error updating message pin status: {e}")
+        return jsonify({"error": "Failed to update message pin status"}), 500
+
 
 # @app.route('/api/get_messages', methods=['GET'])
 # def get_messages():
@@ -434,6 +500,59 @@ def delete_event():
     except Exception as e:
         print(f"error: {e}")
         abort(400, description="Error deleting event")
+
+@app.route('/api/add_user_to_gc', methods=['PUT'])
+def add_user_to_gc():
+    try:
+        chat_id = request.args.get("chat_id")
+        user_id = request.args.get("user_id")
+
+        if not chat_id or not user_id:
+            abort(400, message="Chat ID and User ID are required")
+
+        ref = firebase_db.reference(chat_id)
+        gc_data = ref.get()
+        if gc_data:
+            users = gc_data.get("users", [])
+            if user_id not in users:
+                users.append(user_id)
+                ref.child("users").set(users)
+                return jsonify({"message": "User added to GC successfully"}), 200
+            else:
+                return jsonify({"message": "User already in GC"}), 200
+        else:
+            abort(404, message="Group chat not found")
+
+    except Exception as e:
+        print(f"Error adding user to GC: {e}")
+        return jsonify({"error": "Failed to add user to GC"}), 500
+
+@app.route('/api/remove_user_from_gc', methods=['PUT'])
+def remove_user_from_gc():
+    try:
+        chat_id = request.args.get("chat_id")
+        user_id = request.args.get("user_id")
+
+        if not chat_id or not user_id:
+            abort(400, message="Chat ID and User ID are required")
+
+        ref = firebase_db.reference(chat_id)
+        gc_data = ref.get()
+
+        if gc_data:
+            users = gc_data.get("users", [])
+            if user_id in users:
+                users.remove(user_id)
+                ref.child("users").set(users)
+                return jsonify({"message": "User removed from GC successfully"}), 200
+            else:
+                return jsonify({"message": "User not in GC"}), 200
+        else:
+            abort(404, message="Group chat not found")
+
+    except Exception as e:
+        print(f"Error removing user from GC: {e}")
+        return jsonify({"error": "Failed to remove user from GC"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)

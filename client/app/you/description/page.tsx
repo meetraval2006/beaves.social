@@ -55,7 +55,7 @@ export default function AppDescriptionPage() {
                   beavs.social
                 </h2>
                 <p className="text-gray-600 dark:text-orange-400">
-                  By Srivatsav.S, Kishore.A, Meet.R, and Rohan.M
+                  By Srivatsav S., Kishore A., Meet R., and Rohan M.
                 </p>
               </div>
             </div>
