@@ -5,6 +5,7 @@ import HomeUserSelect from "./HomeUserSelect"
 
 export default function HomeUsersWall() {
   const [data, setData] = useState<any[]>([]);
+  const currentUserId = localStorage.getItem("id");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,13 +21,15 @@ export default function HomeUsersWall() {
     
     fetchData();
   }, []);
+
+  console.log(currentUserId)
   
 
   return (
     <>
         <div className="basis-10/12 p-2 grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-1 gap-6 items-stretch h-full">
           {data ? data.map((user) => {
-            return <div key={user.id} role="button">
+            return user.id == currentUserId ? <></> : <div key={user.id} role="button">
               <HomeUserSelect 
               username={user.username} 
               key={user.id} 

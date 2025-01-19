@@ -260,6 +260,7 @@ def add_messages():
         text = data.get("text")
         isPinned = data.get("isPinned")
         user_id = data.get("user_id")
+        username = data.get("username")
         print(1)
 
         message_id = str(uuid.uuid4())
@@ -272,7 +273,8 @@ def add_messages():
             "isPinned": isPinned,
             "likes": likes,
             "timestamp": timestamp,
-            "user_id": user_id #id of the user who sent the message
+            "user_id": user_id, #id of the user who sent the message,
+            "username": username
         }
 
         print(3)
@@ -306,6 +308,9 @@ def like_message():
             abort(400, message="Chat ID, Message ID, and User ID are required")
 
         ref = firebase_db.reference(chat_id)
+
+        print(ref.child("messages"), ref.child("messages").child(message_id))
+
         message_ref = ref.child("messages").child(message_id)
         message_data = message_ref.get()
 

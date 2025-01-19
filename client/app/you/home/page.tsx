@@ -1,5 +1,6 @@
 "use client";
 
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronRight, ChevronLeft, User, Book, Home, Mail, GraduationCap, Menu } from 'lucide-react';
@@ -98,8 +99,9 @@ export default function HomePage() {
           </header>
 
           <main className="flex-grow overflow-y-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {filteredUsers.map((user) => (
+            <div key="home-grid" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {filteredUsers.map((user) => user.id === localStorage.getItem('id') ? <React.Fragment key="01234none"></React.Fragment> :
+              (
                 <HomeUserSelect 
                   key={user.id}
                   username={user.username}
