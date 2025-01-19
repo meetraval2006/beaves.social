@@ -9,6 +9,7 @@ interface Chat {
   users: string[]
   messages: any[]
   lastUpdated: number
+  unreadCount: number
 }
 
 export default function ChatsPane() {
@@ -28,17 +29,18 @@ export default function ChatsPane() {
       if (!response.ok) throw new Error("Failed to fetch chats")
       const data = await response.json()
 
-      // Transform the data into a more efficient structure
       const processedChats: Record<string, Chat> = {}
       Object.entries(data).forEach(([id, chat]: [string, any]) => {
         if (chat.users?.includes(userId)) {
+          const lastMessage = chat.messages[chat.messages.length - 1]
           processedChats[id] = {
             id,
             gc_name: chat.gc_name || "",
             is_gc: chat.is_gc,
             users: chat.users || [],
             messages: chat.messages || [],
-            lastUpdated: Date.now(),
+            lastUpdated: lastMessage ? lastMessage.timestamp : Date.now(),
+            unreadCount: chat.unreadCount || 0,
           }
         }
       })
@@ -57,13 +59,11 @@ export default function ChatsPane() {
   useEffect(() => {
     if (userId) {
       fetchChats()
-      // Poll for updates every 30 seconds
-      const interval = setInterval(fetchChats, 30000)
+      const interval = setInterval(fetchChats, 5000)
       return () => clearInterval(interval)
     }
   }, [userId, fetchChats])
 
-  // Listen for group chat name updates
   useEffect(() => {
     const handleGcNameUpdate = (event: StorageEvent) => {
       if (event.key?.startsWith("gc_name_")) {
@@ -86,11 +86,7 @@ export default function ChatsPane() {
     return () => window.removeEventListener("storage", handleGcNameUpdate)
   }, [chats])
 
-  const sortedChats = Object.values(chats).sort((a, b) => {
-    const aLastMessage = a.messages[a.messages.length - 1]
-    const bLastMessage = b.messages[b.messages.length - 1]
-    return (bLastMessage?.timestamp || 0) - (aLastMessage?.timestamp || 0)
-  })
+  const sortedChats = Object.values(chats).sort((a, b) => b.lastUpdated - a.lastUpdated)
 
   return (
     <div className="px-2 pb-4 pt-2 overflow-y-auto">
@@ -108,6 +104,7 @@ export default function ChatsPane() {
               users={chat.users}
               isGc={chat.is_gc}
               isActive={chat.id === currentChatId}
+              unreadCount={chat.unreadCount}
             />
           )
         })}

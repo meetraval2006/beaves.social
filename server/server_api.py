@@ -210,7 +210,9 @@ def create_gc():
             "gc_name": gc_name,
             "is_gc": is_gc,
             "users": users,
-            "messages": messages
+            "messages": messages,
+            "unreadCount": 0,
+            "lastUpdated": firebase_admin.db.ServerValue.TIMESTAMP
         }
 
         ref = firebase_db.reference(chat_id)
@@ -251,9 +253,7 @@ def get_gcs():
 @app.route('/api/add_messages', methods=['POST'])
 def add_messages():
     try:
-        print(0)
         data = request.get_json()
-
         chat_id = data.get("chat_id")
         timestamp = data.get("timestamp")
         likes = data.get("likes")
@@ -261,11 +261,8 @@ def add_messages():
         isPinned = data.get("isPinned")
         user_id = data.get("user_id")
         username = data.get("username")
-        print(1)
 
         message_id = str(uuid.uuid4())
-
-        print(2)
 
         message_data = {
             "chat_id": chat_id,
@@ -274,18 +271,33 @@ def add_messages():
             "likes": likes,
             "timestamp": timestamp,
             "user_id": user_id, #id of the user who sent the message,
-            "username": username
+            "username": username,
+            "read_by": {}
         }
 
-        print(3)
-
         ref = firebase_db.reference(chat_id)
-        new_message_ref = ref.child("messages").push(message_data)
-        message_id = new_message_ref.key  # Get the key of the newly add message
+        chat_data = ref.get()
 
-        message_data["id"] = message_id  # Add the message ID to the response data
+        if chat_data:
+            users = chat_data.get("users", [])
+            unread_count = chat_data.get("unreadCount", 0)
+            
+            # Increment unread count for all users except the sender
+            unread_count += len(users) - 1
+            
+            # Add the new message
+            new_message_ref = ref.child("messages").push(message_data)
+            message_id = new_message_ref.key
 
-        return jsonify(message_data), 201
+            # Update unread count
+            ref.child("unreadCount").set(unread_count)
+            
+            # Update lastUpdated timestamp
+            ref.child("lastUpdated").set(firebase_admin.db.ServerValue.TIMESTAMP)
+
+            return jsonify({"message": "Message added successfully", "id": message_id}), 201
+        else:
+            abort(404, message="Chat not found")
     
     except Exception as e:
         print(f"Error adding message: {e}")
@@ -484,7 +496,9 @@ def create_event():
             "gc_name": f"Event: {name}",
             "is_gc": True,
             "users": [author_id],
-            "messages": []
+            "messages": [],
+            "unreadCount": 0,
+            "lastUpdated": firebase_admin.db.ServerValue.TIMESTAMP
         }
         firebase_db.reference(groupChatId).set(gc_data)
         
@@ -617,6 +631,37 @@ def remove_user_from_gc():
     except Exception as e:
         print(f"Error removing user from GC: {e}")
         return jsonify({"error": "Failed to remove user from GC"}), 500
+
+@app.route('/api/mark_messages_read', methods=['POST'])
+def mark_messages_read():
+    try:
+        data = request.get_json()
+        chat_id = data.get("chat_id")
+        user_id = data.get("user_id")
+
+        if not chat_id or not user_id:
+            abort(400, message="Chat ID and User ID are required")
+
+        ref = firebase_db.reference(chat_id)
+        chat_data = ref.get()
+
+        if chat_data:
+            messages = chat_data.get("messages", {})
+            unread_count = 0
+            for message_id, message in messages.items():
+                if message.get("user_id") != user_id and not message.get("read_by", {}).get(user_id):
+                    ref.child(f"messages/{message_id}/read_by/{user_id}").set(True)
+                else:
+                    unread_count += 1
+            
+            ref.child("unreadCount").set(unread_count)
+            return jsonify({"message": "Messages marked as read successfully"}), 200
+        else:
+            abort(404, message="Chat not found")
+
+    except Exception as e:
+        print(f"Error marking messages as read: {e}")
+        return jsonify({"error": "Failed to mark messages as read"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)

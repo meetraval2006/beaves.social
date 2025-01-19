@@ -16,6 +16,7 @@ interface GCObject {
   gc_name?: string
   users?: string[]
   messages?: { [key: string]: any } | any[]
+  unreadCount?: number
 }
 
 export default function ChatMessagesWindow() {
@@ -33,6 +34,7 @@ export default function ChatMessagesWindow() {
   const [isEditingGcName, setIsEditingGcName] = useState(false)
   const [editedGcName, setEditedGcName] = useState("")
   const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null)
+  const [unreadCount, setUnreadCount] = useState(0)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -53,6 +55,7 @@ export default function ChatMessagesWindow() {
       }
       const fetchedData: GCObject = await response.json()
       console.log("Fetched chat data:", fetchedData)
+      setUnreadCount(fetchedData.unreadCount || 0)
 
       // Compare the fetched data with the current data
       if (JSON.stringify(fetchedData) !== JSON.stringify(data)) {
@@ -111,6 +114,27 @@ export default function ChatMessagesWindow() {
   useEffect(() => {
     scrollToBottom()
   }, [data])
+
+  useEffect(() => {
+    if (userId && chatId) {
+      const markMessagesAsRead = async () => {
+        try {
+          await fetch(`http://127.0.0.1:5000/api/mark_messages_read`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ chat_id: chatId, user_id: userId }),
+          })
+          setUnreadCount(0)
+        } catch (error) {
+          console.error("Error marking messages as read:", error)
+        }
+      }
+
+      markMessagesAsRead()
+    }
+  }, [userId, chatId])
 
   const handleLike = async (messageId: string) => {
     try {
@@ -314,6 +338,7 @@ export default function ChatMessagesWindow() {
         }
 
         setInputText("")
+        setUnreadCount(0)
         await fetchData()
       } catch (error) {
         console.error("Error sending message:", error)
@@ -393,7 +418,14 @@ export default function ChatMessagesWindow() {
                 </div>
               )
             ) : (
-              <div className="text-xl font-semibold text-white">{gcName}</div>
+              <div className="text-xl font-semibold text-white">
+                {gcName}
+                {unreadCount > 0 && (
+                  <span className="ml-2 bg-red-500 text-white text-xs font-bold rounded-full px-2 py-1">
+                    {unreadCount}
+                  </span>
+                )}
+              </div>
             )}
           </div>
           <div className="flex items-center">
