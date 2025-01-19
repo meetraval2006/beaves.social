@@ -27,7 +27,7 @@ const PinnedMessagesPopup: React.FC<PinnedMessagesPopupProps> = ({ messages, onC
         {messages.length === 0 ? (
           <p className="text-gray-500">No pinned messages</p>
         ) : (
-          <ul className="space-y-4">
+          <ul key="list" className="space-y-4">
             {messages.map((message) => (
               <li key={message.id} className="border-b pb-2">
                 <p className="text-sm">{message.text}</p>

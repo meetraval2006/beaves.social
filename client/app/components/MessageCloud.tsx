@@ -24,8 +24,6 @@ const MessageCloud: React.FC<MessageCloudProps> = ({ message, onLike, onPin }) =
   const date = new Date(message.timestamp * 1000);
   const time = date.toLocaleTimeString();
 
-  console.log(`Rendering MessageCloud for message: ${message.id}`, message);
-
   const handleDoubleClick = () => {
     console.log(`Double-click like on message: ${message.id}`);
     onLike(message.id);
@@ -49,14 +47,14 @@ const MessageCloud: React.FC<MessageCloudProps> = ({ message, onLike, onPin }) =
   const optionsButton = (
     <button 
       onClick={toggleOptions} 
-      className={`text-gray-500 hover:text-gray-700 ${message.isMine ? 'order-last ml-2' : 'order-first mr-2'}`}
+      className={`text-gray-500 hover:text-gray-700 ${message.isMine ? 'order-last ml-2' : 'order-first mr-1'}`}
     >
       <MoreVertical size={16} />
     </button>
   );
 
   const optionsMenu = showOptions && (
-    <div className={`absolute ${message.isMine ? 'right-0' : 'left-0'} top-full mt-1 bg-white rounded shadow-lg z-10`}>
+    <div className={`absolute ${message.isMine ? 'right-0' : 'left-2'} top-full mt-1 bg-white rounded shadow-lg z-10`}>
       <button onClick={handlePinClick} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
         {message.isPinned ? 'Unpin' : 'Pin'}
       </button>
@@ -97,7 +95,7 @@ const MessageCloud: React.FC<MessageCloudProps> = ({ message, onLike, onPin }) =
     return (
       <div className="px-2 py-1">
         <div>
-          <img src="https://i.pinimg.com/236x/68/31/12/68311248ba2f6e0ba94ff6da62eac9f6.jpg" className="flex items-center float-left h-11 w-11 mr-5 ms-2 rounded-full" alt="user-avatar"/>
+          <img src="https://i.pinimg.com/236x/68/31/12/68311248ba2f6e0ba94ff6da62eac9f6.jpg" className="flex items-center float-left h-11 w-11 mr-2 ms-2 rounded-full" alt="user-avatar"/>
         </div>
         <div className="float-left flex flex-col">
           <div className="flex items-center columns-2 relative">
@@ -107,7 +105,7 @@ const MessageCloud: React.FC<MessageCloudProps> = ({ message, onLike, onPin }) =
             {optionsMenu}
           </div>
           {message.isGroupChat && !message.isMine && (
-            <div className="text-xs text-gray-500 mt-1 ml-2">{message.username}</div>
+            <div className="text-xs text-gray-500 mt-1 ml-6">{message.username}</div>
           )}
         </div>
       </div>

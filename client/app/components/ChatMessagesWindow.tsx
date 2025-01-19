@@ -168,7 +168,7 @@ export default function ChatMessagesWindow() {
         if (Array.isArray(data.messages)) {
             messagesArray = data.messages;
         } else if (typeof data.messages === 'object') {
-            messagesArray = Object.values(data.messages);
+            messagesArray = Object.entries(data.messages).map(([key, value]) => ({ id: key, ...value }));
         } else {
             console.error("Unexpected messages format:", data.messages);
             return null;
@@ -176,8 +176,9 @@ export default function ChatMessagesWindow() {
 
         const sortedMessages = messagesArray.sort((a: any, b: any) => a.timestamp - b.timestamp);
 
+        console.log("Sorted messages:", sortedMessages);
+
         return sortedMessages.map((message: any, index: number) => {
-            console.log("Rendering message:", message);
             return (
                 <MessageCloud 
                     key={index}
@@ -206,11 +207,33 @@ export default function ChatMessagesWindow() {
     const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && inputText.trim() !== '') {
             try {
+                let username = '';
+
+                // Fetch username using userId
+                if (userId) {
+                    const userResponse = await fetch(`http://127.0.0.1:5000/api/get_user_by_id?id=${userId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    if (userResponse.ok) {
+                        const userData = await userResponse.json();
+                        username = userData.username || ''; // Use the username if available
+                    } else {
+                        console.error(`Failed to fetch username for userId: ${userId}`);
+                    }
+                }
+
+                console.log(username, "username");  
+
                 const dataObject = {
                     chat_id: chatId,
                     user_id: userId,
                     text: inputText.trim(),
                     likes: 0,
+                    username,
                     isPinned: false,
                     timestamp: Math.floor(Date.now() / 1000)
                 };
