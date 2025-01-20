@@ -102,7 +102,7 @@ export default function HomeUserSelect({ username, id, name, email, major, minor
               <div className="bg-gradient-to-r from-orange-400 to-orange-600 p-1">
                 <div className="flex items-center bg-black bg-opacity-90 p-3 space-x-4 rounded-md">
                   <img 
-                    src="https://i.pinimg.com/236x/68/31/12/68311248ba2f6e0ba94ff6da62eac9f6.jpg" 
+                    src="https://i.pinimg.com/736x/71/39/e2/7139e287d3f84a3691a38ecb048aa9f7.jpg" 
                     className="h-16 w-16 rounded-full border-2 border-orange-500" 
                     alt="server-icon"
                   />

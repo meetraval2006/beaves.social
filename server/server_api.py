@@ -286,8 +286,13 @@ def add_messages():
             # Add the new message
             ref.child("messages").child(message_id).set(message_data)
 
-            # Update unread count only for other users
-            unread_count = sum(1 for u in users if u != user_id)
+            # Update unread count by counting only unread messages from other users
+            messages_dict = chat_data.get("messages", {})
+            unread_count = sum(
+                1 for msg in messages_dict.values() 
+                if msg.get("user_id") != user_id  # Only count messages from other users
+                and user_id not in msg.get("read_by", {})  # That haven't been read by current user
+            )
             ref.child("unreadCount").set(unread_count)
             
             # Update lastUpdated timestamp
@@ -312,7 +317,12 @@ def get_unread_count(chat_id, user_id):
     messages = ref.child("messages").get()
     if not messages:
         return 0
-    return sum(1 for msg in messages.values() if msg['user_id'] != user_id and user_id not in msg.get('read_by', {}))
+    return sum(
+        1 for msg in messages.values() 
+        if msg.get('user_id') != user_id  # Only count messages from other users
+        and user_id not in msg.get('read_by', {})  # That haven't been read by current user
+        and msg.get('timestamp', 0) > 0  # Ensure message has valid timestamp
+    )
 
 @app.route('/api/mark_messages_read', methods=['POST'])
 def mark_messages_read():
@@ -440,6 +450,7 @@ def edit_message():
         chat_id = data.get("chat_id")
         message_id = data.get("message_id")
         new_text = data.get("new_text")
+        is_latest = data.get("is_latest", False)
 
         if not chat_id or not message_id or not new_text:
             abort(400, message="Chat ID, Message ID, and new text are required")
@@ -447,6 +458,14 @@ def edit_message():
         ref = firebase_db.reference(chat_id)
         message_ref = ref.child("messages").child(message_id)
         message_ref.update({"text": new_text})
+
+        if is_latest:
+            socketio.emit('message_edit', {
+                'chat_id': chat_id,
+                'message_id': message_id,
+                'new_text': new_text,
+                'is_latest': True
+            })
 
         return jsonify({"message": "Message updated successfully"}), 200
 
@@ -460,6 +479,7 @@ def delete_message():
         data = request.get_json()
         chat_id = data.get("chat_id")
         message_id = data.get("message_id")
+        is_latest = data.get("is_latest", False)
 
         if not chat_id or not message_id:
             abort(400, message="Chat ID and Message ID are required")
@@ -467,6 +487,13 @@ def delete_message():
         ref = firebase_db.reference(chat_id)
         message_ref = ref.child("messages").child(message_id)
         message_ref.delete()
+
+        if is_latest:
+            socketio.emit('message_delete', {
+                'chat_id': chat_id,
+                'message_id': message_id,
+                'is_latest': True
+            })
 
         return jsonify({"message": "Message deleted successfully"}), 200
 

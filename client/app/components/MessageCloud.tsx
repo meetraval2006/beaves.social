@@ -201,7 +201,7 @@ const MessageCloud: React.FC<MessageCloudProps> = ({ message, onLike, onPin, onE
       <div className="px-2 py-1">
         <div>
           <img
-            src="https://i.pinimg.com/236x/68/31/12/68311248ba2f6e0ba94ff6da62eac9f6.jpg"
+            src="https://i.pinimg.com/736x/71/39/e2/7139e287d3f84a3691a38ecb048aa9f7.jpg"
             className="flex items-center float-left h-11 w-11 mr-2 ms-2 rounded-full"
             alt="user-avatar"
           />

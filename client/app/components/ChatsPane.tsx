@@ -80,24 +80,63 @@ export default function ChatsPane() {
         setChats((prevChats) => {
           const updatedChats = { ...prevChats }
           if (updatedChats[data.chat_id]) {
-            // Check if the message already exists to prevent duplication
             const messageExists = updatedChats[data.chat_id].messages.some((m) => m.id === data.message.id)
 
             if (!messageExists) {
-              // Add the new message
               updatedChats[data.chat_id].messages.push(data.message)
               updatedChats[data.chat_id].lastUpdated = Date.now()
 
               // Only increment unread count if:
               // 1. The message is not from the current user
               // 2. The chat is not currently focused
-              if (data.message.user_id !== userId && data.chat_id !== currentChatId) {
+              // 3. It's not a DM or if it is a DM, check if the sender is not the current user
+              if (
+                data.message.user_id !== userId &&
+                data.chat_id !== currentChatId &&
+                (updatedChats[data.chat_id].is_gc ||
+                  (!updatedChats[data.chat_id].is_gc && data.message.user_id !== userId))
+              ) {
                 updatedChats[data.chat_id].unreadCount++
               }
             }
           }
           return updatedChats
         })
+      }
+
+      const handleMessageEdit = (data: {
+        chat_id: string
+        message_id: string
+        new_text: string
+        is_latest: boolean
+      }) => {
+        if (data.is_latest) {
+          setChats((prevChats) => {
+            const updatedChats = { ...prevChats }
+            if (updatedChats[data.chat_id]) {
+              const messages = updatedChats[data.chat_id].messages
+              const messageIndex = messages.findIndex((m) => m.id === data.message_id)
+              if (messageIndex !== -1) {
+                messages[messageIndex] = { ...messages[messageIndex], text: data.new_text }
+              }
+            }
+            return updatedChats
+          })
+        }
+      }
+
+      const handleMessageDelete = (data: { chat_id: string; message_id: string; is_latest: boolean }) => {
+        if (data.is_latest) {
+          setChats((prevChats) => {
+            const updatedChats = { ...prevChats }
+            if (updatedChats[data.chat_id]) {
+              const messages = updatedChats[data.chat_id].messages
+              const filteredMessages = messages.filter((m) => m.id !== data.message_id)
+              updatedChats[data.chat_id].messages = filteredMessages
+            }
+            return updatedChats
+          })
+        }
       }
 
       const handleUnreadCountUpdate = (data: { chat_id: string; unread_count: number }) => {
@@ -111,10 +150,14 @@ export default function ChatsPane() {
       }
 
       socket.on("new_message", handleNewMessage)
+      socket.on("message_edit", handleMessageEdit)
+      socket.on("message_delete", handleMessageDelete)
       socket.on("unread_count_update", handleUnreadCountUpdate)
 
       return () => {
         socket.off("new_message", handleNewMessage)
+        socket.off("message_edit", handleMessageEdit)
+        socket.off("message_delete", handleMessageDelete)
         socket.off("unread_count_update", handleUnreadCountUpdate)
       }
     }
