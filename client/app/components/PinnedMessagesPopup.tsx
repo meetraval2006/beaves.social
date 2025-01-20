@@ -47,17 +47,9 @@ const PinnedMessagesPopup: React.FC<PinnedMessagesPopupProps> = ({ messages, onC
           <ul className="space-y-4">
             {messages.map((message) => (
               <li key={message.id} id={message.id} className="border-b pb-2">
-                <p className="text-sm">
-                  {message.text}
-                </p>
-                {isGroupChat && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    {message.username}
-                  </p>
-                )}
-                <p className="text-xs text-gray-400 mt-1">
-                  {new Date(message.timestamp * 1000).toLocaleString()}
-                </p>
+                <p className="text-sm">{message.text}</p>
+                {isGroupChat && <p className="text-xs text-gray-500 mt-1">{message.username}</p>}
+                <p className="text-xs text-gray-400 mt-1">{new Date(message.timestamp).toLocaleString()}</p>
               </li>
             ))}
           </ul>
