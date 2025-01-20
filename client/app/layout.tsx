@@ -25,7 +25,7 @@ const REM = localFont({
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: "Beaves Social",
+  title: "Beavs.Social",
   description: "Connect and share with your community",
 };
 
