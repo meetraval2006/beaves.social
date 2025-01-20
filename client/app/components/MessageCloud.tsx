@@ -1,6 +1,7 @@
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import { ThumbsUp, MoreVertical, Pin, Edit, Trash } from "lucide-react"
+import { toast } from "react-hot-toast"
 
 interface Message {
   id: string
@@ -26,10 +27,19 @@ const MessageCloud: React.FC<MessageCloudProps> = ({ message, onLike, onPin, onE
   const [showOptions, setShowOptions] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editedText, setEditedText] = useState(message.text || "")
+  const [originalWidth, setOriginalWidth] = useState<number>(0)
   const optionsRef = useRef<HTMLDivElement>(null)
   const editInputRef = useRef<HTMLTextAreaElement>(null)
+  const messageRef = useRef<HTMLDivElement>(null)
   const date = new Date(message.timestamp)
   const time = date.toLocaleTimeString()
+
+  useEffect(() => {
+    // Store the original message width when component mounts
+    if (messageRef.current) {
+      setOriginalWidth(messageRef.current.offsetWidth)
+    }
+  }, [message.text])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -38,17 +48,31 @@ const MessageCloud: React.FC<MessageCloudProps> = ({ message, onLike, onPin, onE
       }
     }
 
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setShowOptions(false)
+        if (isEditing) {
+          setIsEditing(false)
+          setEditedText(message.text || "")
+        }
+      }
+    }
+
     document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener("keydown", handleEscape)
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
+      document.removeEventListener("keydown", handleEscape)
     }
-  }, [])
+  }, [isEditing, message.text])
 
   useEffect(() => {
     if (isEditing && editInputRef.current) {
       editInputRef.current.focus()
+      editInputRef.current.style.width = `${originalWidth}px`
     }
-  }, [isEditing])
+  }, [isEditing, originalWidth])
 
   useEffect(() => {
     setEditedText(message.text || "")
@@ -80,6 +104,10 @@ const MessageCloud: React.FC<MessageCloudProps> = ({ message, onLike, onPin, onE
   }
 
   const handleEditSubmit = () => {
+    if (editedText.trim().length > 200) {
+      toast.error("Message cannot exceed 200 characters")
+      return
+    }
     if (editedText.trim() !== message.text) {
       onEdit(message.id, editedText.trim())
     }
@@ -151,6 +179,7 @@ const MessageCloud: React.FC<MessageCloudProps> = ({ message, onLike, onPin, onE
       className={`py-3 px-6 rounded-full ${
         message.isMine ? "bg-indigo-500 text-white" : "bg-gray-500 text-white"
       } relative`}
+      style={{ width: `${originalWidth}px` }}
     >
       <textarea
         ref={editInputRef}
@@ -158,8 +187,9 @@ const MessageCloud: React.FC<MessageCloudProps> = ({ message, onLike, onPin, onE
         onChange={(e) => setEditedText(e.target.value)}
         onKeyDown={handleKeyDown}
         className="w-full bg-transparent resize-none outline-none"
-        rows={1}
+        rows={Math.ceil(editedText.length / 40)}
         maxLength={200}
+        style={{ width: "100%" }}
       />
       <button onClick={handleEditSubmit} className="absolute right-4 bottom-3 text-white hover:text-gray-200">
         <Edit size={16} />
@@ -167,8 +197,13 @@ const MessageCloud: React.FC<MessageCloudProps> = ({ message, onLike, onPin, onE
     </div>
   ) : (
     <div
+      ref={messageRef}
       className={`py-3 px-6 rounded-full ${
-        message.isMine ? "bg-indigo-500 text-white" : "bg-gray-500 text-white"
+        message.user_id === "system"
+          ? "bg-gray-300 text-gray-800 italic"
+          : message.isMine
+            ? "bg-indigo-500 text-white"
+            : "bg-gray-500 text-white"
       } relative max-w-[35vw] whitespace-pre-wrap break-words`}
       onDoubleClick={handleDoubleClick}
     >
@@ -201,7 +236,11 @@ const MessageCloud: React.FC<MessageCloudProps> = ({ message, onLike, onPin, onE
       <div className="px-2 py-1">
         <div>
           <img
-            src="https://i.pinimg.com/736x/71/39/e2/7139e287d3f84a3691a38ecb048aa9f7.jpg"
+            src={
+              message.user_id === "system"
+                ? "https://i.pinimg.com/736x/b8/e1/50/b8e150a4207f15298ff9952d99389764.jpg"
+                : "https://i.pinimg.com/736x/71/39/e2/7139e287d3f84a3691a38ecb048aa9f7.jpg"
+            }
             className="flex items-center float-left h-11 w-11 mr-2 ms-2 rounded-full"
             alt="user-avatar"
           />

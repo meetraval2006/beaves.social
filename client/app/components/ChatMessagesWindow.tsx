@@ -1,10 +1,10 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { ChevronLeft, Users, Pin } from "lucide-react"
-import { redirect } from "next/navigation"
 import { toast } from "react-hot-toast"
+import { Button } from "@/components/ui/button"
 
 import { useAppContext } from "./AppContext"
 import MessageCloud from "./MessageCloud"
@@ -19,6 +19,7 @@ interface GCObject {
 }
 
 export default function ChatMessagesWindow() {
+  const router = useRouter()
   const pathname = usePathname()
   const chatId = pathname.split("/")[3]
 
@@ -30,6 +31,19 @@ export default function ChatMessagesWindow() {
   const [showPinnedMessages, setShowPinnedMessages] = useState(false)
   const [inputText, setInputText] = useState("")
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // Add handlers for Escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShowUserList(false)
+        setShowPinnedMessages(false)
+      }
+    }
+
+    document.addEventListener("keydown", handleEscape)
+    return () => document.removeEventListener("keydown", handleEscape)
+  }, [])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -193,8 +207,8 @@ export default function ChatMessagesWindow() {
           }}
           onLike={handleLike}
           onPin={handlePin}
-          onEdit={handleEditMessage} // Added onEdit prop
-          onDelete={handleDeleteMessage} // Added onDelete prop
+          onEdit={handleEditMessage}
+          onDelete={handleDeleteMessage}
         />
       )
     })
@@ -206,6 +220,10 @@ export default function ChatMessagesWindow() {
 
   const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && inputText.trim() !== "") {
+      if (inputText.length > 200) {
+        toast.error("Message cannot exceed 200 characters")
+        return
+      }
       try {
         let username = ""
 
@@ -322,6 +340,27 @@ export default function ChatMessagesWindow() {
     return sortedMessages[0]?.id === messageId
   }
 
+  const handleLeaveGroup = async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/api/leave_group_chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ chat_id: chatId, user_id: userId }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to leave group chat")
+      }
+
+      toast.success("You have left the group chat")
+      router.push("/you/chats/inbox")
+    } catch (error) {
+      console.error("Error leaving group chat:", error)
+    }
+  }
+
   return (
     <div className="sm:ml-96 flex flex-col h-screen">
       <div className="sticky top-0 z-10 border-b border-b-indigo-200 pl-6 py-4 bg-orange-700">
@@ -329,7 +368,7 @@ export default function ChatMessagesWindow() {
           <div className="flex items-center">
             <button
               className="transition rounded-full ease-in-out bg-orange-500 hover:-translate-y-1 hover:scale-110 hover:bg-orange-600 duration-300 p-2 flex-initial mr-6"
-              onClick={() => redirect("/you/chats/inbox")}
+              onClick={() => router.push("/you/chats/inbox")}
             >
               <ChevronLeft className="text-white" size={20} />
             </button>
@@ -340,9 +379,19 @@ export default function ChatMessagesWindow() {
               <Pin className="text-white" size={24} />
             </button>
             {data && data.is_gc && (
-              <button onClick={() => setShowUserList(true)} className="mr-4">
-                <Users className="text-white" size={24} />
-              </button>
+              <>
+                <Button
+                  onClick={() => setShowUserList(true)}
+                  variant="ghost"
+                  className="mr-4 text-white hover:text-white"
+                >
+                  <Users className="mr-2" size={24} />
+                  Users
+                </Button>
+                <Button onClick={handleLeaveGroup} variant="destructive" className="mr-4">
+                  Leave Group
+                </Button>
+              </>
             )}
           </div>
         </div>
@@ -355,17 +404,19 @@ export default function ChatMessagesWindow() {
 
       <div className="sticky bottom-0 bg-white border-t border-gray-200">
         <div className="py-4">
-          <form className="max-w mx-12" onSubmit={(e) => e.preventDefault()}>
+          <form className="max-w mx-12 relative" onSubmit={(e) => e.preventDefault()}>
             <div className="relative">
               <input
                 type="text"
                 value={inputText}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
+                maxLength={200}
                 className="block w-full px-4 py-2 ps-4 text-md text-gray-900 border border-gray-300 rounded-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Message..."
                 required
               />
+              <div className="absolute right-4 -top-6 text-sm text-gray-500">{inputText.length}/200</div>
             </div>
           </form>
         </div>

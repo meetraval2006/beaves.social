@@ -716,6 +716,60 @@ def remove_user_from_gc():
         print(f"Error removing user from GC: {e}")
         return jsonify({"error": "Failed to remove user from GC"}), 500
 
+@app.route('/api/leave_group_chat', methods=['POST'])
+def leave_group_chat():
+    try:
+        data = request.get_json()
+        chat_id = data.get("chat_id")
+        user_id = data.get("user_id")
+
+        if not chat_id or not user_id:
+            abort(400, message="Chat ID and User ID are required")
+
+        ref = firebase_db.reference(chat_id)
+        gc_data = ref.get()
+
+        if gc_data:
+            users = gc_data.get("users", [])
+            if user_id in users:
+                users.remove(user_id)
+                ref.child("users").set(users)
+
+                # Add a system message about the user leaving
+                user_doc = db.collection("users").document(user_id).get()
+                username = user_doc.to_dict().get("username", "Unknown User") if user_doc.exists else "Unknown User"
+
+                message_id = str(uuid.uuid4())
+                timestamp = int(time.time() * 1000)
+                system_message = {
+                    "id": message_id,
+                    "chat_id": chat_id,
+                    "text": f"{username} has left the group chat",
+                    "isPinned": False,
+                    "likes": 0,
+                    "timestamp": timestamp,
+                    "user_id": "system",
+                    "username": "System",
+                    "read_by": {}
+                }
+                ref.child("messages").child(message_id).set(system_message)
+
+                # Emit the user leave event
+                socketio.emit('user_leave_chat', {
+                    'chat_id': chat_id,
+                    'user_id': user_id
+                })
+
+                return jsonify({"message": "User removed from group chat successfully"}), 200
+            else:
+                return jsonify({"message": "User not in group chat"}), 200
+        else:
+            abort(404, message="Group chat not found")
+
+    except Exception as e:
+        print(f"Error removing user from group chat: {e}")
+        return jsonify({"error": "Failed to remove user from group chat"}), 500
+
 if __name__ == "__main__":
     socketio.run(app, debug=True, allow_unsafe_werkzeug=True)
 

@@ -149,19 +149,31 @@ export default function ChatsPane() {
         })
       }
 
+      const handleUserLeaveChat = (data: { chat_id: string; user_id: string }) => {
+        if (data.user_id === userId) {
+          setChats((prevChats) => {
+            const updatedChats = { ...prevChats }
+            delete updatedChats[data.chat_id]
+            return updatedChats
+          })
+        }
+      }
+
       socket.on("new_message", handleNewMessage)
       socket.on("message_edit", handleMessageEdit)
       socket.on("message_delete", handleMessageDelete)
       socket.on("unread_count_update", handleUnreadCountUpdate)
+      socket.on("user_leave_chat", handleUserLeaveChat)
 
       return () => {
         socket.off("new_message", handleNewMessage)
         socket.off("message_edit", handleMessageEdit)
         socket.off("message_delete", handleMessageDelete)
         socket.off("unread_count_update", handleUnreadCountUpdate)
+        socket.off("user_leave_chat", handleUserLeaveChat)
       }
     }
-  }, [socket, userId, currentChatId])
+  }, [socket, userId])
 
   const handleClearUnread = useCallback(
     async (chatId: string) => {
