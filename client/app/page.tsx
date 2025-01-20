@@ -10,7 +10,7 @@ export default function Home() {
     <header className="bg-black">
         <nav className="flex justify-between items-center w-[90%] mx-auto">
             <div>
-                <p className="w-48 text-orange-500 text-xl m-5 font-bold text-center tracking-wide">beavs_social 🦫</p>
+                <p className="w-48 text-orange-500 text-xl m-5 font-bold text-center tracking-wide">beavs.social 🦫</p>
             </div>
             <div className="nav-links duration-500 mr-24 md:static absolute md:min-h-fit left-0 top-[-100%] md:w-auto w-full flex items-center p-5">
                 <ul className="flex md:flex-row flex-col md:items-center md:gap-[4vw] gap-6">
@@ -56,7 +56,7 @@ export default function Home() {
                     transition={{ duration: 0.8 }}
                 >
                     <span className="text-accent highlight">
-                      beavs_social
+                      beavs.social
                     </span>
                 </motion.h1>
 
