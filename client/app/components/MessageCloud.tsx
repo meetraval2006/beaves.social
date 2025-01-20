@@ -28,7 +28,7 @@ const MessageCloud: React.FC<MessageCloudProps> = ({ message, onLike, onPin, onE
   const [editedText, setEditedText] = useState(message.text || "")
   const optionsRef = useRef<HTMLDivElement>(null)
   const editInputRef = useRef<HTMLTextAreaElement>(null)
-  const date = new Date(message.timestamp * 1000)
+  const date = new Date(message.timestamp)
   const time = date.toLocaleTimeString()
 
   useEffect(() => {
@@ -49,6 +49,10 @@ const MessageCloud: React.FC<MessageCloudProps> = ({ message, onLike, onPin, onE
       editInputRef.current.focus()
     }
   }, [isEditing])
+
+  useEffect(() => {
+    setEditedText(message.text || "")
+  }, [message.text])
 
   const handleDoubleClick = () => {
     console.log(`Double-click like on message: ${message.id}`)

@@ -5,12 +5,15 @@ from google.cloud.firestore_v1.base_query import FieldFilter
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_restful import Api, Resource, reqparse, abort
+from flask_socketio import SocketIO, emit
 
 import uuid
 import re
+import time
 
 app = Flask(__name__)
 CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 api = Api(app)
 
 cred = credentials.Certificate('./server/key.json')
@@ -193,10 +196,6 @@ def get_user_by_id():
 
 @app.route('/api/create_gc', methods=['POST'])
 def create_gc():
-    """
-    Endpoint to add a message to the Firebase Realtime Database.
-    Expects JSON input with 'timestamp', 'text', 'likes', and 'reply_id'.
-    """
     try:
         data = request.get_json()
         gc_name = data.get("gc_name")
@@ -212,13 +211,13 @@ def create_gc():
             "users": users,
             "messages": messages,
             "unreadCount": 0,
-            "lastUpdated": firebase_admin.db.ServerValue.TIMESTAMP
+            "lastUpdated": int(time.time() * 1000)  # Use milliseconds for consistency with JS
         }
 
         ref = firebase_db.reference(chat_id)
         ref.set(gc_data)
         
-        return jsonify(gc_data), 201
+        return jsonify({"gc_id": chat_id, **gc_data}), 201
 
     except Exception as e:
         print(f"Error adding message: {e}")
@@ -255,24 +254,27 @@ def add_messages():
     try:
         data = request.get_json()
         chat_id = data.get("chat_id")
-        timestamp = data.get("timestamp")
-        likes = data.get("likes")
+        message_id = data.get("id")  # Use the client-generated ID
+        timestamp = data.get("timestamp") or int(time.time() * 1000)
+        likes = data.get("likes", 0)
         text = data.get("text")
-        isPinned = data.get("isPinned")
+        isPinned = data.get("isPinned", False)
         user_id = data.get("user_id")
         username = data.get("username")
 
-        message_id = str(uuid.uuid4())
+        if not all([chat_id, message_id, text, user_id, username]):
+            return jsonify({"error": "Missing required fields"}), 400
 
         message_data = {
+            "id": message_id,
             "chat_id": chat_id,
             "text": text,
             "isPinned": isPinned,
             "likes": likes,
             "timestamp": timestamp,
-            "user_id": user_id, #id of the user who sent the message,
+            "user_id": user_id,
             "username": username,
-            "read_by": {}
+            "read_by": {user_id: True}
         }
 
         ref = firebase_db.reference(chat_id)
@@ -280,28 +282,83 @@ def add_messages():
 
         if chat_data:
             users = chat_data.get("users", [])
-            unread_count = chat_data.get("unreadCount", 0)
-            
-            # Increment unread count for all users except the sender
-            unread_count += len(users) - 1
             
             # Add the new message
-            new_message_ref = ref.child("messages").push(message_data)
-            message_id = new_message_ref.key
+            ref.child("messages").child(message_id).set(message_data)
 
-            # Update unread count
+            # Update unread count only for other users
+            unread_count = sum(1 for u in users if u != user_id)
             ref.child("unreadCount").set(unread_count)
             
             # Update lastUpdated timestamp
-            ref.child("lastUpdated").set(firebase_admin.db.ServerValue.TIMESTAMP)
+            ref.child("lastUpdated").set(int(time.time() * 1000))
+
+            # Emit the new message to all connected clients
+            socketio.emit('new_message', {
+                'chat_id': chat_id,
+                'message': message_data
+            })
 
             return jsonify({"message": "Message added successfully", "id": message_id}), 201
         else:
-            abort(404, message="Chat not found")
+            return jsonify({"error": "Chat not found"}), 404
     
     except Exception as e:
         print(f"Error adding message: {e}")
-        return jsonify({"error": "Failed to add message"}), 500
+        return jsonify({"error": f"Failed to add message: {str(e)}"}), 500
+
+def get_unread_count(chat_id, user_id):
+    ref = firebase_db.reference(chat_id)
+    messages = ref.child("messages").get()
+    if not messages:
+        return 0
+    return sum(1 for msg in messages.values() if msg['user_id'] != user_id and user_id not in msg.get('read_by', {}))
+
+@app.route('/api/mark_messages_read', methods=['POST'])
+def mark_messages_read():
+    try:
+        data = request.get_json()
+        chat_id = data.get("chat_id")
+        user_id = data.get("user_id")
+
+        if not chat_id or not user_id:
+            return jsonify({"error": "Chat ID and User ID are required"}), 400
+
+        ref = firebase_db.reference(chat_id)
+        chat_data = ref.get()
+
+        if chat_data:
+            messages = chat_data.get("messages", {})
+            updates = {}
+            
+            # Mark all messages as read for this user
+            for message_id, message in messages.items():
+                if message.get("user_id") != user_id:
+                    read_by = message.get("read_by", {})
+                    if user_id not in read_by:
+                        read_by[user_id] = True
+                        updates[f"messages/{message_id}/read_by"] = read_by
+            
+            if updates:
+                ref.update(updates)
+            
+            # Get the correct unread count
+            unread_count = get_unread_count(chat_id, user_id)
+            ref.child("unreadCount").set(unread_count)
+            
+            # Emit the updated unread count to all connected clients
+            socketio.emit('unread_count_update', {
+                'chat_id': chat_id,
+                'unread_count': unread_count
+            })
+            
+            return jsonify({"message": "Messages marked as read successfully", "unreadCount": unread_count}), 200
+        else:
+            return jsonify({"error": "Chat not found"}), 404
+
+    except Exception as e:
+        print(f"Error marking messages as read: {e}")
+        return jsonify({"error": f"Failed to mark messages as read: {str(e)}"}), 500
 
 #liked and isPinned done after hackathon
 @app.route('/api/update_chat', methods=['POST'])
@@ -498,7 +555,7 @@ def create_event():
             "users": [author_id],
             "messages": [],
             "unreadCount": 0,
-            "lastUpdated": firebase_admin.db.ServerValue.TIMESTAMP
+            "lastUpdated": int(time.time() * 1000) # Use milliseconds for consistency with JS
         }
         firebase_db.reference(groupChatId).set(gc_data)
         
@@ -632,37 +689,6 @@ def remove_user_from_gc():
         print(f"Error removing user from GC: {e}")
         return jsonify({"error": "Failed to remove user from GC"}), 500
 
-@app.route('/api/mark_messages_read', methods=['POST'])
-def mark_messages_read():
-    try:
-        data = request.get_json()
-        chat_id = data.get("chat_id")
-        user_id = data.get("user_id")
-
-        if not chat_id or not user_id:
-            abort(400, message="Chat ID and User ID are required")
-
-        ref = firebase_db.reference(chat_id)
-        chat_data = ref.get()
-
-        if chat_data:
-            messages = chat_data.get("messages", {})
-            unread_count = 0
-            for message_id, message in messages.items():
-                if message.get("user_id") != user_id and not message.get("read_by", {}).get(user_id):
-                    ref.child(f"messages/{message_id}/read_by/{user_id}").set(True)
-                else:
-                    unread_count += 1
-            
-            ref.child("unreadCount").set(unread_count)
-            return jsonify({"message": "Messages marked as read successfully"}), 200
-        else:
-            abort(404, message="Chat not found")
-
-    except Exception as e:
-        print(f"Error marking messages as read: {e}")
-        return jsonify({"error": "Failed to mark messages as read"}), 500
-
 if __name__ == "__main__":
-    app.run(debug=True)
+    socketio.run(app, debug=True, allow_unsafe_werkzeug=True)
 

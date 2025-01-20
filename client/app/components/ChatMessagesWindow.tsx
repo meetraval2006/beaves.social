@@ -1,12 +1,11 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { ChevronLeft, Users, Pin } from "lucide-react"
-import { redirect } from "next/navigation"
 import { toast } from "react-hot-toast"
 
-import { useAppContext } from "./AppContext"
+import { useWebSocket } from "./WebSocketContext"
 import MessageCloud from "./MessageCloud"
 import UserListPopup from "./UserListPopup"
 import PinnedMessagesPopup from "./PinnedMessagesPopup"
@@ -21,6 +20,7 @@ interface GCObject {
 
 export default function ChatMessagesWindow() {
   const pathname = usePathname()
+  const router = useRouter()
   const chatId = pathname.split("/")[3]
 
   const [data, setData] = useState<GCObject | null>(null)
@@ -33,8 +33,8 @@ export default function ChatMessagesWindow() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [isEditingGcName, setIsEditingGcName] = useState(false)
   const [editedGcName, setEditedGcName] = useState("")
-  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null)
-  const [unreadCount, setUnreadCount] = useState(0)
+  const [isSending, setIsSending] = useState(false)
+  const { socket } = useWebSocket()
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -55,38 +55,34 @@ export default function ChatMessagesWindow() {
       }
       const fetchedData: GCObject = await response.json()
       console.log("Fetched chat data:", fetchedData)
-      setUnreadCount(fetchedData.unreadCount || 0)
 
-      // Compare the fetched data with the current data
-      if (JSON.stringify(fetchedData) !== JSON.stringify(data)) {
-        setData(fetchedData)
+      setData(fetchedData)
 
-        if (fetchedData.is_gc) {
-          setGcName(fetchedData.gc_name || "")
-        } else if (fetchedData.users && fetchedData.users.length >= 2) {
-          const otherUserId = fetchedData.users[0] === userId ? fetchedData.users[1] : fetchedData.users[0]
-          console.log(`Fetching user data for: ${otherUserId}`)
-          const userResponse = await fetch(`http://127.0.0.1:5000/api/get_user_by_id?id=${otherUserId}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-          if (!userResponse.ok) {
-            console.error(`Server responded with an error: ${userResponse.status}`)
-            throw new Error("Failed to fetch user data")
-          }
-          const userData = await userResponse.json()
-          console.log("Fetched user data:", userData)
-          setUser(userData)
-          setGcName(userData?.username || "")
+      if (fetchedData.is_gc) {
+        setGcName(fetchedData.gc_name || "")
+      } else if (fetchedData.users && fetchedData.users.length >= 2) {
+        const otherUserId = fetchedData.users[0] === userId ? fetchedData.users[1] : fetchedData.users[0]
+        console.log(`Fetching user data for: ${otherUserId}`)
+        const userResponse = await fetch(`http://127.0.0.1:5000/api/get_user_by_id?id=${otherUserId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        if (!userResponse.ok) {
+          console.error(`Server responded with an error: ${userResponse.status}`)
+          throw new Error("Failed to fetch user data")
         }
+        const userData = await userResponse.json()
+        console.log("Fetched user data:", userData)
+        setUser(userData)
+        setGcName(userData?.username || "")
       }
     } catch (error) {
       console.error("Error fetching chat data:", error)
       toast.error("Failed to load chat data. Please try again.")
     }
-  }, [chatId, userId, data])
+  }, [chatId, userId])
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("id")
@@ -96,18 +92,6 @@ export default function ChatMessagesWindow() {
   useEffect(() => {
     if (userId) {
       fetchData()
-      // Set up polling
-      const interval = setInterval(() => {
-        fetchData()
-      }, 5000) // Poll every 5 seconds
-      setPollingInterval(interval)
-
-      // Clean up function
-      return () => {
-        if (pollingInterval) {
-          clearInterval(pollingInterval)
-        }
-      }
     }
   }, [userId, fetchData])
 
@@ -116,25 +100,34 @@ export default function ChatMessagesWindow() {
   }, [data])
 
   useEffect(() => {
-    if (userId && chatId) {
-      const markMessagesAsRead = async () => {
-        try {
-          await fetch(`http://127.0.0.1:5000/api/mark_messages_read`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ chat_id: chatId, user_id: userId }),
+    if (socket && chatId) {
+      const handleNewMessage = (data: { chat_id: string; message: any }) => {
+        if (data.chat_id === chatId) {
+          setData((prevData) => {
+            if (!prevData) return null
+            const updatedMessages = prevData.messages
+              ? Array.isArray(prevData.messages)
+                ? [...prevData.messages, data.message]
+                : { ...prevData.messages, [data.message.id]: data.message }
+              : { [data.message.id]: data.message }
+
+            // Only increment unread count if the message is not from the current user
+            const newUnreadCount =
+              data.message.user_id !== userId ? (prevData.unreadCount || 0) + 1 : prevData.unreadCount || 0
+
+            return { ...prevData, messages: updatedMessages, unreadCount: newUnreadCount }
           })
-          setUnreadCount(0)
-        } catch (error) {
-          console.error("Error marking messages as read:", error)
+          scrollToBottom()
         }
       }
 
-      markMessagesAsRead()
+      socket.on("new_message", handleNewMessage)
+
+      return () => {
+        socket.off("new_message", handleNewMessage)
+      }
     }
-  }, [userId, chatId])
+  }, [socket, chatId])
 
   const handleLike = async (messageId: string) => {
     try {
@@ -292,7 +285,8 @@ export default function ChatMessagesWindow() {
   }
 
   const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && inputText.trim() !== "") {
+    if (e.key === "Enter" && inputText.trim() !== "" && !isSending) {
+      setIsSending(true)
       try {
         let username = ""
 
@@ -307,22 +301,22 @@ export default function ChatMessagesWindow() {
 
           if (userResponse.ok) {
             const userData = await userResponse.json()
-            username = userData.username || "" // Use the username if available
+            username = userData.username || ""
           } else {
             console.error(`Failed to fetch username for userId: ${userId}`)
           }
         }
 
-        console.log(username, "username")
-
-        const dataObject = {
+        const messageId = `${Date.now()}-${userId}` // Create a unique message ID
+        const messageData = {
+          id: messageId,
           chat_id: chatId,
           user_id: userId,
           text: inputText.trim(),
           likes: 0,
           username,
           isPinned: false,
-          timestamp: Math.floor(Date.now() / 1000),
+          timestamp: Date.now(),
         }
 
         const response = await fetch("http://127.0.0.1:5000/api/add_messages", {
@@ -330,19 +324,31 @@ export default function ChatMessagesWindow() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(dataObject),
+          body: JSON.stringify(messageData),
         })
 
         if (!response.ok) {
-          throw new Error("Failed to send message")
+          const errorData = await response.json()
+          throw new Error(errorData.error || "Failed to send message")
         }
 
         setInputText("")
-        setUnreadCount(0)
-        await fetchData()
+
+        // Update the local state immediately for better UX
+        setData((prevData) => {
+          if (!prevData) return null
+          const updatedMessages = Array.isArray(prevData.messages)
+            ? [...prevData.messages, messageData]
+            : { ...prevData.messages, [messageId]: messageData }
+          return { ...prevData, messages: updatedMessages }
+        })
+
+        scrollToBottom()
       } catch (error) {
         console.error("Error sending message:", error)
         toast.error("Failed to send message. Please try again.")
+      } finally {
+        setIsSending(false)
       }
     }
   }
@@ -380,7 +386,7 @@ export default function ChatMessagesWindow() {
           <div className="flex items-center">
             <button
               className="transition rounded-full ease-in-out bg-orange-500 hover:-translate-y-1 hover:scale-110 hover:bg-orange-600 duration-300 p-2 flex-initial mr-6"
-              onClick={() => redirect("/you/chats/inbox")}
+              onClick={() => router.push("/you/chats/inbox")}
             >
               <ChevronLeft className="text-white" size={20} />
             </button>
@@ -418,14 +424,7 @@ export default function ChatMessagesWindow() {
                 </div>
               )
             ) : (
-              <div className="text-xl font-semibold text-white">
-                {gcName}
-                {unreadCount > 0 && (
-                  <span className="ml-2 bg-red-500 text-white text-xs font-bold rounded-full px-2 py-1">
-                    {unreadCount}
-                  </span>
-                )}
-              </div>
+              <div className="text-xl font-semibold text-white">{gcName}</div>
             )}
           </div>
           <div className="flex items-center">
