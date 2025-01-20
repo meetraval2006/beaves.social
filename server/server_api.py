@@ -603,6 +603,31 @@ def create_event():
     except Exception as e:
         abort(400, message=f"Error creating event: {e}")
 
+def add_system_message(chat_id, message_text):
+    message_id = str(uuid.uuid4())
+    timestamp = int(time.time() * 1000)
+    system_message = {
+        "id": message_id,
+        "chat_id": chat_id,
+        "text": message_text,
+        "isPinned": False,
+        "likes": 0,
+        "timestamp": timestamp,
+        "user_id": "system",
+        "username": "System",
+        "read_by": {}
+    }
+    
+    ref = firebase_db.reference(chat_id)
+    ref.child("messages").child(message_id).set(system_message)
+    ref.child("lastUpdated").set(timestamp)
+    
+    # Emit the new message to all connected clients
+    socketio.emit('new_message', {
+        'chat_id': chat_id,
+        'message': system_message
+    })
+
 @app.route('/api/join_event', methods=['POST'])
 def join_event():
     try:
@@ -614,6 +639,10 @@ def join_event():
         if not event_id or not user_id or not group_chat_id:
             abort(400, message="Please provide all the required information")
 
+        # Get username of the joining user
+        user_doc = db.collection("users").document(user_id).get()
+        username = user_doc.to_dict().get("username", "Unknown User") if user_doc.exists else "Unknown User"
+
         # Add user to the group chat
         ref = firebase_db.reference(group_chat_id)
         gc_data = ref.get()
@@ -622,6 +651,10 @@ def join_event():
             if user_id not in users:
                 users.append(user_id)
                 ref.child("users").set(users)
+                
+                # Add system message about user joining
+                add_system_message(group_chat_id, f"{username} has joined the group chat")
+                
             return jsonify({"message": "User added to group chat successfully"}), 200
         else:
             abort(404, message="Group chat not found")
@@ -672,6 +705,10 @@ def add_user_to_gc():
         if not chat_id or not user_id:
             abort(400, message="Chat ID and User ID are required")
 
+        # Get username of the added user
+        user_doc = db.collection("users").document(user_id).get()
+        username = user_doc.to_dict().get("username", "Unknown User") if user_doc.exists else "Unknown User"
+
         ref = firebase_db.reference(chat_id)
         gc_data = ref.get()
         if gc_data:
@@ -679,6 +716,10 @@ def add_user_to_gc():
             if user_id not in users:
                 users.append(user_id)
                 ref.child("users").set(users)
+                
+                # Add system message about user being added
+                add_system_message(chat_id, f"{username} has been added to the group chat")
+                
                 return jsonify({"message": "User added to GC successfully"}), 200
             else:
                 return jsonify({"message": "User already in GC"}), 200
@@ -698,6 +739,10 @@ def remove_user_from_gc():
         if not chat_id or not user_id:
             abort(400, message="Chat ID and User ID are required")
 
+        # Get username of the removed user
+        user_doc = db.collection("users").document(user_id).get()
+        username = user_doc.to_dict().get("username", "Unknown User") if user_doc.exists else "Unknown User"
+
         ref = firebase_db.reference(chat_id)
         gc_data = ref.get()
 
@@ -706,6 +751,10 @@ def remove_user_from_gc():
             if user_id in users:
                 users.remove(user_id)
                 ref.child("users").set(users)
+                
+                # Add system message about user being removed
+                add_system_message(chat_id, f"{username} has been removed from the group chat")
+                
                 return jsonify({"message": "User removed from GC successfully"}), 200
             else:
                 return jsonify({"message": "User not in GC"}), 200

@@ -47,7 +47,7 @@ export default function ChatsPane() {
               gc_name: chat.gc_name || "",
               is_gc: chat.is_gc,
               users: chat.users || [],
-              messages: messages,
+              messages: messages.sort((a: any, b: any) => b.timestamp - a.timestamp), // Sort messages by timestamp
               lastUpdated: chat.lastUpdated || Date.now(),
               unreadCount: chat.unreadCount || 0,
             }
@@ -83,20 +83,15 @@ export default function ChatsPane() {
             const messageExists = updatedChats[data.chat_id].messages.some((m) => m.id === data.message.id)
 
             if (!messageExists) {
-              updatedChats[data.chat_id].messages.push(data.message)
-              updatedChats[data.chat_id].lastUpdated = Date.now()
+              // Add new message to the beginning of the array since we're sorting by newest first
+              updatedChats[data.chat_id].messages.unshift(data.message)
+              updatedChats[data.chat_id].lastUpdated = data.message.timestamp
 
               // Only increment unread count if:
               // 1. The message is not from the current user
               // 2. The chat is not currently focused
-              // 3. It's not a DM or if it is a DM, check if the sender is not the current user
-              if (
-                data.message.user_id !== userId &&
-                data.chat_id !== currentChatId &&
-                (updatedChats[data.chat_id].is_gc ||
-                  (!updatedChats[data.chat_id].is_gc && data.message.user_id !== userId))
-              ) {
-                updatedChats[data.chat_id].unreadCount++
+              if (data.message.user_id !== userId && data.chat_id !== currentChatId) {
+                updatedChats[data.chat_id].unreadCount = (updatedChats[data.chat_id].unreadCount || 0) + 1
               }
             }
           }
@@ -110,33 +105,29 @@ export default function ChatsPane() {
         new_text: string
         is_latest: boolean
       }) => {
-        if (data.is_latest) {
-          setChats((prevChats) => {
-            const updatedChats = { ...prevChats }
-            if (updatedChats[data.chat_id]) {
-              const messages = updatedChats[data.chat_id].messages
-              const messageIndex = messages.findIndex((m) => m.id === data.message_id)
-              if (messageIndex !== -1) {
-                messages[messageIndex] = { ...messages[messageIndex], text: data.new_text }
-              }
+        setChats((prevChats) => {
+          const updatedChats = { ...prevChats }
+          if (updatedChats[data.chat_id]) {
+            const messages = updatedChats[data.chat_id].messages
+            const messageIndex = messages.findIndex((m) => m.id === data.message_id)
+            if (messageIndex !== -1) {
+              messages[messageIndex] = { ...messages[messageIndex], text: data.new_text }
             }
-            return updatedChats
-          })
-        }
+          }
+          return updatedChats
+        })
       }
 
       const handleMessageDelete = (data: { chat_id: string; message_id: string; is_latest: boolean }) => {
-        if (data.is_latest) {
-          setChats((prevChats) => {
-            const updatedChats = { ...prevChats }
-            if (updatedChats[data.chat_id]) {
-              const messages = updatedChats[data.chat_id].messages
-              const filteredMessages = messages.filter((m) => m.id !== data.message_id)
-              updatedChats[data.chat_id].messages = filteredMessages
-            }
-            return updatedChats
-          })
-        }
+        setChats((prevChats) => {
+          const updatedChats = { ...prevChats }
+          if (updatedChats[data.chat_id]) {
+            updatedChats[data.chat_id].messages = updatedChats[data.chat_id].messages.filter(
+              (m) => m.id !== data.message_id,
+            )
+          }
+          return updatedChats
+        })
       }
 
       const handleUnreadCountUpdate = (data: { chat_id: string; unread_count: number }) => {
@@ -173,7 +164,7 @@ export default function ChatsPane() {
         socket.off("user_leave_chat", handleUserLeaveChat)
       }
     }
-  }, [socket, userId])
+  }, [socket, userId, currentChatId])
 
   const handleClearUnread = useCallback(
     async (chatId: string) => {
@@ -197,7 +188,6 @@ export default function ChatsPane() {
               unreadCount: 0,
             },
           }))
-          // The server will emit an 'unread_count_update' event to all clients
         } catch (error) {
           console.error("Error clearing unread messages:", error)
         }
@@ -206,6 +196,7 @@ export default function ChatsPane() {
     [userId],
   )
 
+  // Sort chats by lastUpdated timestamp
   const sortedChats = Object.values(chats).sort((a, b) => b.lastUpdated - a.lastUpdated)
 
   if (loading) {
@@ -224,7 +215,7 @@ export default function ChatsPane() {
     <div className="px-2 pb-4 pt-2 overflow-y-auto">
       <ul className="font-medium">
         {sortedChats.map((chat) => {
-          const latestMessage = chat.messages[chat.messages.length - 1]
+          const latestMessage = chat.messages[0] // Get first message since they're sorted newest first
           return (
             <ChatUserSelect
               key={chat.id}
