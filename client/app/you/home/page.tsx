@@ -27,10 +27,9 @@ export default function HomePage() {
   const [users, setUsers] = useState<User[]>([])
   const [filteredUsers, setFilteredUsers] = useState<User[]>([])
   const [currentUser, setCurrentUser] = useState<User | null>(null)
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
   const toggleSidebar = () => {
-    setIsSidebarCollapsed(!isSidebarCollapsed)
+    setIsSidebarOpen(!isSidebarOpen)
   }
 
   const toggleMenu = () => {
@@ -81,33 +80,26 @@ export default function HomePage() {
                 <h1 className="text-3xl sm:text-4xl font-black text-orange-600">beavs.social</h1>
               </div>
 
-              <nav className="flex items-center justify-center gap-4">
+              {/* Centered buttons */}
+              <nav className="flex items-center gap-4 w-full justify-center">
                 <button
-                  className="lg:hidden transition rounded-lg ease-in-out bg-orange-600 hover:bg-orange-500 duration-300 p-2 text-black"
-                  onClick={toggleMenu}
+                  className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 text-black text-sm sm:text-base"
+                  onClick={() => router.push("chats/inbox")}
                 >
-                  <Menu size={24} />
+                  Chats
                 </button>
-                <div className={`flex flex-col sm:flex-row gap-2 ${isMenuOpen ? "flex" : "hidden lg:flex"}`}>
-                  <button
-                    className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 text-black text-sm sm:text-base"
-                    onClick={() => router.push("chats/inbox")}
-                  >
-                    Chats
-                  </button>
-                  <button
-                    className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 text-black text-sm sm:text-base"
-                    onClick={() => router.push("events")}
-                  >
-                    Events
-                  </button>
-                  <button
-                    className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 text-black text-sm sm:text-base"
-                    onClick={() => router.push("description")}
-                  >
-                    App Description
-                  </button>
-                </div>
+                <button
+                  className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 text-black text-sm sm:text-base"
+                  onClick={() => router.push("events")}
+                >
+                  Events
+                </button>
+                <button
+                  className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 text-black text-sm sm:text-base"
+                  onClick={() => router.push("description")}
+                >
+                  App Description
+                </button>
               </nav>
             </div>
           </header>
@@ -139,101 +131,101 @@ export default function HomePage() {
       <aside
         className={`fixed inset-y-0 right-0 z-40 w-full sm:w-3/4 md:w-1/2 lg:w-1/4 transition-all duration-300 ease-in-out border-l border-l-orange-700 bg-black transform ${
           isSidebarOpen ? "translate-x-0" : "translate-x-full"
-        } lg:translate-x-0 lg:static ${isSidebarCollapsed ? "lg:w-0 lg:border-l-0" : "lg:w-1/4"}`}
+        } lg:${isSidebarOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         <button
           onClick={toggleSidebar}
-          className="fixed top-1/2 -translate-y-1/2 right-0 z-50 bg-orange-600 text-black p-2 rounded-l-md hover:bg-orange-500 transition-colors duration-300 transform -translate-x-1/2"
-          aria-label={isSidebarCollapsed ? "Expand account sidebar" : "Collapse account sidebar"}
+          className={`absolute top-1/2 -translate-y-1/2 bg-orange-600 text-black px-2 py-2 rounded-md hover:bg-orange-500 transition-transform duration-300 ${
+            isSidebarOpen ? "-left-8" : "-left-16"
+          }`}
+          aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
+          style={{ writingMode: "vertical-rl", textOrientation: "upright" }}
         >
-          {isSidebarCollapsed ? <ChevronLeft size={24} /> : <ChevronRight size={24} />}
-          <span className="hidden lg:inline-block ml-2">ACCOUNT</span>
+          Account
         </button>
-        {!isSidebarCollapsed && (
-          <div className={`h-full overflow-y-auto ${isSidebarCollapsed ? "" : "px-6"} py-8`}>
-            <div className="mb-8">
-              <form className="max-w-md mx-auto">
-                <label htmlFor="default-search" className="mb-2 text-sm font-medium text-orange-300 sr-only">
-                  Search
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                    <svg
-                      className="w-4 h-4 text-orange-500"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                      />
-                    </svg>
-                  </div>
-                  <input
-                    type="search"
-                    id="default-search"
-                    className="block w-full px-4 py-2 ps-10 text-sm sm:text-md text-orange-300 border border-orange-600 rounded-full bg-gray-800 focus:ring-orange-500 focus:border-orange-500"
-                    placeholder="Search users..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-              </form>
-            </div>
 
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-orange-400">Your Info</h2>
-
-            {currentUser ? (
-              <div className="bg-gray-800 rounded-lg p-4 mb-4">
-                <div className="flex items-center text-gray-400 mb-2">
-                  <User size={16} className="mr-2 flex-shrink-0" />
-                  <span className="text-orange-300 text-sm sm:text-base">{currentUser.name}</span>
+        <div className="h-full overflow-y-auto px-6 py-8">
+          <div className="mb-8">
+            <form className="max-w-md mx-auto">
+              <label htmlFor="default-search" className="mb-2 text-sm font-medium text-orange-300 sr-only">
+                Search
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                  <svg
+                    className="w-4 h-4 text-orange-500"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                    />
+                  </svg>
                 </div>
-                <div className="flex items-center text-gray-400 mb-2">
-                  <User size={16} className="mr-2 flex-shrink-0" />
-                  <span className="text-orange-300 text-sm sm:text-base">@{currentUser.username}</span>
-                </div>
-                <div className="flex items-center text-gray-400 mb-2">
-                  <Mail size={16} className="mr-2 flex-shrink-0" />
-                  <span className="text-orange-300 text-sm sm:text-base">{currentUser.email}</span>
-                </div>
-                <div className="flex items-center text-gray-400 mb-2">
-                  <GraduationCap size={16} className="mr-2 flex-shrink-0" />
-                  <span className="text-orange-300 text-sm sm:text-base">Year: {currentUser.year}</span>
-                </div>
-                <div className="flex items-center text-gray-400 mb-2">
-                  <Book size={16} className="mr-2 flex-shrink-0" />
-                  <span className="text-orange-300 text-sm sm:text-base">Major: {currentUser.major}</span>
-                </div>
-                <div className="flex items-center text-gray-400 mb-2">
-                  <Book size={16} className="mr-2 flex-shrink-0" />
-                  <span className="text-orange-300 text-sm sm:text-base">Minor: {currentUser.minor}</span>
-                </div>
-                <div className="flex items-center text-gray-400">
-                  <Home size={16} className="mr-2 flex-shrink-0" />
-                  <span className="text-orange-300 text-sm sm:text-base">Residence: {currentUser.residence_hall}</span>
-                </div>
+                <input
+                  type="search"
+                  id="default-search"
+                  className="block w-full px-4 py-2 ps-10 text-sm sm:text-md text-orange-300 border border-orange-600 rounded-full bg-gray-800 focus:ring-orange-500 focus:border-orange-500"
+                  placeholder="Search users..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
-            ) : (
-              <div className="text-orange-300 text-sm sm:text-base">Loading user information...</div>
-            )}
-            {currentUser && (
-              <button
-                className="w-full mt-4 transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 text-black text-sm sm:text-base"
-                onClick={() => router.push("update-account")}
-              >
-                Update Account
-              </button>
-            )}
+            </form>
           </div>
-        )}
+
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-orange-400">Your Info</h2>
+
+          {currentUser ? (
+            <div className="bg-gray-800 rounded-lg p-4 mb-4">
+              <div className="flex items-center text-gray-400 mb-2">
+                <User size={16} className="mr-2 flex-shrink-0" />
+                <span className="text-orange-300 text-sm sm:text-base">{currentUser.name}</span>
+              </div>
+              <div className="flex items-center text-gray-400 mb-2">
+                <User size={16} className="mr-2 flex-shrink-0" />
+                <span className="text-orange-300 text-sm sm:text-base">@{currentUser.username}</span>
+              </div>
+              <div className="flex items-center text-gray-400 mb-2">
+                <Mail size={16} className="mr-2 flex-shrink-0" />
+                <span className="text-orange-300 text-sm sm:text-base">{currentUser.email}</span>
+              </div>
+              <div className="flex items-center text-gray-400 mb-2">
+                <GraduationCap size={16} className="mr-2 flex-shrink-0" />
+                <span className="text-orange-300 text-sm sm:text-base">Year: {currentUser.year}</span>
+              </div>
+              <div className="flex items-center text-gray-400 mb-2">
+                <Book size={16} className="mr-2 flex-shrink-0" />
+                <span className="text-orange-300 text-sm sm:text-base">Major: {currentUser.major}</span>
+              </div>
+              <div className="flex items-center text-gray-400 mb-2">
+                <Book size={16} className="mr-2 flex-shrink-0" />
+                <span className="text-orange-300 text-sm sm:text-base">Minor: {currentUser.minor}</span>
+              </div>
+              <div className="flex items-center text-gray-400">
+                <Home size={16} className="mr-2 flex-shrink-0" />
+                <span className="text-orange-300 text-sm sm:text-base">Residence: {currentUser.residence_hall}</span>
+              </div>
+            </div>
+          ) : (
+            <div className="text-orange-300 text-sm sm:text-base">Loading user information...</div>
+          )}
+          {currentUser && (
+            <button
+              className="w-full mt-4 transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 p-2 text-black text-sm sm:text-base"
+              onClick={() => router.push("update-account")}
+            >
+              Update Account
+            </button>
+          )}
+        </div>
       </aside>
     </div>
   )
 }
-
