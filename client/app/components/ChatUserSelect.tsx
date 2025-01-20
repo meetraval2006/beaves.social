@@ -13,13 +13,21 @@ interface Options {
   isGc: boolean
   isActive: boolean
   unreadCount: number
+  onClearUnread: (chatId: string) => void
 }
 
 export default function ChatUserSelect(options: Options) {
   const router = useRouter()
-  const { latestMessageAuthor, latestMessageText, unreadCount } = options
+  const { id, latestMessageAuthor, latestMessageText, unreadCount, onClearUnread } = options
   const [displayName, setDisplayName] = useState(options.isGc ? options.username : "")
-  const handleUserClick = (_: any, id: string): void => router.push(`/you/chats/${id}`)
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (unreadCount > 0) {
+      onClearUnread(id)
+    }
+    router.push(`/you/chats/${id}`)
+  }
 
   useEffect(() => {
     const fetchOtherUsername = async () => {
@@ -51,28 +59,24 @@ export default function ChatUserSelect(options: Options) {
   }, [options.isGc, options.users])
 
   return (
-    <li>
+    <li className="mb-2">
       <a
-        style={{ cursor: "pointer" }}
-        onClick={(e) => handleUserClick(e, options.id)}
-        className={`flex items-center p-2 h-16 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${options.isActive ? "bg-gray-100 dark:bg-gray-700" : ""}`}
+        onClick={handleClick}
+        className={`flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group ${
+          options.isActive ? "bg-gray-100 dark:bg-gray-700" : ""
+        }`}
       >
         <img
-          src="https://i.pinimg.com/236x/68/31/12/68311248ba2f6e0ba94ff6da62eac9f6.jpg"
-          className="flex items-center float-left h-11 w-11 mr-5 ms-2 rounded-full"
-          alt="server-icon"
+          src="https://i.pinimg.com/736x/71/39/e2/7139e287d3f84a3691a38ecb048aa9f7.jpg"
+          className="w-10 h-10 rounded-full mr-3"
+          alt="user-avatar"
         />
-        <div className="flex-grow">
-          <div className="text-base">
-            <span className="text-orange-400">{displayName}</span>
-          </div>
-          <div className="text-sm text-gray-400">
-            <span className="text-white">
-              {latestMessageAuthor}
-              {options.isMessage ? ": " : ""}
-              {latestMessageText}
-            </span>
-          </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-orange-400 truncate">{displayName}</p>
+          <p className="text-xs text-gray-400 truncate">
+            {latestMessageAuthor && `${latestMessageAuthor}: `}
+            {latestMessageText}
+          </p>
         </div>
         {unreadCount > 0 && (
           <div className="bg-red-500 text-white text-xs font-bold rounded-full px-2 py-1 ml-2">{unreadCount}</div>

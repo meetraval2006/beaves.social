@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast'
 import "./globals.css";
 
 import { AppWrapper } from './components/AppContext';
+import { WebSocketProvider } from "./components/WebSocketContext"
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -41,7 +42,9 @@ export default function RootLayout({
       >
         <Toaster />
         <AppWrapper>
+          <WebSocketProvider>
           {children}
+          </WebSocketProvider>
         </AppWrapper>
       </body>
     </html>
