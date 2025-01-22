@@ -333,7 +333,7 @@ export default function CreateEventForm() {
       <div className="relative">
         <div className="absolute top-2 left-2 flex gap-4">
           <button
-            className="transition rounded-full bg-orange-600 hover:bg-black text-white hover:text-orange-600 ease-in-out duration-300 p-2"
+            className="transition rounded-full bg-orange-600 hover:bg-gray-800 text-white hover:text-orange-600 ease-in-out duration-300 p-2"
             onClick={() => redirect("/you/home")}
           >
             <svg
@@ -348,9 +348,9 @@ export default function CreateEventForm() {
           </button>
         </div>
       </div>
-      <section className="bg-orange-100 dark:bg-black min-h-screen flex items-center">
+      <section className="bg-gray-900 min-h-screen flex items-center">
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto sm:max-w-md">
-          <a href="/" className="flex items-center mb-6 text-2xl font-semibold text-orange-900 dark:text-orange-500">
+          <a href="/" className="flex items-center mb-6 text-2xl font-semibold text-orange-500">
             <Image
               className="inline-block align-middle rounded-lg w-12 h-12 mr-2"
               src={Logo || "/placeholder.svg"}
@@ -360,12 +360,12 @@ export default function CreateEventForm() {
             />
             beavs.social
           </a>
-          <div className="w-full bg-orange-50 rounded-lg shadow dark:border dark:border-orange-600 dark:bg-black">
+          <div className="w-full bg-gray-800 rounded-lg shadow border border-orange-600">
             <div className="p-6 space-y-6">
-              <h1 className="text-xl font-bold text-gray-900 dark:text-orange-500">Create an event</h1>
+              <h1 className="text-xl font-bold text-orange-400">Create an event</h1>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label htmlFor="name" className="block mb-2 text-sm font-medium text-orange-900 dark:text-orange-400">
+                  <label htmlFor="name" className="block mb-2 text-sm font-medium text-orange-400">
                     Name of the event
                   </label>
                   <input
@@ -373,7 +373,7 @@ export default function CreateEventForm() {
                     name="name"
                     id="name"
                     placeholder="Enter event name"
-                    className="bg-orange-50 border border-orange-300 text-orange-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
+                    className="bg-gray-700 border border-orange-500 text-orange-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
                     value={eventName}
                     onChange={(e) => setEventName(e.target.value.slice(0, 75))}
                     maxLength={75}
@@ -381,89 +381,94 @@ export default function CreateEventForm() {
                 </div>
 
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-orange-900 dark:text-orange-400">
+                  <label className="block mb-2 text-sm font-medium text-orange-400">
                     What year student are you looking for?
                   </label>
-                  <ScrollArea className="h-[200px] w-full rounded-md border p-4">
+                  <ScrollArea className="h-[200px] w-full rounded-md border border-orange-600 bg-gray-700 p-4 text-white">
                     {yearOptions.map((year) => (
                       <div key={year} className="flex items-center space-x-2 mb-2">
                         <Checkbox
                           id={`year-${year}`}
                           checked={years.includes(year)}
                           onCheckedChange={() => handleOptionChange(year, years, setYears)}
+                          className="border-white"
                         />
-                        <Label htmlFor={`year-${year}`}>{year}</Label>
+                        <Label htmlFor={`year-${year}`} className="text-white">
+                          {year}
+                        </Label>
                       </div>
                     ))}
                   </ScrollArea>
                 </div>
 
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-orange-900 dark:text-orange-400">
+                  <label className="block mb-2 text-sm font-medium text-orange-400">
                     What major are you looking for (be specific)?
                   </label>
-                  <ScrollArea className="h-[200px] w-full rounded-md border p-4">
+                  <ScrollArea className="h-[200px] w-full rounded-md border border-orange-600 bg-gray-700 p-4 text-white">
                     {majorOptions.map((major) => (
                       <div key={major} className="flex items-center space-x-2 mb-2">
                         <Checkbox
                           id={`major-${major}`}
                           checked={majors.includes(major)}
                           onCheckedChange={() => handleOptionChange(major, majors, setMajors)}
+                          className="border-white"
                         />
-                        <Label htmlFor={`major-${major}`}>{major}</Label>
+                        <Label htmlFor={`major-${major}`} className="text-white">
+                          {major}
+                        </Label>
                       </div>
                     ))}
                   </ScrollArea>
                 </div>
 
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-orange-900 dark:text-orange-400">
-                    Minor (if any)
-                  </label>
-                  <ScrollArea className="h-[200px] w-full rounded-md border p-4">
+                  <label className="block mb-2 text-sm font-medium text-orange-400">Minor (if any)</label>
+                  <ScrollArea className="h-[200px] w-full rounded-md border border-orange-600 bg-gray-700 p-4 text-white">
                     {minorOptions.map((minor) => (
                       <div key={minor} className="flex items-center space-x-2 mb-2">
                         <Checkbox
                           id={`minor-${minor}`}
                           checked={minors.includes(minor)}
                           onCheckedChange={() => handleOptionChange(minor, minors, setMinors)}
+                          className="border-white"
                         />
-                        <Label htmlFor={`minor-${minor}`}>{minor}</Label>
+                        <Label htmlFor={`minor-${minor}`} className="text-white">
+                          {minor}
+                        </Label>
                       </div>
                     ))}
                   </ScrollArea>
                 </div>
 
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-orange-900 dark:text-orange-400">
-                    Residence Hall (if any)
-                  </label>
-                  <ScrollArea className="h-[200px] w-full rounded-md border p-4">
+                  <label className="block mb-2 text-sm font-medium text-orange-400">Residence Hall (if any)</label>
+                  <ScrollArea className="h-[200px] w-full rounded-md border border-orange-600 bg-gray-700 p-4 text-white">
                     {residenceHallOptions.map((hall) => (
                       <div key={hall} className="flex items-center space-x-2 mb-2">
                         <Checkbox
                           id={`hall-${hall}`}
                           checked={halls.includes(hall)}
                           onCheckedChange={() => handleOptionChange(hall, halls, setHalls)}
+                          className="border-white"
                         />
-                        <Label htmlFor={`hall-${hall}`}>{hall}</Label>
+                        <Label htmlFor={`hall-${hall}`} className="text-white">
+                          {hall}
+                        </Label>
                       </div>
                     ))}
                   </ScrollArea>
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="description"
-                    className="block mb-2 text-sm font-medium text-orange-900 dark:text-orange-400"
-                  >
+                  <label htmlFor="description" className="block mb-2 text-sm font-medium text-orange-400">
                     Description of the Event
                   </label>
                   <textarea
                     name="description"
                     id="description"
                     placeholder="What is your event about?"
-                    className="bg-orange-50 border border-orange-300 text-orange-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
+                    className="bg-gray-700 border border-orange-500 text-orange-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
                     value={description}
                     onChange={(e) => setDescription(e.target.value.slice(0, 150))}
                     maxLength={150}
@@ -473,7 +478,7 @@ export default function CreateEventForm() {
 
                 <button
                   type="submit"
-                  className="w-full text-white bg-orange-600 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-orange-700 dark:hover:bg-orange-600 dark:focus:ring-orange-800"
+                  className="w-full text-white bg-orange-600 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                 >
                   Create an event
                 </button>

@@ -363,11 +363,11 @@ export default function ChatMessagesWindow() {
 
   return (
     <div className="sm:ml-96 flex flex-col h-screen">
-      <div className="sticky top-0 z-10 border-b border-b-indigo-200 pl-6 py-4 bg-orange-700">
+      <div className="sticky top-0 z-10 border-b border-b-orange-600 pl-6 py-4 bg-gray-800">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <button
-              className="transition rounded-full ease-in-out bg-orange-500 hover:-translate-y-1 hover:scale-110 hover:bg-orange-600 duration-300 p-2 flex-initial mr-6"
+              className="transition rounded-full ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-700 duration-300 p-2 flex-initial mr-6"
               onClick={() => router.push("/you/chats/inbox")}
             >
               <ChevronLeft className="text-white" size={20} />
@@ -388,7 +388,11 @@ export default function ChatMessagesWindow() {
                   <Users className="mr-2" size={24} />
                   Users
                 </Button>
-                <Button onClick={handleLeaveGroup} variant="destructive" className="mr-4">
+                <Button
+                  onClick={handleLeaveGroup}
+                  variant="destructive"
+                  className="mr-4 bg-red-600 hover:bg-red-700 text-white"
+                >
                   Leave Group
                 </Button>
               </>
@@ -397,12 +401,12 @@ export default function ChatMessagesWindow() {
         </div>
       </div>
 
-      <div className="flex-1 p-4 overflow-y-auto flex flex-col">
+      <div className="flex-1 p-4 overflow-y-auto flex flex-col bg-gray-900">
         {returnMessageBubbles(data)}
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="sticky bottom-0 bg-white border-t border-gray-200">
+      <div className="sticky bottom-0 bg-gray-800 border-t border-gray-700">
         <div className="py-4">
           <form className="max-w mx-12 relative" onSubmit={(e) => e.preventDefault()}>
             <div className="relative">
@@ -412,11 +416,11 @@ export default function ChatMessagesWindow() {
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
                 maxLength={200}
-                className="block w-full px-4 py-2 ps-4 text-md text-gray-900 border border-gray-300 rounded-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="block w-full px-4 py-2 ps-4 text-md text-white border border-gray-600 rounded-full bg-gray-700 focus:ring-orange-500 focus:border-orange-500"
                 placeholder="Message..."
                 required
               />
-              <div className="absolute right-4 -top-6 text-sm text-gray-500">{inputText.length}/200</div>
+              <div className="absolute right-4 -top-6 text-sm text-gray-400">{inputText.length}/200</div>
             </div>
           </form>
         </div>
