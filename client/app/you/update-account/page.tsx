@@ -57,7 +57,7 @@ export default function UpdateAccount() {
         localStorage.setItem(key, value as string);
       });
       console.log('Account successfully updated');
-      router.push(`/you/chats/home`);
+      router.push(`/you/home`);
     } else {
       console.error('Failed to update account');
     }

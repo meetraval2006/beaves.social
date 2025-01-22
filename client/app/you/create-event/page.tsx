@@ -1,22 +1,22 @@
-'use client';
+"use client"
 
-import Image from "next/image";
-import { useRouter, redirect } from 'next/navigation';
-import { useState } from 'react';
-import Logo from "@/public/logo.png";
-import { Toaster, toast } from 'react-hot-toast';
+import Image from "next/image"
+import { useRouter, redirect } from "next/navigation"
+import { useState } from "react"
+import Logo from "@/public/logo.png"
+import { Toaster, toast } from "react-hot-toast"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 export default function CreateEventForm() {
-  const router = useRouter();
-  const [eventName, setEventName] = useState('');
-  const [years, setYears] = useState<string[]>([]);
-  const [majors, setMajors] = useState<string[]>([]);
-  const [minors, setMinors] = useState<string[]>([]);
-  const [halls, setHalls] = useState<string[]>([]);
-  const [description, setDescription] = useState('');
+  const router = useRouter()
+  const [eventName, setEventName] = useState("")
+  const [years, setYears] = useState<string[]>([])
+  const [majors, setMajors] = useState<string[]>([])
+  const [minors, setMinors] = useState<string[]>([])
+  const [halls, setHalls] = useState<string[]>([])
+  const [description, setDescription] = useState("")
 
   const majorOptions = [
     "All",
@@ -30,7 +30,7 @@ export default function CreateEventForm() {
     "Applied Humanities",
     "Architectural Engineering",
     "Art",
-    "Arts, Media, and Technology",
+    "Arts, Media and Technology",
     "Biochemistry and Biophysics",
     "Biochemistry and Molecular Biology",
     "Bioengineering",
@@ -122,8 +122,8 @@ export default function CreateEventForm() {
     "Tourism, Recreation, and Adventure Leadership",
     "Women, Gender, and Sexuality Studies",
     "Wood Innovation for Sustainability",
-    "Zoology"
-  ];
+    "Zoology",
+  ]
 
   const minorOptions = [
     "All",
@@ -139,7 +139,7 @@ export default function CreateEventForm() {
     "Anthropology",
     "Applied Journalism",
     "Art History",
-    "Arts, Media, and Technology",
+    "Arts, Media and Technology",
     "Asian Languages and Cultures",
     "Asian Studies",
     "Biochemistry and Molecular Biology",
@@ -251,18 +251,10 @@ export default function CreateEventForm() {
     "Women, Gender, and Sexuality Studies",
     "Wood Innovation for Sustainability",
     "Wood Products Sales",
-    "Writing"
-  ];
+    "Writing",
+  ]
 
-  const yearOptions = [
-    "All",
-    "Freshman",
-    "Sophomore",
-    "Junior",
-    "Senior",
-    "Masters",
-    "PhD"
-  ];
+  const yearOptions = ["All", "Freshman", "Sophomore", "Junior", "Senior", "Masters", "PhD"]
 
   const residenceHallOptions = [
     "All",
@@ -281,28 +273,30 @@ export default function CreateEventForm() {
     "Tebeau Hall",
     "Weatherford Hall",
     "West Hall",
-    "Wilson Hall"
-  ];
+    "Wilson Hall",
+  ]
 
-  const handleOptionChange = (option: string, currentState: string[], setter: React.Dispatch<React.SetStateAction<string[]>>) => {
+  const handleOptionChange = (
+    option: string,
+    currentState: string[],
+    setter: React.Dispatch<React.SetStateAction<string[]>>,
+  ) => {
     if (option === "All") {
-      setter(["All"]);
+      setter(["All"])
     } else {
-      setter(prev => {
+      setter((prev) => {
         if (prev.includes("All")) {
-          return [option];
+          return [option]
         } else {
-          const newState = prev.includes(option)
-            ? prev.filter(item => item !== option)
-            : [...prev, option];
-          return newState.length === 0 ? ["All"] : newState;
+          const newState = prev.includes(option) ? prev.filter((item) => item !== option) : [...prev, option]
+          return newState.length === 0 ? ["All"] : newState
         }
-      });
+      })
     }
-  };
+  }
 
   const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+    event.preventDefault()
 
     console.log(localStorage.getItem("id"))
 
@@ -313,26 +307,26 @@ export default function CreateEventForm() {
       years: years.length === 0 ? ["All"] : years,
       residence_halls: halls.length === 0 ? ["All"] : halls,
       eventDescription: description,
-      authorId: localStorage.getItem('id')
-    };
+      authorId: localStorage.getItem("id"),
+    }
 
-    const response = await fetch('http://127.0.0.1:5000/api/create_event', {
-      method: 'POST',
+    const response = await fetch("http://127.0.0.1:5000/api/create_event", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
-    });
+    })
 
     if (response.ok) {
-      console.log('Event created successfully');
-      toast.success('Event created successfully!');
-      router.push('/you/events');
+      console.log("Event created successfully")
+      toast.success("Event created successfully!")
+      router.push("/you/events")
     } else {
-      console.error('Failed to create event');
-      toast.error('Failed to create event. Please try again.');
+      console.error("Failed to create event")
+      toast.error("Failed to create event. Please try again.")
     }
-  };
+  }
 
   return (
     <>
@@ -354,12 +348,9 @@ export default function CreateEventForm() {
           </button>
         </div>
       </div>
-      <section className="bg-gray-100 dark:bg-black min-h-screen flex items-center">
+      <section className="bg-orange-100 dark:bg-black min-h-screen flex items-center">
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto sm:max-w-md">
-          <a
-            href="/"
-            className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-orange-500"
-          >
+          <a href="/" className="flex items-center mb-6 text-2xl font-semibold text-orange-900 dark:text-orange-500">
             <Image
               className="inline-block align-middle rounded-lg w-12 h-12 mr-2"
               src={Logo || "/placeholder.svg"}
@@ -369,17 +360,12 @@ export default function CreateEventForm() {
             />
             beavs.social
           </a>
-          <div className="w-full bg-white rounded-lg shadow dark:border dark:border-orange-600 dark:bg-black">
+          <div className="w-full bg-orange-50 rounded-lg shadow dark:border dark:border-orange-600 dark:bg-black">
             <div className="p-6 space-y-6">
-              <h1 className="text-xl font-bold text-gray-900 dark:text-orange-500">
-                Create an event
-              </h1>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-orange-500">Create an event</h1>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label
-                    htmlFor="name"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-orange-400"
-                  >
+                  <label htmlFor="name" className="block mb-2 text-sm font-medium text-orange-900 dark:text-orange-400">
                     Name of the event
                   </label>
                   <input
@@ -387,7 +373,7 @@ export default function CreateEventForm() {
                     name="name"
                     id="name"
                     placeholder="Enter event name"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
+                    className="bg-orange-50 border border-orange-300 text-orange-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
                     value={eventName}
                     onChange={(e) => setEventName(e.target.value.slice(0, 75))}
                     maxLength={75}
@@ -395,7 +381,7 @@ export default function CreateEventForm() {
                 </div>
 
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-orange-400">
+                  <label className="block mb-2 text-sm font-medium text-orange-900 dark:text-orange-400">
                     What year student are you looking for?
                   </label>
                   <ScrollArea className="h-[200px] w-full rounded-md border p-4">
@@ -413,7 +399,7 @@ export default function CreateEventForm() {
                 </div>
 
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-orange-400">
+                  <label className="block mb-2 text-sm font-medium text-orange-900 dark:text-orange-400">
                     What major are you looking for (be specific)?
                   </label>
                   <ScrollArea className="h-[200px] w-full rounded-md border p-4">
@@ -431,7 +417,7 @@ export default function CreateEventForm() {
                 </div>
 
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-orange-400">
+                  <label className="block mb-2 text-sm font-medium text-orange-900 dark:text-orange-400">
                     Minor (if any)
                   </label>
                   <ScrollArea className="h-[200px] w-full rounded-md border p-4">
@@ -449,7 +435,7 @@ export default function CreateEventForm() {
                 </div>
 
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-orange-400">
+                  <label className="block mb-2 text-sm font-medium text-orange-900 dark:text-orange-400">
                     Residence Hall (if any)
                   </label>
                   <ScrollArea className="h-[200px] w-full rounded-md border p-4">
@@ -469,7 +455,7 @@ export default function CreateEventForm() {
                 <div>
                   <label
                     htmlFor="description"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-orange-400"
+                    className="block mb-2 text-sm font-medium text-orange-900 dark:text-orange-400"
                   >
                     Description of the Event
                   </label>
@@ -477,7 +463,7 @@ export default function CreateEventForm() {
                     name="description"
                     id="description"
                     placeholder="What is your event about?"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
+                    className="bg-orange-50 border border-orange-300 text-orange-900 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-black dark:border-orange-500 dark:text-orange-300"
                     value={description}
                     onChange={(e) => setDescription(e.target.value.slice(0, 150))}
                     maxLength={150}
@@ -487,11 +473,10 @@ export default function CreateEventForm() {
 
                 <button
                   type="submit"
-                  className="w-full text-white bg-orange-600 hover:bg-orange-400 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-orange-800"
+                  className="w-full text-white bg-orange-600 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-orange-700 dark:hover:bg-orange-600 dark:focus:ring-orange-800"
                 >
                   Create an event
                 </button>
-
               </form>
             </div>
           </div>
@@ -499,6 +484,6 @@ export default function CreateEventForm() {
       </section>
       <Toaster />
     </>
-  );
+  )
 }
 

@@ -1,19 +1,21 @@
-"use client";
-import Image from 'next/image';
-import { redirect } from 'next/navigation';
-import Logo from "@/public/logo.png";
+"use client"
+import Image from "next/image"
+import { redirect } from "next/navigation"
+import Logo from "@/public/logo.png"
+import Sri from "@/public/sri.jpg"
+import Kishore from "@/public/kishore.jpg"
 
 const features = [
   "Easy to use interface",
   "Cross-platform compatibility",
   "Real-time synchronization",
   "Advanced security features",
-  "Customizable settings"
-];
+  "Customizable settings",
+]
 
 export default function AppDescriptionPage() {
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-black py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-black py-12 px-4 sm:px-6 lg:px-8">
       <div className="relative">
         <div className="absolute top-2 left-2 flex gap-4">
           <button
@@ -33,51 +35,68 @@ export default function AppDescriptionPage() {
         </div>
       </div>
       <div className="max-w-3xl mx-auto">
-        
         <header className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-orange-500 mb-2">
-            App Description
-          </h1>
+          <h1 className="text-4xl font-bold text-orange-500 mb-2">App Description</h1>
         </header>
 
-        <div className="bg-white dark:bg-black shadow-lg rounded-lg overflow-hidden w-full bg-white rounded-lg shadow dark:border dark:border-orange-600 dark:bg-black">
+        <div className="bg-black shadow-lg rounded-lg overflow-hidden w-full rounded-lg shadow border border-orange-600">
           <div className="p-8">
             <div className="flex items-center mb-6">
-              <Image
-                src={Logo}
-                alt="App Icon"
-                width={80}
-                height={80}
-                className="rounded-2xl"
-              />
+              <Image src={Logo || "/placeholder.svg"} alt="App Icon" width={80} height={80} className="rounded-2xl" />
               <div className="ml-4">
-                <h2 className="text-2xl font-semibold text-gray-900 dark:text-orange-500">
-                  beavs.social
-                </h2>
-                <p className="text-gray-600 dark:text-orange-400">
-                  By Srivatsav S., Kishore A., Meet R., and Rohan M.
-                </p>
+                <h2 className="text-2xl font-semibold text-orange-500">beavs.social</h2>
+                <p className="text-orange-400">By Srivatsav S., Kishore A.</p>
               </div>
             </div>
 
             <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-orange-500 mb-2">
-                Description
-              </h3>
-              <p className="text-gray-700 dark:text-orange-300">
-              The app focuses on creating a collaborative environment that allows users to create chats with students and let students create different types of events which lets other students know about different types of activities that are happening nearby. A student could also customize their usernames and create group chats with the option to create a private dm too.
+              <h3 className="text-lg font-semibold text-orange-500 mb-2">Description</h3>
+              <p className="text-orange-300">
+                The app focuses on creating a collaborative environment that allows users to create chats with students
+                and let students create different types of events which lets other students know about different types
+                of activities that are happening nearby. A student could also customize their usernames and create group
+                chats with the option to create a private dm too.
               </p>
             </div>
 
             <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-orange-500 mb-2">
-                Creators
-              </h3>
-              
+              <h3 className="text-lg font-semibold text-orange-500 mb-2">Creators</h3>
+
+              <div className="mb-6">
+                <Image
+                  src={Sri}
+                  alt="Back End Engineer"
+                  width={200}
+                  height={200}
+                  className="rounded-lg mx-auto mb-2"
+                />
+                <p className="text-orange-500 text-center font-semibold mb-4">Back End Engineer</p>
+                <p className="text-orange-300">
+                  Hello everyone. My name is Srivatsav Sundaresan from Oregon State University Class of 2028. I am an
+                  Electrical and Computer Engineering student. I mostly worked on the back end of this app and some
+                  front end.
+                </p>
+              </div>
+
+              <div className="mb-6">
+                <Image
+                  src={Kishore}
+                  alt="Front-End Engineer"
+                  width={200}
+                  height={200}
+                  className="rounded-lg mx-auto mb-2"
+                />
+                <p className="text-orange-500 text-center font-semibold mb-4">Front-End Engineer</p>
+                <p className="text-orange-300">
+                  Hello everyone. My name is Kishore Kumar from Oregon State University Class of 2028. I am a Computer
+                  Science student. I created most of the front end of this app.
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  );
+  )
 }
+
