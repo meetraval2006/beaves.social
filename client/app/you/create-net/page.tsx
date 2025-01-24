@@ -17,6 +17,7 @@ export default function CreateEventForm() {
   const [minors, setMinors] = useState<string[]>([])
   const [halls, setHalls] = useState<string[]>([])
   const [description, setDescription] = useState("")
+  const [netType, setNetType] = useState("")
 
   const majorOptions = [
     "All",
@@ -308,6 +309,7 @@ export default function CreateEventForm() {
       residence_halls: halls.length === 0 ? ["All"] : halls,
       eventDescription: description,
       authorId: localStorage.getItem("id"),
+      netType: netType,
     }
 
     const response = await fetch("http://127.0.0.1:5000/api/create_event", {
@@ -320,11 +322,11 @@ export default function CreateEventForm() {
 
     if (response.ok) {
       console.log("Event created successfully")
-      toast.success("Event created successfully!")
-      router.push("/you/events")
+      toast.success("Net cast successfully!")
+      router.push("/you/nets")
     } else {
       console.error("Failed to create event")
-      toast.error("Failed to create event. Please try again.")
+      toast.error("Failed to cast net. Please try again.")
     }
   }
 
@@ -362,17 +364,17 @@ export default function CreateEventForm() {
           </a>
           <div className="w-full bg-gray-800 rounded-lg shadow border border-orange-600">
             <div className="p-6 space-y-6">
-              <h1 className="text-xl font-bold text-orange-400">Create an event</h1>
+              <h1 className="text-xl font-bold text-orange-400">Cast a Net</h1>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label htmlFor="name" className="block mb-2 text-sm font-medium text-orange-400">
-                    Name of the event
+                    Name
                   </label>
                   <input
                     type="text"
                     name="name"
                     id="name"
-                    placeholder="Enter event name"
+                    placeholder="The name of your Net"
                     className="bg-gray-700 border border-orange-500 text-orange-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
                     value={eventName}
                     onChange={(e) => setEventName(e.target.value.slice(0, 75))}
@@ -382,7 +384,7 @@ export default function CreateEventForm() {
 
                 <div>
                   <label className="block mb-2 text-sm font-medium text-orange-400">
-                    What year student are you looking for?
+                    What year student(s) are you looking for?
                   </label>
                   <ScrollArea className="h-[200px] w-full rounded-md border border-orange-600 bg-gray-700 p-4 text-white">
                     {yearOptions.map((year) => (
@@ -403,7 +405,7 @@ export default function CreateEventForm() {
 
                 <div>
                   <label className="block mb-2 text-sm font-medium text-orange-400">
-                    What major are you looking for (be specific)?
+                    What major(s) are you looking for (be specific)?
                   </label>
                   <ScrollArea className="h-[200px] w-full rounded-md border border-orange-600 bg-gray-700 p-4 text-white">
                     {majorOptions.map((major) => (
@@ -423,7 +425,7 @@ export default function CreateEventForm() {
                 </div>
 
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-orange-400">Minor (if any)</label>
+                  <label className="block mb-2 text-sm font-medium text-orange-400">Minor(s) (if any)</label>
                   <ScrollArea className="h-[200px] w-full rounded-md border border-orange-600 bg-gray-700 p-4 text-white">
                     {minorOptions.map((minor) => (
                       <div key={minor} className="flex items-center space-x-2 mb-2">
@@ -442,7 +444,7 @@ export default function CreateEventForm() {
                 </div>
 
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-orange-400">Residence Hall (if any)</label>
+                  <label className="block mb-2 text-sm font-medium text-orange-400">Residence Hall(s) (if any)</label>
                   <ScrollArea className="h-[200px] w-full rounded-md border border-orange-600 bg-gray-700 p-4 text-white">
                     {residenceHallOptions.map((hall) => (
                       <div key={hall} className="flex items-center space-x-2 mb-2">
@@ -461,13 +463,31 @@ export default function CreateEventForm() {
                 </div>
 
                 <div>
+                  <label htmlFor="netType" className="block mb-2 text-sm font-medium text-orange-400">
+                    Net Type
+                  </label>
+                  <select
+                    id="netType"
+                    name="netType"
+                    className="bg-gray-700 border border-orange-500 text-orange-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
+                    value={netType}
+                    onChange={(e) => setNetType(e.target.value)}
+                  >
+                    <option value="">Select a net type</option>
+                    <option value="Social">Social Net</option>
+                    <option value="Project">Project Net</option>
+                    <option value="Interest">Interest Net</option>
+                  </select>
+                </div>
+
+                <div>
                   <label htmlFor="description" className="block mb-2 text-sm font-medium text-orange-400">
-                    Description of the Event
+                    Net Description
                   </label>
                   <textarea
                     name="description"
                     id="description"
-                    placeholder="What is your event about?"
+                    placeholder="The description or purpose of your net (e.g., &quot;Looking for CS majors to collaborate on a startup&quot;)"
                     className="bg-gray-700 border border-orange-500 text-orange-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
                     value={description}
                     onChange={(e) => setDescription(e.target.value.slice(0, 150))}
@@ -480,7 +500,7 @@ export default function CreateEventForm() {
                   type="submit"
                   className="w-full text-white bg-orange-600 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                 >
-                  Create an event
+                  Cast a Net
                 </button>
               </form>
             </div>

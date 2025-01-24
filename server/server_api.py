@@ -562,6 +562,7 @@ def create_event():
         residence_halls: list[str] = data.get("residence_halls")
         event_description = data.get("eventDescription")
         author_id = data.get("authorId")
+        netType = data.get("netType")
 
         # Ensure these fields are arrays
         majors = majors if isinstance(majors, list) else []
@@ -571,6 +572,10 @@ def create_event():
 
         if not name or not author_id:
             abort(400, message="Please provide all the required event information")
+
+        if not netType:
+            print("Net type is required")
+            abort(400, message="Net type is required")
 
         random_id = str(uuid.uuid4())
         groupChatId = str(uuid.uuid4())
@@ -594,7 +599,8 @@ def create_event():
             "residence_halls": residence_halls,
             "eventDescription": event_description,
             "authorId": author_id,
-            "groupChatId": groupChatId
+            "groupChatId": groupChatId,
+            "netType": netType
         }
         
         db.collection("events").document(random_id).set(dictionary)
@@ -672,6 +678,7 @@ def get_events():
         for doc in docs:
             events_data = doc.to_dict()
             events_data["id"] = doc.id  # Add the document ID to the dictionary
+            events_data["netType"] = events_data.get("netType", "")  # Default to empty string if not present
             events.append(events_data)
 
             # user_id = users["id"]
