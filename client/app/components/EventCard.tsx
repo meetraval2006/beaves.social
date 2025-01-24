@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react"
-import { Trash2 } from "lucide-react"
+import React, { useState, useEffect, useRef } from "react"
+import { Trash2, ChevronDown, ChevronUp, Users } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 
@@ -23,6 +23,7 @@ export default function EventCard(options: Options) {
   const [isDeleting, setIsDeleting] = useState(false)
   const [isJoining, setIsJoining] = useState(false)
   const [isInGroupChat, setIsInGroupChat] = useState(false)
+  const [userCount, setUserCount] = useState(0)
 
   const majors = Array.isArray(options.majors) ? options.majors : []
   const minors = Array.isArray(options.minors) ? options.minors : []
@@ -30,49 +31,95 @@ export default function EventCard(options: Options) {
   const residence_halls = Array.isArray(options.residence_halls) ? options.residence_halls : []
   const eventDescription: string = options.eventDescription ? options.eventDescription : "<No description>"
 
-  const majorElements: JSX.Element[] = majors.map((major) => (
-    <React.Fragment key={major}>
-      <span className="underline">{major}</span>&nbsp;
-    </React.Fragment>
-  ))
-  const minorElements: JSX.Element[] = minors.map((minor) => (
-    <React.Fragment key={minor}>
-      <span className="underline">{minor}</span>&nbsp;
-    </React.Fragment>
-  ))
-  const yearElements: JSX.Element[] = years.map((year) => (
-    <React.Fragment key={year}>
-      <span className="underline">{year}</span>&nbsp;
-    </React.Fragment>
-  ))
-  const residenceHallElements: JSX.Element[] = residence_halls.map((residence_hall) => (
-    <React.Fragment key={residence_hall}>
-      <span className="underline">{residence_hall}</span>&nbsp;
-    </React.Fragment>
-  ))
+  const renderSection = (title: string, items: string[]) => {
+    const [isExpanded, setIsExpanded] = useState(false)
+    const containerRef = useRef<HTMLDivElement>(null)
+    const [showMoreButton, setShowMoreButton] = useState(false)
 
-  const eventDescriptionElement = () => (
-    <React.Fragment key={eventDescription}>
-      <span className="underline">{eventDescription}</span>&nbsp;
-    </React.Fragment>
-  )
+    useEffect(() => {
+      if (containerRef.current) {
+        const hasOverflow = containerRef.current.scrollHeight > containerRef.current.clientHeight
+        setShowMoreButton(hasOverflow)
+      }
+    }, [items])
+
+    return (
+      <div className="mb-3">
+        <div className="flex items-center justify-between">
+          <span className="font-bold text-slate-200">{title}:</span>
+          {showMoreButton && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="text-orange-400 hover:text-orange-300 focus:outline-none transition-colors duration-200"
+              aria-label={isExpanded ? `Show less ${title}` : `Show more ${title}`}
+            >
+              {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+          )}
+        </div>
+        <div className="relative mt-1">
+          <div
+            ref={containerRef}
+            className={`flex flex-wrap transition-all duration-300 ease-in-out ${
+              isExpanded ? "max-h-none" : "max-h-8 overflow-hidden"
+            }`}
+          >
+            {items.map((item, index) => (
+              <span key={index} className="inline-block bg-orange-500 text-white rounded px-2 py-1 text-sm mr-1 mb-1">
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const renderDescription = () => {
+    const [isExpanded, setIsExpanded] = useState(false)
+    const shortDescription = eventDescription.slice(0, 100)
+    const hasMore = eventDescription.length > 100
+
+    return (
+      <div className="mb-3">
+        <div className="flex items-center justify-between">
+          <span className="font-bold text-slate-200">Description:</span>
+          {hasMore && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="text-orange-400 hover:text-orange-300 focus:outline-none transition-colors duration-200"
+              aria-label={isExpanded ? "Show less description" : "Show full description"}
+            >
+              {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+          )}
+        </div>
+        <div
+          className={`mt-1 text-orange-400 transition-all duration-300 ease-in-out ${isExpanded ? "" : "max-h-24 overflow-y-auto"}`}
+        >
+          {isExpanded ? eventDescription : shortDescription}
+          {!isExpanded && hasMore && "..."}
+        </div>
+      </div>
+    )
+  }
 
   const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this event?")) {
+    if (window.confirm("Are you sure you want to delete this net?")) {
       setIsDeleting(true)
       try {
         const response = await fetch(`http://127.0.0.1:5000/api/delete_event?id=${options.id}`, {
           method: "DELETE",
         })
         if (response.ok) {
-          toast.success("Event deleted successfully")
+          toast.success("Net deleted successfully")
           options.onDelete(options.id)
         } else {
-          throw new Error("Failed to delete event")
+          throw new Error("Failed to delete net")
         }
       } catch (error) {
         console.error("Error deleting event:", error)
-        toast.error("Failed to delete event")
+        toast.error("Failed to delete net")
       } finally {
         setIsDeleting(false)
       }
@@ -81,7 +128,6 @@ export default function EventCard(options: Options) {
 
   const handleJoin = async () => {
     if (isInGroupChat) {
-      // If already in chat, just redirect
       router.push(`/you/chats/${options.groupChatId}`)
     } else {
       setIsJoining(true)
@@ -98,14 +144,14 @@ export default function EventCard(options: Options) {
           }),
         })
         if (response.ok) {
-          toast.success("Joined event successfully")
+          toast.success("You were reeled into the net")
           router.push(`/you/chats/${options.groupChatId}`)
         } else {
           throw new Error("Failed to join event")
         }
       } catch (error) {
         console.error("Error joining event:", error)
-        toast.error("Failed to join event")
+        toast.error("Failed to join net")
       } finally {
         setIsJoining(false)
       }
@@ -128,54 +174,64 @@ export default function EventCard(options: Options) {
     checkGroupChatMembership()
   }, [options.groupChatId, options.userId])
 
+  useEffect(() => {
+    const fetchUserCount = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:5000/api/get_gc?chat_id=${options.groupChatId}`)
+        if (response.ok) {
+          const data = await response.json()
+          setUserCount(data.users?.length || 0)
+        }
+      } catch (error) {
+        console.error("Error fetching user count:", error)
+      }
+    }
+
+    fetchUserCount()
+  }, [options.groupChatId])
+
   return (
-    <div
-      key={options.id}
-      style={{ cursor: "default" }}
-      className="bg-gradient-to-r from-orange-400 to-orange-600 p-1 rounded-lg relative"
-    >
-      {options.userId === options.authorId && (
-        <button
-          onClick={handleDelete}
-          disabled={isDeleting}
-          className="absolute top-4 right-4 p-2 bg-orange-500 rounded-full hover:bg-orange-600 transition-colors duration-200"
-          aria-label="Delete event"
-        >
-          <Trash2 size={20} className="text-white" />
-        </button>
-      )}
-      <div className="flex items-center bg-black bg-opacity-90 p-3 space-x-4 rounded-lg">
-        <div className="overflow-hidden h-auto px-8 py-4 w-full">
-          <div className="text-xl font-semibold text-orange-400 truncate">{options.name}</div>
-          <div>
-            <span className="font-bold text-slate-200"> Majors: </span>
-            <span className="text-m  text-orange-400 truncate"> {majorElements} </span>
-          </div>
-          <div>
-            <span className="font-bold text-slate-200"> Minors: </span>
-            <span className="text-m text-orange-400 truncate"> {minorElements} </span>
-          </div>
-          <div>
-            <span className="font-bold text-slate-200"> Years: </span>
-            <span className="text-m text-orange-400 truncate"> {yearElements} </span>
-          </div>
-          <div>
-            <span className="font-bold text-slate-200"> Residence Halls: </span>
-            <span className="text-m text-orange-400 truncate"> {residenceHallElements} </span>
-          </div>
-          <div>
-            <span className="font-bold text-slate-200"> Description: </span>
-            <span className="text-m text-orange-400 truncate"> {eventDescriptionElement()} </span>
-          </div>
-          <div className="mt-4">
+    <div className="bg-gradient-to-r from-orange-400 to-orange-600 p-1 rounded-lg h-full">
+      <div className="bg-black bg-opacity-90 p-4 rounded-lg h-full flex flex-col">
+        <div className="flex justify-between items-start mb-4">
+          <h2 className="text-xl font-semibold text-orange-400">{options.name}</h2>
+          {options.userId === options.authorId && (
             <button
-              onClick={handleJoin}
-              disabled={isJoining}
-              className="w-full transition rounded-lg ease-in-out bg-orange-500 hover:bg-orange-400 duration-100 p-2 text-slate-200 font-semibold"
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="p-1 bg-orange-500 rounded-full hover:bg-orange-600 transition-colors duration-200"
+              aria-label="Delete net"
             >
-              {isInGroupChat ? "Go to Chat" : isJoining ? "Joining..." : "Join"}
+              <Trash2 size={16} className="text-white" />
             </button>
+          )}
+        </div>
+
+        <div className="flex-grow overflow-y-auto mb-4">
+          {renderSection("Majors", majors)}
+          {renderSection("Minors", minors)}
+          {renderSection("Years", years)}
+          {renderSection("Residence Halls", residence_halls)}
+          {renderDescription()}
+        </div>
+
+        <div className="mt-auto">
+          <div className="flex items-center justify-between mb-2 group">
+            <div className="flex items-center">
+              <Users size={24} className="text-orange-400 mr-2" />
+              <span className="text-lg font-bold text-slate-200">Users in Net:</span>
+            </div>
+            <span className="text-orange-400 font-bold text-2xl transition-all duration-300 ease-in-out group-hover:text-orange-300">
+              {userCount}
+            </span>
           </div>
+          <button
+            onClick={handleJoin}
+            disabled={isJoining}
+            className="w-full transition rounded-lg ease-in-out bg-orange-500 hover:bg-orange-400 duration-100 p-2 text-slate-200 font-semibold"
+          >
+            {isInGroupChat ? "Go to Chat" : isJoining ? "Reeling in..." : "Reel in"}
+          </button>
         </div>
       </div>
     </div>

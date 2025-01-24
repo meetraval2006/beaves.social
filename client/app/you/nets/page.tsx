@@ -1,3 +1,5 @@
+// nets
+
 "use client";
 
 import { useState } from 'react';
@@ -24,7 +26,7 @@ export default function Events() {
             >
               <ChevronLeft size={24} />
             </button>
-            <h1 className="text-3xl sm:text-4xl font-black text-orange-600">Events</h1>
+            <h1 className="text-3xl sm:text-4xl font-black text-orange-600">Nets</h1>
           </div>
           
           <nav className="flex items-center">
@@ -46,13 +48,13 @@ export default function Events() {
         <div className="flex justify-center my-4">
           <button
             className="transition rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 shadow-md"
-            onClick={() => router.push("create-event")}
+            onClick={() => router.push("create-net")}
           >
-            Create Event
+            Cast a Net
           </button>
         </div>
 
-        <EventsWall userId={localStorage.getItem("id") ?? "null"} />
+        <EventsWall />
       </main>
     </div>
   );

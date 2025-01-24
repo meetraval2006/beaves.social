@@ -86,9 +86,9 @@ export default function HomePage() {
                 </button>
                 <button
                   className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 px-3 py-2 text-black text-sm sm:text-base font-medium"
-                  onClick={() => router.push("events")}
+                  onClick={() => router.push("nets")}
                 >
-                  Events
+                  Nets
                 </button>
                 <button
                   className="transition rounded-lg ease-in-out bg-orange-600 hover:-translate-y-1 hover:scale-110 hover:bg-orange-500 duration-300 px-3 py-2 text-black text-sm sm:text-base font-medium"
