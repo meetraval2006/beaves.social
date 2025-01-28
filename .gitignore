@@ -1,2 +1,3 @@
-#delete this file or comment line 2 before running server.py
 key.json
+.env
+secrete_key.py

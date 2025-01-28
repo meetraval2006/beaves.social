@@ -10,14 +10,19 @@ from flask_socketio import SocketIO, emit
 import uuid
 import re
 import time
+import os
+from dotenv import load_dotenv
+from config import config
 
 app = Flask(__name__)
+app.config.from_object(config[os.getenv('FLASK_ENV', 'default')])
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 api = Api(app)
 
-cred = credentials.Certificate('./server/key.json')
-firebase_initialization = firebase_admin.initialize_app(cred, {"databaseURL": "https://beavs-social-default-rtdb.firebaseio.com/"})
+# Use environment variables for sensitive information
+cred = credentials.Certificate(app.config['FIREBASE_CREDENTIALS_PATH'])
+firebase_initialization = firebase_admin.initialize_app(cred, {"databaseURL": app.config['FIREBASE_DATABASE_URL']})
 db = firestore.client()
 
 ref = firebase_db.reference('/')
@@ -827,5 +832,5 @@ def leave_group_chat():
         return jsonify({"error": "Failed to remove user from group chat"}), 500
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True, allow_unsafe_werkzeug=True)
+    socketio.run(app)
 
