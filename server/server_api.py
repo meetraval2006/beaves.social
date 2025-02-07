@@ -15,14 +15,14 @@ from dotenv import load_dotenv
 from config import config
 
 app = Flask(__name__)
-app.config.from_object(config[os.getenv('FLASK_ENV', 'default')])
+# app.config.from_object(config[os.getenv('FLASK_ENV', 'default')])
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 api = Api(app)
 
 # Use environment variables for sensitive information
-cred = credentials.Certificate(app.config['FIREBASE_CREDENTIALS_PATH'])
-firebase_initialization = firebase_admin.initialize_app(cred, {"databaseURL": app.config['FIREBASE_DATABASE_URL']})
+cred = credentials.Certificate("./server/key.json")
+firebase_initialization = firebase_admin.initialize_app(cred, {"databaseURL": "https://beavs-social-default-rtdb.firebaseio.com/"})
 db = firestore.client()
 
 ref = firebase_db.reference('/')
