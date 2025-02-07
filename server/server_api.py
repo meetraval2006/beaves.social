@@ -12,7 +12,6 @@ import re
 import time
 import os
 from dotenv import load_dotenv
-from config import config
 
 app = Flask(__name__)
 # app.config.from_object(config[os.getenv('FLASK_ENV', 'default')])
