@@ -7,7 +7,7 @@ const AppContext = createContext<any>(undefined);
 export function AppWrapper({ children } : {
   children: React.ReactNode;
 }) {
-  let [email, setEmail] = useState("null@oregonstate.edu");
+  const [email, setEmail] = useState("null@oregonstate.edu");
 
   return (
     <AppContext.Provider value={{ email, setEmail }}>
